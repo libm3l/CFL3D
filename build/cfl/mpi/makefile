@@ -14,7 +14,7 @@ lncode:
 	ln -s $(CFLSRC_D)/*.F .
 	ln -s $(CFLSRC_S)/ccomplex.F .
 
-lnhead:
+lnhead:D_DIST
 
 lnlibs:
 	ln -s ../libs/$(COMMONLIB) .
@@ -61,10 +61,10 @@ mgbl.o: ../libs/module_kwstm.o
 setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F 
 
 # *************************** CREATE EXECUTABLE ******************************
 
