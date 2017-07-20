@@ -765,11 +765,11 @@ case $FARCH in LINUX)
 # Default to INTEL settings:
 
   CFLAG=""
-  FFLAG="-O2 -w -ip -fno-alias -xHost -traceback"
+  FFLAG="-O2 -fdefault-real-8 -fdefault-double-8 -fconvert=big-endian -frecord-marker=4"
   CURLIB=`pwd`
-  FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
+  FFLAG="$FFLAG $CURLIB/\$(CFLLIBSD)"
   FFLAG_SPEC="$FFLAG"
-  LFLAG="-z muldefs -xHost -traceback -fpe0"                                  
+  LFLAG="-O2 -fdefault-real-8 -fdefault-double-8 -fconvert=big-endian -frecord-marker=4" 
   LLIB=""
   LLIB_SEQ=$LLIB
   LLIBDIR=""
@@ -779,7 +779,7 @@ case $FARCH in LINUX)
   CC="mpicc"
   CPP="cpp"
   if [ $do_dou = yes ]; then
-     PREC="-r8"
+     PREC=""
   else
      PREC=""
   fi
@@ -798,7 +798,7 @@ case $FARCH in LINUX)
 # Lahey Fujitsu Compiler
 #   FTN="lf95"
 # Intel Fortan Compiler
-#   FTN="ifort"
+   FTN="mpif90"
 # Alpha-using-Linux Compiler
 #   FTN="fort"
 
@@ -808,14 +808,14 @@ case $FARCH in LINUX)
 
   if [ $linux_compiler_flags = Intel ]; then
      CFLAG=""
-     FFLAG="-O2 -w -ip -fno-alias -xHost -traceback -fpe0"
+     FFLAG="-O2 -fdefault-real-8 -fdefault-double-8 -fconvert=big-endian -frecord-marker=4"
      if [ $do_no_opt = yes ]; then
-        FFLAG="-O0 -w -ip -fno-alias -xHost -traceback -fpe0"
+        FFLAG="-O2 -fdefault-real-8 -fdefault-double-8 -fconvert=big-endian -frecord-marker=4"
      fi
      CURLIB=`pwd`
-     FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
+     FFLAG="$FFLAG $CURLIB/\$(CFLLIBSD)"
      FFLAG_SPEC="$FFLAG"
-     LFLAG="-z muldefs -xHost -traceback -fpe0"
+     LFLAG="-O2 -msse3 -ip -convert big_endian -r8 -std03"
      LLIB=""
      LLIB_SEQ=$LLIB
      LLIBDIR=""
