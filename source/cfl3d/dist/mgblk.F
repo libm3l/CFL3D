@@ -71,7 +71,8 @@ c
      .                 stm,stmi,xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,
      .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
      .                 timekeep,xorgae0,yorgae0,zorgae0,icouple,
-     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue,nummem)
+     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue,nummem,
+     .                 pglob)
 c
 c     $Id$
 c
@@ -84,6 +85,8 @@ c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
+
+      USE FLL_MODS_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -309,6 +312,9 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c      time step cycle:
 c

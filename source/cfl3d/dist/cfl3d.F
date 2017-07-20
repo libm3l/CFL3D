@@ -1111,7 +1111,7 @@ c
      .          iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .          gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
      .          nmaster,aehist,timekeep,xorgae0,yorgae0,zorgae0,
-     .          icouple,nblelst,iskmax,jskmax,kskmax,ue,irdrea)
+     .          icouple,nblelst,iskmax,jskmax,kskmax,ue,irdrea, PGLOB)
 c
 c***********************************************************************
 c     deallocate memory 

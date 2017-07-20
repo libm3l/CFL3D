@@ -72,11 +72,13 @@ c
      .                gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
-     .                irdrea)
+     .                irdrea, PBLOB)
 #   ifdef CMPLX
 #   else
       use module_kwstm, only:kws_get_nummem
 #   endif
+
+      USE FLL_MODS_M
 c
 c     $Id$
 c
@@ -289,6 +291,9 @@ c
 
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
 c     initialization
@@ -852,7 +857,7 @@ c
      .              xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
      .              yorgae0,zorgae0,icouple,iprnsurf,nblelst,iskmax,
-     .              jskmax,kskmax,ue,nummem)
+     .              jskmax,kskmax,ue,nummem,pglob)
 c
          do iii = 1,mworki
             iwork(iii) = 0
