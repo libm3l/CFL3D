@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE TWOEQN_M
+      CONTAINS
       subroutine twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,
      + x,y,z,vist3d,vor,smin,zksav,turre,damp1,blend,timestp,fnu,bx,bx2,
      + cx,cx2,dx,dx2,fx,fx2,workx,by,by2,cy,cy2,dy,dy2,fy,fy2,worky,
@@ -35,7 +37,7 @@ c
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum)
+     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum,pglob)
 c
 c     $Id$
 c
@@ -49,6 +51,12 @@ c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
+
+      USE FLL_MODS_M
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
+
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -212,6 +220,9 @@ c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
 c      xlscale - length scale for use with DES 2-eqn model
 c      fdsav - f_d parameter for use with DDES
 c
+
+      write(*,*)' JKA BLOCK dimensions ', jdim,kdim,idim
+
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
@@ -2399,6 +2410,7 @@ c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
           call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         end if
 c
+        write(*,*)' JKA GET Sij'
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2424,7 +2436,7 @@ c            or 0.33333 (3D))
      +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1 .or.
      +            isstrc .eq. 2 .or. isst2003 .eq. 1) then
-                s11 = ux(j,k,i,1)
+                s11 = ux(j,k,i,1)   !JKA here is strain rate tensor
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
@@ -5244,3 +5256,5 @@ c-----END HARDWIRED OUTPUT SECTION
 c
       return
       end
+
+      END MODULE TWOEQN_M

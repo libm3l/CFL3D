@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      module RESID_M
+      CONTAINS
       subroutine resid(nbl,ntime,jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,
      .           vol,dtj,x,y,z,vist3d,snj0,snk0,sni0,res,wj0,wk0,wi0,
      .           vmuk,vmuj,vmui,wk,nwork,isf,iwfa,wfa,delt,blank,iover,
@@ -29,11 +31,14 @@ c
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance,qavg,nummem)
+     .           idefrm,iadvance,qavg,nummem,pglob)
 #   ifdef CMPLX
 #   else
       use module_kwstm, only: kws_main,kws_dump_movie
 #   endif
+
+      use TWOEQN_M
+      USE FLL_MODS_M
 c
 c     $Id$
 c
@@ -121,6 +126,9 @@ c
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /reystressmodel/ issglrrw2012,i_sas_rsm
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -630,6 +638,7 @@ c allocate for DES and DDES
        write(bou(nou(1),1),'('' nroom='',i12)') nroom
        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
+      write(*,*)' JKA calling twoeqn'
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
      + wk(iwk5),
@@ -652,7 +661,7 @@ c allocate for DES and DDES
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
-     + wk(iwk82),nummem,iccnum)
+     + wk(iwk82),nummem,iccnum,pglob)
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1
@@ -1301,3 +1310,5 @@ c   during restarts, because the PLOT3D output is in conserved form)
       end if
       return 
       end
+
+       END MODULE RESID_M

@@ -20,7 +20,10 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
+       module mgbl_m
+       contains
+      subroutine mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,intmax,
+     .                maxxe,
      .                mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .                maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .                ibufdim,nbuf,mxbcfil,istat_size,
@@ -72,13 +75,15 @@ c
      .                gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
-     .                irdrea, PBLOB)
+     .                irdrea)
+
+      USE FLL_MODS_M
+      USE MGBLK_M
+
 #   ifdef CMPLX
 #   else
       use module_kwstm, only:kws_get_nummem
 #   endif
-
-      USE FLL_MODS_M
 c
 c     $Id$
 c
@@ -124,6 +129,7 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer irdrea(maxgr),stats
+      INTEGER(LINT) :: dims,ndims
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -292,7 +298,7 @@ c
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGLOB, PLEVEL, PGRID,PTMP
       TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
@@ -300,7 +306,7 @@ c     initialization
 c***********************************************************************
 c
 c     initialize timing utility
-c
+c       
       string = ' '
       call cputim(0,1,string,myhost,myid,mycomm,11)
 c
@@ -491,6 +497,56 @@ c
          do iii = 1,iwk5
             iwork(iii) = 0
          end do
+
+       DO J = 1,mseq
+         PLEVEL => FLL_MK("level","DIR",0_LINT, 0_LINT,FPAR)
+         IF(.NOT.FLL_MV(PLEVEL, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
+         dims = idimg(j)*jdimg(j)*kdimg(j)
+         if(idimg(j) == 2)then
+           ndims = 2*2
+         else
+           ndims = 3*3
+         end if
+       
+         write(*,*)ngrid, nblock
+         DO I = 1,ngrid  ! nblock
+           PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
+           IF(.NOT.FLL_MV(PGRID, PLEVEL, FPAR))STOP' ERROR MOVING NODE'
+
+!           IF (IHDM==1) THEN
+             PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+
+             PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             
+             IF(NDIMS == 4)THEN
+               PTMP => FLL_MK('SSGRAD','D',dims,6_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               PTMP => FLL_MK('SS2GRAD','D',dims,12_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             ELSE
+               PTMP => FLL_MK('SSGRAD','D',dims,18_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               PTMP => FLL_MK('SS2GRAD','D',dims,54_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             END IF
+
+         END DO
+       END DO
+
+ 
+       write(*,*)'Adding data set for non-equilibrium model ... ' 
+       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR, 'Y')
+
+	 stop
 c
 #if defined DIST_MPI
 c
@@ -1110,3 +1166,5 @@ c
       deallocate(nneg)
       return
       end
+
+      end module mgbl_m
