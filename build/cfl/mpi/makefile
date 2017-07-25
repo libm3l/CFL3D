@@ -14,7 +14,7 @@ lncode:
 	ln -s $(CFLSRC_D)/*.F .
 	ln -s $(CFLSRC_S)/ccomplex.F .
 
-lnhead:D_DIST
+lnhead:
 
 lnlibs:
 	ln -s ../libs/$(COMMONLIB) .
