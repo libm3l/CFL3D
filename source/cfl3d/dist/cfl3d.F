@@ -38,6 +38,7 @@ c   use fll library which it exxentially a linked list
 c   will be used to store additional data
 c
       USE FLL_MODS_M
+      USE mgbl_m
 
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -70,6 +71,8 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer stats
+
+      common /info/ mseq
 c
       dimension nou(nbuf)
 c
@@ -1054,13 +1057,14 @@ c***********************************************************************
 c     allocate fll global pointer contaning all additional data
 c***********************************************************************
 c
-      PGLOB => FLL_MK("pglob","DIR",0_LINT, 0_LINT,FPAR)
+       PGLOB => FLL_MK("pglob","DIR",0_LINT, 0_LINT,FPAR)   
 c
 c***********************************************************************
 c     call flow solver
 c***********************************************************************
 c
-      call mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
+      call mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,
+     .          intmax,maxxe,
      .          mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .          maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .          ibufdim,nbuf,mxbcfil,istat_size,
@@ -1111,7 +1115,7 @@ c
      .          iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .          gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
      .          nmaster,aehist,timekeep,xorgae0,yorgae0,zorgae0,
-     .          icouple,nblelst,iskmax,jskmax,kskmax,ue,irdrea, PGLOB)
+     .          icouple,nblelst,iskmax,jskmax,kskmax,ue,irdrea)
 c
 c***********************************************************************
 c     deallocate memory 

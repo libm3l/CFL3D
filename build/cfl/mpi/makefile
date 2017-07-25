@@ -126,3 +126,5 @@ cleang:
 	-rm -f *.F
 
 scrub: cleana cleano cleane cleanf cleanh cleang
+
+include depend.mk

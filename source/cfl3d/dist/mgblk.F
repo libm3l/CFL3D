@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE MGBLK_M
+      CONTAINS
       subroutine mgblk(iseq,lw,lw2,w,mgwk,timesave,wk,nwork,iw,ireq_qb,
      .                 iwk,iwork,maxbl,maxgr,maxseg,iitot,intmax,nsub1,
      .                 maxxe,ncycmax,iovrlp,lig,lbg,ibpntsg,iipntsg,
@@ -3305,3 +3307,5 @@ c
 c
       return
       end
+
+      END MODULE MGBLK_M

@@ -20,7 +20,10 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
+       module mgbl_m
+       contains
+      subroutine mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,intmax,
+     .                maxxe,
      .                mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .                maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .                ibufdim,nbuf,mxbcfil,istat_size,
@@ -72,13 +75,15 @@ c
      .                gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
-     .                irdrea, PBLOB)
+     .                irdrea)
+
+      USE FLL_MODS_M
+      USE MGBLK_M
+
 #   ifdef CMPLX
 #   else
       use module_kwstm, only:kws_get_nummem
 #   endif
-
-      USE FLL_MODS_M
 c
 c     $Id$
 c
@@ -292,7 +297,7 @@ c
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGLOB, PLEVEL, PGRID
       TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
@@ -300,7 +305,7 @@ c     initialization
 c***********************************************************************
 c
 c     initialize timing utility
-c
+c       
       string = ' '
       call cputim(0,1,string,myhost,myid,mycomm,11)
 c
@@ -491,6 +496,22 @@ c
          do iii = 1,iwk5
             iwork(iii) = 0
          end do
+
+       DO J = 1,mseq
+         PLEVEL => FLL_MK("level","DIR",0_LINT, 0_LINT,FPAR)
+         IF(.NOT.FLL_MV(PLEVEL, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+      
+         DO I = 1,maxbl
+           PGRID => FLL_MK("block","DIR",0_LINT, 0_LINT,FPAR)
+           IF(.NOT.FLL_MV(PGRID, PLEVEL, FPAR))STOP' ERROR MOVING NODE'
+
+         END DO
+       END DO
+ 
+       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
+
+
+
 c
 #if defined DIST_MPI
 c
@@ -1110,3 +1131,5 @@ c
       deallocate(nneg)
       return
       end
+
+      end module mgbl_m
