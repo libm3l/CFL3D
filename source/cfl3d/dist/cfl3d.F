@@ -38,7 +38,7 @@ c   use fll library which it exxentially a linked list
 c   will be used to store additional data
 c
       USE FLL_MODS_M
-      USE mgbl_m
+      USE MGBL_M
 
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
