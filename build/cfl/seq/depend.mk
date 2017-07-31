@@ -1,2 +1,1 @@
-cfl3d.o: mgbl.o
-mgbl.o: mgblk.o
+../../../source/cfl3d/dist/depend.mk

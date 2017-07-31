@@ -31,7 +31,9 @@ plot3d_coarse.o :
 
 writ_buf.o : 
 
-mgbl.o : 
+mgbl.o :  \
+	../../../build/cfl/libs/module_kwstm.o \
+	mgblk.o
 
 newalpha.o : 
 
@@ -68,7 +70,8 @@ qout_coarse.o :
 pointers.o :  \
 	../../../build/cfl/libs/module_kwstm.o
 
-cfl3d.o : 
+cfl3d.o :  \
+	mgbl.o
 
 plot3t.o : 
 
