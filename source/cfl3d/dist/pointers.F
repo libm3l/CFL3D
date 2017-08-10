@@ -827,7 +827,7 @@ c
      .        ((ivmx.eq.5) .and. isarc3d.eq.1) .or.
      .        ((ivmx.eq.5) .and. isar.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .        (ivmx.eq.6 .and. i_wilcox98.eq.1) .or. ivmax==72 .or.
+     .        (ivmx.eq.6 .and. i_wilcox98.eq.1) .or. ivmx==72 .or.
      .        ides.ge.2 .or. i_nonlin.ne.0)
      .        ns = jm1km1im1*9
          else
