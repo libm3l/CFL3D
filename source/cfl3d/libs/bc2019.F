@@ -139,7 +139,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
       uun=-(u*sj(1,k,i,1)+v*sj(1,k,i,2)+w*sj(1,k,i,3)+sj(1,k,i,5))
       un  = -uun*sj(1,k,i,1)
       vn  = -uun*sj(1,k,i,2)
-      vw  = -uun*sj(1,k,i,3)
+      wn  = -uun*sj(1,k,i,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
@@ -291,7 +291,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
      +     sj(jdim,k,i,5))
       un  = +uun*sj(jdim,k,i,1)
       vn  = +uun*sj(jdim,k,i,2)
-      vw  = +uun*sj(jdim,k,i,3)
+      wn  = +uun*sj(jdim,k,i,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
@@ -443,7 +443,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
       uun=-(u*sk(j,1,i,1)+v*sk(j,1,i,2)+w*sk(j,1,i,3)+sk(j,1,i,5))
       un  = -uun*sk(j,1,i,1)
       vn  = -uun*sk(j,1,i,2)
-      vw  = -uun*sk(j,1,i,3)
+      wn  = -uun*sk(j,1,i,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
@@ -595,7 +595,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
      +     sk(j,kdim,i,5))
       un  = +uun*sk(j,kdim,i,1)
       vn  = +uun*sk(j,kdim,i,2)
-      vw  = +uun*sk(j,kdim,i,3)
+      wn  = +uun*sk(j,kdim,i,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
@@ -747,7 +747,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
       uun=-(u*si(j,k,1,1)+v*si(j,k,1,2)+w*si(j,k,1,3)+si(j,k,1,5))
       un  = -uun*si(j,k,1,1)
       vn  = -uun*si(j,k,1,2)
-      vw  = -uun*si(j,k,1,3)
+      wn  = -uun*si(j,k,1,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
@@ -899,7 +899,7 @@ c     need outward-pointing (- sign for ilo,jlo,klo):
      +     si(j,k,idim,5))
       un  = +uun*si(j,k,idim,1)
       vn  = +uun*si(j,k,idim,2)
-      vw  = +uun*si(j,k,idim,3)
+      wn  = +uun*si(j,k,idim,3)
       ut  = u-un
       vt  = v-vn
       wt  = w-wn
