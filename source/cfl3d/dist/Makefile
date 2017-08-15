@@ -51,5 +51,7 @@ depend: $(FFILES)
 	@echo "Making dependencies!"
 	cd $(srcdir) && $(MAKEDEPEND) -r $(PROJ_ROOT_PATH) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -d $(FMODDIRS) -f $(FFILES)
 
+	sed -i 's|source/cfl3d|build/cfl|' depend.mk
+
 -include $(srcdir)/$(DEP_FILE)
 

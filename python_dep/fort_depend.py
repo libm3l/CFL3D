@@ -112,7 +112,7 @@ def write_depend(verbose,path,cwd,outfile="makefile.dep",dep=[],overwrite=False,
       print("\033[031m Opening dependency file \033[032m"+outfile+"\033[039m ...")
       print("  ")
     f=open(outfile,'w')
-    f.write('# This file is generated automatically. DO NOT EDIT!\n')
+    f.write('# This file is generated automatically by fort_depend.py. DO NOT EDIT!\n')
 
     for i in dep.keys():
         tmp,fil=os.path.split(i)
@@ -189,18 +189,18 @@ def get_all_files(path,dep):
 #  get relative path of current directory
 #
     currdirr = os.getcwd()
+    currdirr = check_path(path=currdirr)
     relapth = currdirr
     relapth=relapth.replace(path,'')
-    relapth = relapth + "/"
     slsh_count  = relapth.count('/')
     relapth = ''
     for isl in range(0, slsh_count):
             relapth += "../"
 #
-#  specified list of preferred directories
 #  list only files located in those
 #
     if not(dep == None):
+       dep.append(currdirr)
        for i in dep:
 #
 #   use basolute path to preferred directories ie.: os.path.abspath(i) 
@@ -227,9 +227,13 @@ def get_all_files(path,dep):
 #   add trailing /   and then add ../ to get to project root path, ie..file will have relative path
 #
                           cwurrdirr = root
-                          cwurrdirr=cwurrdirr.replace(path,'')
-                          cwurrdirr = relapth + cwurrdirr + "/"
-                          matches.append(os.path.join(cwurrdirr, filename))
+                          cwurrdirr = cwurrdirr.replace(path,'')
+#
+#   if specified directory is a subdirectory in projet root path then add files
+#   otherwise not (it is possible then some external library is specified)
+                          if root != cwurrdirr:
+                            cwurrdirr = relapth + cwurrdirr + "/"
+                            matches.append(os.path.join(cwurrdirr, filename))
 #
 #  otherwise include all files from path dir
 #                         
@@ -437,20 +441,21 @@ def get_depends(ignore,verbose,cwd,fob=[],m2f=[], ffiles=[]):
                     retval = 0
                     
                     if not(cwd.strip() == dir):
+                        
                         retval=check_if_there(use=j,file=k)
                        
                         if retval > 0:
                           istat = 1
                           name=os.path.splitext(k)[0]+'.o'
                           tmp.append(name.lower())
+
                           if int(verbose) > 2 :
                             print ("\033[031m   Note: \033[039m module \033[032m"+j+"\033[039m not defined in any file in this directory")
                             print ("\033[031m         \033[039m module found in \033[032m"+name+"\033[039m file")
                             print ("\033[031m         \033[039m adding the module to dependency file, not checking its dependency further \033[032m\033[039m")
-#                            print(" ")
-                            break    #break loop, dependency declared
+                          break    #break loop, dependency declared
                 
-                if istat== 0 and not(j == ""):
+                if istat== 0 and (j != ""):
                          if int(verbose) > 2 :
                            print("")
                            print ("\033[031m   Note!!!!: \033[039m module \033[032m"+j+"\033[039m not defined in any file")
@@ -459,8 +464,7 @@ def get_depends(ignore,verbose,cwd,fob=[],m2f=[], ffiles=[]):
 #   once module found, break the loop
 #
 #                           break    #break loop, dependency declared 
-        
-        if not(istat == 0):
+        if (istat != 0):
 #
 #   if file containign module, add to the list 
 #
