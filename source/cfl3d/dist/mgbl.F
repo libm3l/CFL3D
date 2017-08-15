@@ -500,8 +500,9 @@ c
        DO J = 1,mseq
          PLEVEL => FLL_MK("level","DIR",0_LINT, 0_LINT,FPAR)
          IF(.NOT.FLL_MV(PLEVEL, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-      
-         DO I = 1,ngrid
+       
+         write(*,*)ngrid, nblock
+         DO I = 1,ngrid  ! nblock
            PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
            IF(.NOT.FLL_MV(PGRID, PLEVEL, FPAR))STOP' ERROR MOVING NODE'
 
