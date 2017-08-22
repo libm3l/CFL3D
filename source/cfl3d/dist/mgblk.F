@@ -1526,7 +1526,7 @@ c        flux contributions
 c
          isf = 0
          if (level.gt.lglobal .and. ntime.eq.nit1) isf = min(1,iconsf)
-         write(*,*)'JKA calling RESID UUU',nbl,jdim,kdim,idim
+         write(*,*)'JKA calling RESID',nbl,jdim,kdim,idim
          call resid(nbl,ntime,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .              w(lqi0),w(lsj),w(lsk),w(lsi),w(lvol),w(ldtj),w(lx),
      .              w(ly),w(lz),w(lvis),w(lsni0),w(lsnk0),w(lsni0),
@@ -1854,7 +1854,7 @@ c
 c     restrict q and r to coarser grid levels
 c
 
-      write(*,*)'LEV 1 ', level, levb
+      write(*,*)'JKA LEV 1 ', level, levb
 
       if (mgflag.gt.0 .and. ntime.eq.nit1 .and. level.ne.levb) then
 c

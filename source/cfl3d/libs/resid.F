@@ -661,7 +661,7 @@ c allocate for DES and DDES
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
-     + wk(iwk82),nummem,iccnum)
+     + wk(iwk82),nummem,iccnum,pglob)
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1

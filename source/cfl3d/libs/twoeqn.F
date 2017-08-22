@@ -37,7 +37,7 @@ c
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum)
+     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum,pglob)
 c
 c     $Id$
 c
@@ -51,6 +51,12 @@ c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
+
+      USE FLL_MODS_M
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
+
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -215,7 +221,7 @@ c      xlscale - length scale for use with DES 2-eqn model
 c      fdsav - f_d parameter for use with DDES
 c
 
-      write(*,*)' BLOCK dimensions ', jdim,kdim,idim  
+      write(*,*)' BLOCK dimensions ', jdim,kdim,idim
 
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
