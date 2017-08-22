@@ -102,7 +102,8 @@ umalloc_c.o :
 
 yplusout.o : 
 
-mgblk.o : 
+mgblk.o :  \
+	../../../build/cfl/libs/resid.o
 
 plot3d.o : 
 

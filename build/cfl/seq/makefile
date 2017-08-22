@@ -22,7 +22,7 @@ lnlibs:
 # ****************************** SUFFIX RULES ********************************
 
 .F.o:
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I/home/jiraseka/LL/fll_exec/data_util/ 
 
 # **************************** CREATE LIBRARIES  *****************************
 
@@ -64,7 +64,7 @@ $(FOBJ_DIST): $(HEAD_DIST)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/ -I/home/jiraseka/LL/fll_exec/data_util/ 
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F  -I/home/jiraseka/LL/fll_exec/data_util/ 
 
 # *************************** CREATE EXECUTABLE ******************************
 
@@ -77,7 +77,7 @@ FOBJ_MAIN = $(FSRC_MAIN:.F=.o)
 HEAD_MAIN = 
 
 $(FOBJ_MAIN): $(HEAD_MAIN)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I/home/jiraseka/LL/fll_exec/data_util/ 
 
 COMMONLIB   = libcommon.a
 

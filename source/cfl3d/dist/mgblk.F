@@ -89,6 +89,7 @@ c
 #   endif
 
       USE FLL_MODS_M
+      USE RESID_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -813,6 +814,7 @@ c
          end do
 c
          iupdat = 1
+
          call updateg(lw,lw2,w,mgwk,wk,nwork,iupdat,iseq,maxbl,
      .                maxgr,maxseg,nbci0,nbcj0,nbck0,nbcidim,
      .                nbcjdim,nbckdim,ibcinfo,jbcinfo,kbcinfo,
@@ -1524,6 +1526,7 @@ c        flux contributions
 c
          isf = 0
          if (level.gt.lglobal .and. ntime.eq.nit1) isf = min(1,iconsf)
+         write(*,*)'JKA calling RESID UUU',nbl,jdim,kdim,idim
          call resid(nbl,ntime,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .              w(lqi0),w(lsj),w(lsk),w(lsi),w(lvol),w(ldtj),w(lx),
      .              w(ly),w(lz),w(lvis),w(lsni0),w(lsnk0),w(lsni0),
@@ -1538,7 +1541,7 @@ c
      .              nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,maxseg,
      .              nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .              jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,idefrm,
-     .              iadvance,w(lqavg),nummem)
+     .              iadvance,w(lqavg),nummem,pglob)
 c
 c        add 2nd order time terms and subiteration terms
 c
@@ -1850,6 +1853,9 @@ c
 c
 c     restrict q and r to coarser grid levels
 c
+
+      write(*,*)'LEV 1 ', level, levb
+
       if (mgflag.gt.0 .and. ntime.eq.nit1 .and. level.ne.levb) then
 c
          if (mblk2nd(nbl) .eq. myid) then
@@ -2105,6 +2111,8 @@ c
 c
 #endif
          do 7020 nbl=1,nblock
+
+!	 write(*,*)' JKA upward ',nbl
 c
          if (iadvance(nbl).lt.0) go to 7020
          if (level.ne.levelg(nbl)) go to 7020
