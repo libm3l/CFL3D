@@ -298,7 +298,7 @@ c
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
 
-      TYPE(DNODE), POINTER :: PGLOB, PLEVEL, PGRID,PTMP
+      TYPE(DNODE), POINTER :: PGLOB, PGRID,PTMP
       TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
@@ -498,23 +498,31 @@ c
             iwork(iii) = 0
          end do
 
-       DO J = 1,mseq
-         PLEVEL => FLL_MK("level","DIR",0_LINT, 0_LINT,FPAR)
-         IF(.NOT.FLL_MV(PLEVEL, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+       DO J = 1,MSEQ
 
-         dims = idimg(j)*jdimg(j)*kdimg(j)
-         if(idimg(j) == 2)then
-           ndims = 2*2
-         else
-           ndims = 3*3
-         end if
+         DIMS = IDIMG(J)*JDIMG(J)*KDIMG(J)
+         IF(IDIMG(J) == 2)THEN
+           NDIMS = 2*2
+         ELSE
+           NDIMS = 3*3
+         END IF
        
-         write(*,*)ngrid, nblock
-         DO I = 1,ngrid  ! nblock
+         WRITE(*,*)NGRID, NBLOCK
+         DO I = 1,NGRID  ! NBLOCK
+
            PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
-           IF(.NOT.FLL_MV(PGRID, PLEVEL, FPAR))STOP' ERROR MOVING NODE'
+           IF(.NOT.FLL_MV(PGRID, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
 !           IF (IHDM==1) THEN
+             PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
+             PTMP%I0 = MSEQ - J + 1
+             PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
+             PTMP%L1(1) = idimg(j)
+             PTMP%L1(2) = jdimg(j)
+             PTMP%L1(3) = kdimg(j)
+
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+
              PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
              PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
@@ -529,24 +537,36 @@ c
              
              IF(NDIMS == 4)THEN
                PTMP => FLL_MK('SSGRAD','D',dims,6_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
                PTMP => FLL_MK('SS2GRAD','D',dims,12_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
              ELSE
                PTMP => FLL_MK('SSGRAD','D',dims,18_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
                PTMP => FLL_MK('SS2GRAD','D',dims,54_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+             END IF
+
+             IF(NDIMS == 4)THEN
+               PTMP => FLL_MK('S','D',dims,3_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('SN1','D',dims,3_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('SN2','D',dims,3_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+             ELSE
+               PTMP => FLL_MK('ST','D',dims,6_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('STN1','D',dims,6_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('STN2','D',dims,6_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
              END IF
 
          END DO
        END DO
 
- 
-       write(*,*)'Adding data set for non-equilibrium model ... ' 
-       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR, 'Y')
-
-	 stop
+       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
 c
 #if defined DIST_MPI
 c
