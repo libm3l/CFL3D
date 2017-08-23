@@ -221,7 +221,7 @@ c      xlscale - length scale for use with DES 2-eqn model
 c      fdsav - f_d parameter for use with DDES
 c
 
-      write(*,*)' BLOCK dimensions ', jdim,kdim,idim
+      write(*,*)' JKA BLOCK dimensions ', jdim,kdim,idim
 
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)

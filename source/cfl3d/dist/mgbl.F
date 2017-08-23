@@ -129,6 +129,7 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer irdrea(maxgr),stats
+      INTEGER(LINT) :: dims,ndims
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -500,6 +501,13 @@ c
        DO J = 1,mseq
          PLEVEL => FLL_MK("level","DIR",0_LINT, 0_LINT,FPAR)
          IF(.NOT.FLL_MV(PLEVEL, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
+         dims = idimg(j)*jdimg(j)*kdimg(j)
+         if(idimg(j) == 2)then
+           ndims = 2*2
+         else
+           ndims = 3*3
+         end if
        
          write(*,*)ngrid, nblock
          DO I = 1,ngrid  ! nblock
@@ -507,72 +515,38 @@ c
            IF(.NOT.FLL_MV(PGRID, PLEVEL, FPAR))STOP' ERROR MOVING NODE'
 
 !           IF (IHDM==1) THEN
-             PTMP => FLL_MK('UUGRAD_UNKNNN','D',100_LINT,1_LINT, FPAR)
+             PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',100_LINT,1_LINT, FPAR)
+             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',100_LINT,1_LINT, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('velocity_nn','D',100_LINT,3_LINT, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn1','D',100_LINT,3_LINT, FPAR)
+             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
 
-             PTMP => FLL_MK('SSGRAD','D',100_LINT,6_LINT, FPAR)
+             PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('SS2GRAD','D',100_LINT,12_LINT, FPAR)
+             PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-!
-!     HD MODEL
-!
-!        IF(NDIM == 2) THEN
-!          PTMP => DATA_SET_NEW('SSGRAD',CRTYPE,6,NNODES,&
-!                    RCFLAG=RCFLAG)
-!          PTMP%RD = 0.
-!          CALL APPEND_CHILD(PREG,PTMP)        
-!          PTMP => DATA_SET_NEW('SS2GRAD',CRTYPE,12,NNODES,&
-!                    RCFLAG=RCFLAG)
-!          PTMP%RD = 0.
-!          CALL APPEND_CHILD(PREG,PTMP)        
-!        ELSE
-!          PTMP => DATA_SET_NEW('SSGRAD',CRTYPE,18,NNODES,&
-!                    RCFLAG=RCFLAG)
-!          PTMP%RD = 0.
-!         CALL APPEND_CHILD(PREG,PTMP)        
-!          PTMP => DATA_SET_NEW('SS2GRAD',CRTYPE,54,NNODES,&
-!                    RCFLAG=RCFLAG)
-!          PTMP%RD = 0.
-!          CALL APPEND_CHILD(PREG,PTMP)  
-!        END IF
-!
-!   ALLOCATE SPACE FOR MATERIAL DERIVATIVE OF STRAIN TENSOR DS/Dt
-!
-!        IF(NDIM == 2) THEN
-!            PTMP => DATA_SET_NEW('DSDT_N',CRTYPE,7,NNODES,RCFLAG=RCFLAG)
-!        ELSE
-!            PTMP => DATA_SET_NEW('DSDT_N',CRTYPE,13,NNODES,RCFLAG=RCFLAG)        
-!        END IF
-!        PTMP%RD = 0.
-!       CALL APPEND_CHILD(PREG,PTMP)
-!
-!        PTMP => DATA_SET_NEW('velocity_NNN',CRTYPE,3,NNODES,&
-!               RCFLAG=RCFLAG)
-!        PTMP%RD = 0.
-!        CALL APPEND_CHILD(PREG,PTMP)  
-        
-!        PTMP => DATA_SET_NEW('velocity_NM1',CRTYPE,3,NNODES,&
-!               RCFLAG=RCFLAG)
-!        PTMP%RD = 0.
-!        CALL APPEND_CHILD(PREG,PTMP)  
-       
-!    END IF
+             
+             IF(NDIMS == 4)THEN
+               PTMP => FLL_MK('SSGRAD','D',dims,6_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               PTMP => FLL_MK('SS2GRAD','D',dims,12_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             ELSE
+               PTMP => FLL_MK('SSGRAD','D',dims,18_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               PTMP => FLL_MK('SS2GRAD','D',dims,54_LINT, FPAR)
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             END IF
 
          END DO
        END DO
+
  
        write(*,*)'Adding data set for non-equilibrium model ... ' 
        CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR, 'Y')
+
+	 stop
 c
 #if defined DIST_MPI
 c
