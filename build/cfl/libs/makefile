@@ -9,7 +9,7 @@
 #=============================================================================
 
 # ****************************** CREATE LINKS ********************************
-
+include ../../../config.mk
 link: lncode lnhead
 
 lncode:
@@ -24,9 +24,9 @@ lnhead:
 .SUFFIXES:
 .SUFFIXES:.F .o .F90 .c
 .F.o: 
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I/home/jiraseka/LL/fll_exec/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
 .F90.o: 
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F90 -I/home/jiraseka/LL/fll_exec/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F90 -I$(FLLLOC)/data_util/ 
 .c.o:
 	$(CC) $(CFLAG) -c $*.c
 
@@ -134,10 +134,10 @@ $(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
 	@$(RANLIB) $(COMMONLIB)
 
 $(FOBJ_LIBS): 
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I/home/jiraseka/LL/fll_exec/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
 
 $(FOBJ_SPEC):
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F -I/home/jiraseka/LL/fll_exec/data_util/
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F -I$(FLLLOC)/data_util/
 
 $(COBJ_LIBS):
 	$(CC) $(CFLAG) -c $*.c
