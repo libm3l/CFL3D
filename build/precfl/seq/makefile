@@ -63,13 +63,13 @@ FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 PRE_HEAD  = 
 
 $(OBJECT): $(PRE_HEAD)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I../../cfl/libs 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 $(FOBJ_SPEC): $(PRE_HEAD)
 	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
 
 $(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS) ../../cfl/libs/module_*.o  
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "

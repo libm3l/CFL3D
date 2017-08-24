@@ -20,8 +20,6 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      MODULE TWOEQN_M
-      CONTAINS
       subroutine twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,
      + x,y,z,vist3d,vor,smin,zksav,turre,damp1,blend,timestp,fnu,bx,bx2,
      + cx,cx2,dx,dx2,fx,fx2,workx,by,by2,cy,cy2,dy,dy2,fy,fy2,worky,
@@ -37,7 +35,7 @@ c
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum,pglob)
+     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum)
 c
 c     $Id$
 c
@@ -46,21 +44,11 @@ c     Purpose:  Compute turbulent viscosity distributions using
 c     2-equation turbulence models
 c     (reprogrammed by Rumsey for CFL3D Version 5 - 5/96)
 c     Alterations to EASM #8,9,13,14 by Rumsey - 5/00)
-c     added non-equilibrium model by Adam Jirasek / USAFA / CU Boulder/ 08/17
 c***********************************************************************
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
-
-      USE FLL_MODS_M
-
-!      IMPLICIT NONE
-
-
-      TYPE(DNODE), POINTER :: PGLOB
-      TYPE(FUNC_DATA_SET)  :: FPAR
-
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -224,334 +212,6 @@ c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
 c      xlscale - length scale for use with DES 2-eqn model
 c      fdsav - f_d parameter for use with DDES
 c
-c
-c  additional declarations needed by non-equilibrium model
-c
-      TYPE(DNODE), POINTER :: PGRID,PTMP,PTMQ
-      INTEGER(LINT) :: NGRID, IGRID
-      INTEGER :: ILEV,IND,IHDM,IDIM,JDIM,KDIM
-      REAL(RDOUBLE), POINTER :: STR(:,:),STRN1(:,:),STRN2(:,:)
-      REAL(RDOUBLE), POINTER :: S11D_N(:),S12D_N(:),S13D_N(:)
-      REAL(RDOUBLE), POINTER :: S22D_N(:),S23D_N(:),S33D_N(:)
-      REAL(RDOUBLE), POINTER :: S11D_N2(:),S12D_N2(:),S13D_N2(:)
-      REAL(RDOUBLE), POINTER :: S22D_N2(:),S23D_N2(:),S33D_N2(:)
-      REAL(RDOUBLE), POINTER :: STILDETRACE(:)
-
-      REAL(RDOUBLE) :: S11DT,S12DT,S13DT,S21DT,S22DT,S23DT
-      REAL(RDOUBLE) :: S31DT,S32DT,S33DT,SKK
-
-      REAL(RDOUBLE), POINTER :: GRS11X_X(:),GRS11X_Y(:),GRS11X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS11Y_X(:),GRS11Y_Y(:),GRS11Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS11Z_X(:),GRS11Z_Y(:),GRS11Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS12X_X(:),GRS12X_Y(:),GRS12X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS12Y_X(:),GRS12Y_Y(:),GRS12Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS12Z_X(:),GRS12Z_Y(:),GRS12Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS13X_X(:),GRS13X_Y(:),GRS13X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS13Y_X(:),GRS13Y_Y(:),GRS13Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS13Z_X(:),GRS13Z_Y(:),GRS13Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS22X_X(:),GRS22X_Y(:),GRS22X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS22Y_X(:),GRS22Y_Y(:),GRS22Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS22Z_X(:),GRS22Z_Y(:),GRS22Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS23X_X(:),GRS23X_Y(:),GRS23X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS23Y_X(:),GRS23Y_Y(:),GRS23Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS23Z_X(:),GRS23Z_Y(:),GRS23Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS33X_X(:),GRS33X_Y(:),GRS33X_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS33Y_X(:),GRS33Y_Y(:),GRS33Y_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS33Z_X(:),GRS33Z_Y(:),GRS33Z_Z(:)
-      REAL(RDOUBLE), POINTER :: GRS11X(:),GRS12X(:),GRS13X(:)
-      REAL(RDOUBLE), POINTER :: GRS22X(:),GRS23X(:),GRS33X(:)
-      REAL(RDOUBLE), POINTER :: GRS11Y(:),GRS12Y(:),GRS13Y(:)
-      REAL(RDOUBLE), POINTER :: GRS22Y(:),GRS23Y(:),GRS33Y(:)
-      REAL(RDOUBLE), POINTER :: GRS11Z(:),GRS12Z(:),GRS13Z(:)
-      REAL(RDOUBLE), POINTER :: GRS22Z(:),GRS23Z(:),GRS33Z(:)
-                                     
-      REAL(RDOUBLE), POINTER :: AEX11(:),AEX12(:),AEX22(:)
-      REAL(RDOUBLE), POINTER :: AEX13(:),AEX33(:),AEX23(:)
-      REAL(RDOUBLE) :: AE11,AE12,AE22,AE13,AE23,AE33
-      REAL(RDOUBLE) :: LARGE
-
-      REAL(RDOUBLE), POINTER :: UU_NN(:),VV_NN(:),WW_NN(:)
-      REAL(RDOUBLE), POINTER :: UU_NN1(:),VV_NN1(:),WW_NN1(:)
-
-      REAL(RDOUBLE), POINTER :: TTEMP(:)
-
-      REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
-
-      REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE
-
-      INTEGER :: ISTAT
-
-      LOGICAL :: LIHDT
-
-      LARGE = 10.E20
-      TEDAMP= 0.01
-!      OMFREE = FREE_STREAM_OMEGA
-      OMDAMP= OMFREE*TEDAMP
-      CLAMB = 0.26
-      CMU   = 0.09
-!
-!   get data set for nbl block
-!   get number of "grid" items, loop over them 
-!   and find the one whose level number is the same and nbl
-!   upon laving cycle, PGRID will point to that data set
-!
-      LIHDT =.FALSE.
-      IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
-!
-!   do only for non-equilibrium model
-!
-      IF(IHDM == 1)THEN
-
-      SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
-      ALLOCATE(MUT(IMDIM*JMDIM*KMDIM), STAT = ISTAT)
-       IF(ISTAT /= O)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:304 '
-
-      NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
-      DO IGRID=1,NGRID
-         PGRID => FLL_LOCATE(PGLOB,'grid','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-         ILEV = FLL_GETNDATA_I0(PGRID,'level',1_LINT,FPAR)
-         IF(ILEV == nbl)THEN
-           LIHDT =.FALSE.
-           IHDM = 1
-           EXIT
-         END IF
-         IHDM = 0
-      END DO
-
-      END IF
-
-      IF(IHDM == 1)THEN
-
-       PTMP => FLL_LOCATE(PGRID,'velocity_nn','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-       UU_NN     => PTMP%D2(:,1)
-       VV_NN     => PTMP%D2(:,2)
-       WW_NN     => PTMP%D2(:,3)
-    
-       PTMP => FLL_LOCATE(PGRID,'velocity_nn1','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-       UU_NN1     => PTMP%D2(:,1)
-       VV_NN1     => PTMP%D2(:,2)
-       WW_NN1     => PTMP%D2(:,3)
-!
-!     find strain rate tensor
-!   
-      STR   => FLL_GETNDATA_D2(PGRID,'ST'  , 1_LINT, FPAR)
-      STRN1 => FLL_GETNDATA_D2(PGRID,'STN1', 1_LINT, FPAR)
-      STRN2 => FLL_GETNDATA_D2(PGRID,'STN2', 1_LINT, FPAR)
-
-      PTMQ =>         FLL_LOCATE(PGRID,'DSDT_N','*',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR)
-      S11D_N   => PTMQ%D2(:,1)
-      S12D_N   => PTMQ%D2(:,2)
-      S13D_N   => PTMQ%D2(:,3)
-      S22D_N   => PTMQ%D2(:,4)
-      S23D_N   => PTMQ%D2(:,5)
-      S33D_N   => PTMQ%D2(:,6)
-      S11D_N2  => PTMQ%D2(:,7)
-      S12D_N2  => PTMQ%D2(:,8)
-      S13D_N2  => PTMQ%D2(:,9)
-      S22D_N2  => PTMQ%D2(:,10)
-      S23D_N2  => PTMQ%D2(:,11)
-      S33D_N2  => PTMQ%D2(:,12)
-      STILDETRACE   => PTMQ%D2(:,13)
-!
-!     calculate strain-rate gradients
-!
-      PTMQ => FLL_LOCATE(PGRID,'SSGRAD','*',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-
-      IF(LIHDT) THEN
-!
-!  calculate 1st spactial derivative of strain rate
-!
-        TTEMP = STR(:,1)       ! S11
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 1: 3),1)
-        TTEMP = STR(:,2)       ! S12
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 4: 6),1)
-        TTEMP = STR(:,3)   ! S13
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 7: 9),1)
-        TTEMP = STR(:,4)       ! S22
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,10:12),1)
-        TTEMP = STR(:,5)    ! S23
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,13:15),1)
-        TTEMP = STR(:,6)       ! S33
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,16:18),1)
-      END IF 
-!
-!     GET STORED GRADIENTS OF STRAIN-RATE
-!
-      GRS11X   => PTMQ%D2(:,1)
-      GRS11Y   => PTMQ%D2(:,2)
-      GRS11Z   => PTMQ%D2(:,3)
-      GRS12X   => PTMQ%D2(:,4)
-      GRS12Y   => PTMQ%D2(:,5)
-      GRS12Z   => PTMQ%D2(:,6)
-      GRS13X   => PTMQ%D2(:,7)
-      GRS13Y   => PTMQ%D2(:,8)
-      GRS13Z   => PTMQ%D2(:,9)
-      GRS22X   => PTMQ%D2(:,10)
-      GRS22Y   => PTMQ%D2(:,11)
-      GRS22Z   => PTMQ%D2(:,12)
-      GRS23X   => PTMQ%D2(:,13)
-      GRS23Y   => PTMQ%D2(:,14)
-      GRS23Z   => PTMQ%D2(:,15)
-      GRS33X   => PTMQ%D2(:,16)
-      GRS33Y   => PTMQ%D2(:,17)
-      GRS33Z   => PTMQ%D2(:,18)
-!
-!     LIMIT VALUES
-! 
-      DO II=1,18
-        DO I=1,NNODES
-          PTMQ%D2(I,II) = MAX(-LARGE, MIN(PTMQ%D2(I,II), LARGE))
-        END DO
-      END DO
-!
-!  calculate 2nd - strain-rate gradients
-!
-      PTMQ => FLL_LOCATE(PGRID,'SS2GRAD','*',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-      IF(LIHDT) THEN
-!
-!  calculate 2nd spactial derivative of strain rate
-!
-        TTEMP=GRS11X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 1: 3),1)
-        TTEMP=GRS11Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 4: 6),1)
-        TTEMP=GRS11Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 7: 9),1)
-        TTEMP=GRS12X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 10: 12),1)
-        TTEMP=GRS12Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 13: 15),1)
-        TTEMP=GRS12Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 16: 18),1)
-        TTEMP=GRS13X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 19: 21),1)
-        TTEMP=GRS13Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 22: 24),1)
-        TTEMP=GRS13Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 25: 27),1)
-        
-        TTEMP=GRS22X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 28: 30),1)
-        TTEMP=GRS22Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 31: 33),1)
-        TTEMP=GRS22Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 34: 36),1)
-        
-        TTEMP=GRS23X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 37: 39),1)
-        TTEMP=GRS23Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 40: 42),1)
-        TTEMP=GRS23Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 43: 45),1)
-        TTEMP=GRS33X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 46: 48),1)
-        TTEMP=GRS33Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 49: 51),1)
-        TTEMP=GRS33Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 52: 54),1)
-        
-      END IF
-!
-!     get stored gradients of strain-rate second derivative
-!
-       GRS11X_X   => PTMQ%D2(:,1)
-       GRS11X_Y   => PTMQ%D2(:,2)
-       GRS11X_Z   => PTMQ%D2(:,3)
-       GRS11Y_X   => PTMQ%D2(:,4)
-       GRS11Y_Y   => PTMQ%D2(:,5)
-       GRS11Y_Z   => PTMQ%D2(:,6)
-       GRS11Z_X   => PTMQ%D2(:,7)
-       GRS11Z_Y   => PTMQ%D2(:,8)
-       GRS11Z_Z   => PTMQ%D2(:,9)
-      
-       GRS12X_X   => PTMQ%D2(:,10)
-       GRS12X_Y   => PTMQ%D2(:,11)
-       GRS12X_Z   => PTMQ%D2(:,12)
-       GRS12Y_X   => PTMQ%D2(:,13)
-       GRS12Y_Y   => PTMQ%D2(:,14)
-       GRS12Y_Z   => PTMQ%D2(:,15)
-       GRS12Z_X   => PTMQ%D2(:,16)
-       GRS12Z_Y   => PTMQ%D2(:,17)
-       GRS12Z_Z   => PTMQ%D2(:,18)
-      
-       GRS13X_X   => PTMQ%D2(:,19)
-       GRS13X_Y   => PTMQ%D2(:,20)
-       GRS13X_Z   => PTMQ%D2(:,21)
-       GRS13Y_X   => PTMQ%D2(:,22)
-       GRS13Y_Y   => PTMQ%D2(:,23)
-       GRS13Y_Z   => PTMQ%D2(:,24)
-       GRS13Z_X   => PTMQ%D2(:,25)
-       GRS13Z_Y   => PTMQ%D2(:,26)
-       GRS13Z_Z   => PTMQ%D2(:,27)
-      
-      
-       GRS22X_X   => PTMQ%D2(:,28)
-       GRS22X_Y   => PTMQ%D2(:,29)
-       GRS22X_Z   => PTMQ%D2(:,30)
-       GRS22Y_X   => PTMQ%D2(:,31)
-       GRS22Y_Y   => PTMQ%D2(:,32)
-       GRS22Y_Z   => PTMQ%D2(:,33)
-       GRS22Z_X   => PTMQ%D2(:,34)
-       GRS22Z_Y   => PTMQ%D2(:,35)
-       GRS22Z_Z   => PTMQ%D2(:,36)
-      
-       GRS23X_X   => PTMQ%D2(:,37)
-       GRS23X_Y   => PTMQ%D2(:,38)
-       GRS23X_Z   => PTMQ%D2(:,39)
-       GRS23Y_X   => PTMQ%D2(:,40)
-       GRS23Y_Y   => PTMQ%D2(:,41)
-       GRS23Y_Z   => PTMQ%D2(:,42)
-       GRS23Z_X   => PTMQ%D2(:,43)
-       GRS23Z_Y   => PTMQ%D2(:,44)
-       GRS23Z_Z   => PTMQ%D2(:,45)
-      
-       GRS33X_X   => PTMQ%D2(:,46)
-       GRS33X_Y   => PTMQ%D2(:,47)
-       GRS33X_Z   => PTMQ%D2(:,48)
-       GRS33Y_X   => PTMQ%D2(:,49)
-       GRS33Y_Y   => PTMQ%D2(:,50)
-       GRS33Y_Z   => PTMQ%D2(:,51)
-       GRS33Z_X   => PTMQ%D2(:,52)
-       GRS33Z_Y   => PTMQ%D2(:,53)
-       GRS33Z_Z   => PTMQ%D2(:,54)
-!
-!     LIMIT VALUES
-!
-       DO II=1,54
-        DO I=1,NNODES
-          PTMQ%D2(I,II) = MAX(-LARGE, MIN(PTMQ%D2(I,II), LARGE))
-        END DO
-       END DO
-!
-!  get variable where to save extra term needed in viscous flux
-!
-
-        PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR)
-
-      AEX11 => PTMQ%D2(:,1)
-      AEX22 => PTMQ%D2(:,2)
-      AEX12 => PTMQ%D2(:,3)
-      AEX13 => PTMQ%D2(:,4)
-      AEX23 => PTMQ%D2(:,5)
-      AEX33 => PTMQ%D2(:,6)
-
-      END IF ! IHDM == 1
-c
-c   end of initiation of non-equlibium model
-c
-
-
-	WRITE(*,*)' HERE6 '
-
-
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
@@ -2739,7 +2399,6 @@ c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
           call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         end if
 c
-        write(*,*)' JKA GET Sij'
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2765,13 +2424,12 @@ c            or 0.33333 (3D))
      +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1 .or.
      +            isstrc .eq. 2 .or. isst2003 .eq. 1) then
-                s11 = ux(j,k,i,1)   !JKA here is strain rate tensor
+                s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
                 s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
                 s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-
                 tracepart=(s11+s22+s33)*prod2d3dtrace
                 s11t=s11-tracepart
                 s22t=s22-tracepart
@@ -2782,175 +2440,6 @@ c            or 0.33333 (3D))
                 w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
                 w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
-
-                IF(IHDM == 1)THEN
-!
-!   if non-equilibrium model do additional stuff
-!   save it in additional structure
-!
-                IND = FIND(I,J,K,IDIM,JDIM,KDIM)
-                STR(IND,1) = s11
-                STR(IND,2) = s12
-                STR(IND,3) = s13
-                STR(IND,4) = s22
-                STR(IND,5) = s23
-                STR(IND,6) = s33
-
-             if(LIHDT)then
-
-!
-!   if first subiter in time step
-!   calculate time derivative
-!
-                S11DT= (3.*S11-4.*STRN1(IND,1)+STRN2(IND,1))
-     .                /(2.*dt)
-                S12DT= (3.*S12-4.*S12O+S12OO)/(2.*dt)
-                S13DT= (3.*S13-4.*S13O+S13OO)/(2.*dt)
-                S22DT= (3.*S22-4.*S22O+S22OO)/(2.*dt)
-                S23DT= (3.*S23-4.*S23O+S23OO)/(2.*dt)
-                S33DT= (3.*S33-4.*S33O+S33OO)/(2.*dt)
-!          
-!  add velocity times covariant derivative
-!
-            S11DT = S11DT+q(j,k,i,2)*GRS11X(IND)+q(j,k,i,3)*GRS11Y(IND)
-     .      + q(j,k,i,4)*GRS11Z(IND)
-            S12DT = S12DT+q(j,k,i,2)*GRS12X(IND)+q(j,k,i,3)*GRS12Y(IND)
-     .      + q(j,k,i,4)*GRS12Z(IND) 
-            S13DT = S13DT+q(j,k,i,2)*GRS13X(IND)+q(j,k,i,3)*GRS13Y(IND)
-     .      + q(j,k,i,4)*GRS13Z(IND) 
-            S22DT = S22DT+q(j,k,i,2)*GRS22X(IND)+q(j,k,i,3)*GRS22Y(IND)
-     .      + q(j,k,i,4)*GRS22Z(IND) 
-            S23DT = S23DT+q(j,k,i,2)*GRS23X(IND)+q(j,k,i,3)*GRS23Y(IND)
-     .      + q(j,k,i,4)*GRS23Z(IND) 
-            S33DT = S33DT+q(j,k,i,2)*GRS33X(IND)+q(j,k,i,3)*GRS33Y(IND)  
-     .      + q(j,k,i,4)*GRS33Z(IND)
-!
-!   store it
-!
-                S11D_N(IND) = S11DT
-                S12D_N(IND) = S12DT
-                S13D_N(IND) = S13DT
-                S22D_N(IND) = S22DT
-                S23D_N(IND) = S23DT
-                S33D_N(IND) = S33DT
-!
-!  second derivative of strain rate
-!
-                S11DT = (S11O-2*S11OO+S11OOO)/(dt*dt)
-                S12DT = (S12O-2*S12OO+S12OOO)/(dt*dt)
-                S13DT = (S13O-2*S13OO+S13OOO)/(dt*dt)
-                S22DT = (S22O-2*S22OO+S22OOO)/(dt*dt)
-                S23DT = (S23O-2*S23OO+S23OOO)/(dt*dt)
-                S33DT = (S33O-2*S33OO+S33OOO)/(dt*dt)
-          
-       S11DT2 = S11DT+q(j,k,i,2)*
-     .          (GRS11X_X(IND)+GRS11X_Y(IND)+GRS11X_Z(IND))
-     .          +q(j,k,i,3)*(GRS11Y_X(IND)+GRS11Y_Y(IND)+GRS11Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS11Z_X(IND)+GRS11Z_Y(IND)+GRS11Z_Z(IND))
-       S12DT2 = S12DT+q(j,k,i,2)*
-     .          (GRS12X_X(IND)+GRS12X_Y(IND)+GRS12X_Z(IND))
-     .          +q(j,k,i,3)*(GRS12Y_X(IND)+GRS12Y_Y(IND)+GRS12Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS12Z_X(IND)+GRS12Z_Y(IND)+GRS12Z_Z(IND))
-       S13DT2 = S13DT+q(j,k,i,2)*
-     .          (GRS13X_X(IND)+GRS13X_Y(IND)+GRS13X_Z(IND))
-     .          +q(j,k,i,3)*(GRS13Y_X(IND)+GRS13Y_Y(IND)+GRS13Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS13Z_X(IND)+GRS13Z_Y(IND)+GRS13Z_Z(IND))
-       S22DT2 = S22DT+q(j,k,i,2)*
-     .          (GRS22X_X(IND)+GRS22X_Y(IND)+GRS22X_Z(IND))
-     .          +q(j,k,i,3)*(GRS22Y_X(IND)+GRS22Y_Y(IND)+GRS22Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS22Z_X(IND)+GRS22Z_Y(IND)+GRS22Z_Z(IND))                                       
-       S23DT2 = S23DT+q(j,k,i,2)*
-     .          (GRS23X_X(IND)+GRS23X_Y(IND)+GRS23X_Z(IND))
-     .          +q(j,k,i,3)*(GRS23Y_X(IND)+GRS23Y_Y(IND)+GRS23Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS23Z_X(IND)+GRS23Z_Y(IND)+GRS23Z_Z(IND))
-       S33DT2 = S33DT+q(j,k,i,2)*
-     .          (GRS33X_X(IND)+GRS33X_Y(IND)+GRS33X_Z(IND))
-     .          +q(j,k,i,3)*(GRS33Y_X(IND)+GRS33Y_Y(IND)+GRS33Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS33Z_X(IND)+GRS33Z_Y(IND)+GRS33Z_Z(IND))                                      
-
- 
-          UUACC= (3.*q(j,k,i,2)-4.*UU_NN(IND)+UU_NN1(IND))/(2.*dt)
-          VVACC= (3.*q(j,k,i,3)-4.*VV_NN(IND)+VV_NN1(IND))/(2.*dt)
-          WWACC= (3.*q(j,k,i,4)-4.*WW_NN(IND)+WW_NN1(IND))/(2.*dt)
-          
-          S11D_N2(IND) = S11DT2 + UUACC*GRS11X(IND)  + VVACC*GRS11Y(IND)
-     .     + WWACC*GRS11Z(IND)
-          S12D_N2(IND) = S12DT2 + UUACC*GRS12X(IND)  + VVACC*GRS12Y(IND)
-     .     + WWACC*GRS12Z(IND) 
-          S13D_N2(IND) = S13DT2 + UUACC*GRS13X(IND)  + VVACC*GRS13Y(IND)
-     .     + WWACC*GRS13Z(IND) 
-          S22D_N2(IND) = S22DT2 + UUACC*GRS22X(IND)  + VVACC*GRS22Y(IND)
-     .     + WWACC*GRS22Z(IND) 
-          S23D_N2(IND) = S23DT2 + UUACC*GRS23X(IND)  + VVACC*GRS23Y(IND)
-     .     + WWACC*GRS23Z(IND) 
-          S33D_N2(IND) = S33DT2 + UUACC*GRS33X(IND)  + VVACC*GRS33Y(IND)
-     .     + WWACC*GRS33Z(IND) 
-
-             end if
-!
-!     STRAIN-RATE
-!
-          S11DT = S11D_N(IND)
-          S12DT = S12D_N(IND)
-          S13DT = S13D_N(IND)
-          S22DT = S22D_N(IND)
-          S23DT = S23D_N(IND)
-          S33DT = S33D_N(IND)
-        
-          S11DT2 = S11D_N2(IND)
-          S12DT2 = S12D_N2(IND)
-          S13DT2 = S13D_N2(IND)
-          S22DT2 = S22D_N2(IND)
-          S23DT2 = S23D_N2(IND)
-          S33DT2 = S33D_N2(IND)
-
-          TSCALE  = 1./MAX(EPS,CMU*turre(j,k,i,1))          
-          LAMBDA  = CLAMB*TSCALE
-
-          AE11 = (-LAMBDA*S11DT+LAMBDA*LAMBDA*S11DT2)
-          AE12 = (-LAMBDA*S12DT+LAMBDA*LAMBDA*S12DT2)
-          AE13 = (-LAMBDA*S13DT+LAMBDA*LAMBDA*S13DT2)
-          AE22 = (-LAMBDA*S22DT+LAMBDA*LAMBDA*S22DT2)
-          AE23 = (-LAMBDA*S23DT+LAMBDA*LAMBDA*S23DT2)
-          AE33 = (-LAMBDA*S33DT+LAMBDA*LAMBDA*S33DT2)
-          
-          SIJTILDE = MAX(EPS,S11*(S11+AE11) + 2*S12*(S12+AE12)
-     .   + 2*S13*(S13+AE13)  +
-     .   S22*(S22+AE22) + 2*S23*(S23+AE23)  + S33*(S33+AE33) )
-
-          SKK         =  MAX(EPS,S11*S11 + 2*S12*S12 
-     .      +2*S13*S13 + S22*S22 + 2*S23*S23 + S33*S33 )
-
-          SIJTILDE = MIN(SIJTILDE, SKK/SLIMITER)
-        
-          STILDETRACE(IND) = SIJTILDE
-
-          NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
-          
-          IF(ABS(NU) > EPSILON(NU))THEN
-            CMUTILDE = -8./15/2.*(1.-1.5)
-            CMUTILDE = (1.-1.5)/(4*NU*NU)
-            CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
-     .        *vist3d(j,k,i)*vist3d(j,k,i)*(1.+0.)/(1.-1.5)**2 ))
-          ELSE
-            CMUTILDE = -8./15/2.*(1.-1.5)
-          END IF
-          CMUTILDE = MIN(CMU, CMUTILDE)        
-        
-          MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-          MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP
-          
-       AEX11(IND)=2*MUT(IND)*MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
-       AEX12(IND)=2*MUT(IND)*MIN(S12/SLIMITER,MAX(-S12/SLIMITER,AE12))
-       AEX13(IND)=2*MUT(IND)*MIN(S13/SLIMITER,MAX(-S13/SLIMITER,AE13))
-       AEX22(IND)=2*MUT(IND)*MIN(S22/SLIMITER,MAX(-S22/SLIMITER,AE22))
-       AEX23(IND)=2*MUT(IND)*MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
-       AEX33(IND)=2*MUT(IND)*MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
-
-
-
-          END IF ! IHDM == 1
-
               end if
               if (isstrc .eq. 2) then
                 ss=sqrt(2.*wis)
@@ -3052,31 +2541,6 @@ c   Get Pk and Dk:
                 if (i_turbprod_kterm .eq. 1) then
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
-
-              elseif(IHDM == 1)THEN
-!
-!  non-equilibrium model
-!
-               TSCALE = 1./MAX(EPS,CMU*turre(j,k,i,1))
-!
-!      sijtilde = sij * sij~
-!
-               SIJTILDE = STILDETRACE(FIND(I,J,K,IMDIM,JDIM,KDIM)) 
-          
-               NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
-          
-               IF(ABS(NU) > EPSILON(NU))THEN
-                 CMUTILDE = (1.-1.5)/(4*NU*NU)
-                 CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
-     .             *NU*NU*(1.+0.)/(1.-1.5)**2 ))
-               ELSE
-                  CMUTILDE = -8./15/2.*(1.-1.5)
-               END IF
-               CMUTILDE = MIN(CMU, CMUTILDE)
-          
-               PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
-     .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
- 
               else
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
@@ -5073,13 +4537,7 @@ c Update VIST3D and save omega and k values
         do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            if (i_wilcox06 .eq. 1 .AND. IHDM == 1) then
-!
-!  save viscosity already calculated by non-eq model
-!
-              vist3d(j,k,i)=MUT(FIND(I,J,K,IDIM,JDIM,KDIM))
-
-            else if (i_wilcox06 .eq. 1) then
+            if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
               s11 = ux(j,k,i,1)
               s22 = ux(j,k,i,5)
@@ -5784,26 +5242,5 @@ c
 c
 c-----END HARDWIRED OUTPUT SECTION
 c
-
-      IF(IHDM == 1)THEN
-       DEALLOCATE(MUT, STAT = ISTAT)
-          IF(ISTAT /= O)
-     .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5740 '
-      END IF
-
-
       return
       end
-
-
-      FUNCTION FIND(I,J,K,IM,JM,KM) RESULT(IND)
-       IMPLICIT NONE
-
-       INTEGER :: I,IM,J,JM,K,KM,IND
-
-       IND = I*JM*KM+J*KM+K
-       RETURN
-
-      END 
-
-      END MODULE TWOEQN_M

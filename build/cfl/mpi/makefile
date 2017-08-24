@@ -61,10 +61,10 @@ mgbl.o: ../libs/module_kwstm.o
 setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/ -I/home/jiraseka/LL/fll_exec/data_util/
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F 
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
 
 # *************************** CREATE EXECUTABLE ******************************
 
@@ -83,7 +83,7 @@ COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
 	-ln -s ../libs/*.o .
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) /home/jiraseka/LL/fll_exec/data_util/*.o
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) 
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -126,5 +126,3 @@ cleang:
 	-rm -f *.F
 
 scrub: cleana cleano cleane cleanf cleanh cleang
-
-include depend.mk

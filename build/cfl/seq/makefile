@@ -6,7 +6,7 @@
 #=============================================================================
 
 # ***************************** CREATE LINKS *********************************
-include ../../../config.mk
+
 link:     lncode lnhead lnlibs
 
 lncode:
@@ -22,7 +22,7 @@ lnlibs:
 # ****************************** SUFFIX RULES ********************************
 
 .F.o:
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 # **************************** CREATE LIBRARIES  *****************************
 
@@ -61,10 +61,10 @@ mgbl.o: ../libs/module_kwstm.o
 setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/ -I$(FLLLOC)/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F  -I$(FLLLOC)/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
 
 # *************************** CREATE EXECUTABLE ******************************
 
@@ -77,13 +77,13 @@ FOBJ_MAIN = $(FSRC_MAIN:.F=.o)
 HEAD_MAIN = 
 
 $(FOBJ_MAIN): $(HEAD_MAIN)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
 	-ln -s ../libs/*.o .
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) $(FLLLOC)/data_util/*.o 
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -126,5 +126,3 @@ cleang:
 	-rm -f *.F
 
 scrub: cleana cleano cleane cleanf cleanh cleang
-
-include depend.mk

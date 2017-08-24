@@ -20,10 +20,7 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-       module mgbl_m
-       contains
-      subroutine mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,intmax,
-     .                maxxe,
+      subroutine mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
      .                mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .                maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .                ibufdim,nbuf,mxbcfil,istat_size,
@@ -76,10 +73,6 @@ c
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
      .                irdrea)
-
-      USE FLL_MODS_M
-      USE MGBLK_M
-
 #   ifdef CMPLX
 #   else
       use module_kwstm, only:kws_get_nummem
@@ -129,7 +122,6 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer irdrea(maxgr),stats
-      INTEGER(LINT) :: dims,ndims
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -297,16 +289,13 @@ c
 
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
-
-      TYPE(DNODE), POINTER :: PGLOB, PGRID,PTMP
-      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
 c     initialization
 c***********************************************************************
 c
 c     initialize timing utility
-c       
+c
       string = ' '
       call cputim(0,1,string,myhost,myid,mycomm,11)
 c
@@ -497,101 +486,6 @@ c
          do iii = 1,iwk5
             iwork(iii) = 0
          end do
-
-       PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 1
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-       PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 1.
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-
-       DO J = 1,MSEQ
-
-         DIMS = IDIMG(J)*JDIMG(J)*KDIMG(J)
-         IF(IDIMG(J) == 2)THEN
-           NDIMS = 2*2
-         ELSE
-           NDIMS = 3*3
-         END IF
-       
-         WRITE(*,*)MSEQ,NGRID, NBLOCK
-         DO I = 1,NGRID  ! NBLOCK
-
-           PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
-           IF(.NOT.FLL_MV(PGRID, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-!           IF (IHDM==1) THEN
-             PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
-             PTMP%I0 = MSEQ - J + 1
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
-             PTMP%L1(1) = idimg(j)
-             PTMP%L1(2) = jdimg(j)
-             PTMP%L1(3) = kdimg(j)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             
-!             IF(NDIMS == 4)THEN
-!               PTMP => FLL_MK('SSGRAD','D',dims,6_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('SS2GRAD','D',dims,12_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('SSGRAD','D',dims,18_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('SS2GRAD','D',dims,54_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4)THEN
-!               PTMP => FLL_MK('ST','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('STN1','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('STN2','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('ST','D',dims,6_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('STN1','D',dims,6_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('STN2','D',dims,6_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4) THEN
-!               PTMP => FLL_MK('DSDT_N','D',dims,7_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('DSDT_N','D',dims,13_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4) THEN
-!               PTMP => FLL_MK('Extra_Strain','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('Extra_Strain','D',dims,6_LINT, FPAR)
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-         END DO
-       END DO
-
-       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
 c
 #if defined DIST_MPI
 c
@@ -958,7 +852,7 @@ c
      .              xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
      .              yorgae0,zorgae0,icouple,iprnsurf,nblelst,iskmax,
-     .              jskmax,kskmax,ue,nummem,pglob)
+     .              jskmax,kskmax,ue,nummem)
 c
          do iii = 1,mworki
             iwork(iii) = 0
@@ -1211,5 +1105,3 @@ c
       deallocate(nneg)
       return
       end
-
-      end module mgbl_m
