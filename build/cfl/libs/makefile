@@ -41,7 +41,7 @@ FSRC_LIBS = \
 	collv.F        dlutrp.F       init.F         q8vrev.F \
 	collx.F        dsmin.F        initvist.F     lamfix.F \
 	collxtb.F      expand.F       int2.F         bc9999.F \
-	extra.F        extrae.F       lead.F \
+	extra.F        extrae.F       lead.F  delS.F\
 	amafi.F        ffluxl.F       l2norm.F       bc_xmera.F \
 	amafj.F        dabciz.F       fhat.F         l2norm2.F \
 	amafk.F        dabcjz.F       fill.F         blkmax.F \
@@ -102,7 +102,7 @@ FSRC_LIBS = \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
         sijrate3d.F    foureqn.F      bc2026.F       bc2019.F \
-        u_doubleprime.F bc2010.F
+        u_doubleprime.F bc2010.F delS.F
 F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 module_stm_2005.F90
 
 FSRC_SPEC = addx.F
@@ -189,3 +189,5 @@ cleanc:
 	-rm -f *.c
 
 scrub: cleana cleano cleane cleanf cleanh cleang cleanc
+
+include depend.mk

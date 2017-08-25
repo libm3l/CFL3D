@@ -258,7 +258,8 @@ q8smax.o :
 
 ffluxv1.o : 
 
-twoeqn.o : 
+twoeqn.o :  \
+	delS.o
 
 xupdt.o : 
 
@@ -497,6 +498,8 @@ bc2026.o :
 add2x.o : 
 
 q8vrev.o : 
+
+delS.o : 
 
 bc1011.o : 
 

@@ -54,6 +54,7 @@ c
 #   endif
 
       USE FLL_MODS_M
+      USE DELS_M
 
 !      IMPLICIT NONE
 
@@ -228,8 +229,8 @@ c
 c  additional declarations needed by non-equilibrium model
 c
       TYPE(DNODE), POINTER :: PGRID,PTMP,PTMQ
-      INTEGER(LINT) :: NGRID, IGRID
       INTEGER :: ILEV,IND,IHDM,IDIM,JDIM,KDIM
+      INTEGER(LINT) :: IGRID, NGRID
       REAL(RDOUBLE), POINTER :: STR(:,:),STRN1(:,:),STRN2(:,:)
       REAL(RDOUBLE), POINTER :: S11D_N(:),S12D_N(:),S13D_N(:)
       REAL(RDOUBLE), POINTER :: S22D_N(:),S23D_N(:),S33D_N(:)
@@ -305,7 +306,7 @@ c
 
       SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
       ALLOCATE(MUT(IMDIM*JMDIM*KMDIM), STAT = ISTAT)
-       IF(ISTAT /= O)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:304 '
+       IF(ISTAT /= O)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
 
       NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
       DO IGRID=1,NGRID
@@ -322,16 +323,23 @@ c
 
       END IF
 
+
+
+      LIHDT = .TRUE.
+
+
+
+
       IF(IHDM == 1)THEN
 
-       PTMP => FLL_LOCATE(PGRID,'velocity_nn','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
+       PTMP => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
+     .                       1_LINT,.FALSE.,FPAR)
        UU_NN     => PTMP%D2(:,1)
        VV_NN     => PTMP%D2(:,2)
        WW_NN     => PTMP%D2(:,3)
     
-       PTMP => FLL_LOCATE(PGRID,'velocity_nn1','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
+       PTMP => FLL_LOCATE(PGRID,'velocity_nn1','D',-1_LINT,
+     .                       1_LINT,.FALSE.,FPAR)
        UU_NN1     => PTMP%D2(:,1)
        VV_NN1     => PTMP%D2(:,2)
        WW_NN1     => PTMP%D2(:,3)
@@ -361,24 +369,36 @@ c
 !     calculate strain-rate gradients
 !
       PTMQ => FLL_LOCATE(PGRID,'SSGRAD','*',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
+     .                       1_LINT,.FALSE.,FPAR)
 
       IF(LIHDT) THEN
 !
 !  calculate 1st spactial derivative of strain rate
 !
-        TTEMP = STR(:,1)       ! S11
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 1: 3),1)
-        TTEMP = STR(:,2)       ! S12
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 4: 6),1)
-        TTEMP = STR(:,3)   ! S13
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 7: 9),1)
-        TTEMP = STR(:,4)       ! S22
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,10:12),1)
-        TTEMP = STR(:,5)    ! S23
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,13:15),1)
-        TTEMP = STR(:,6)       ! S33
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:,16:18),1)
+!  S11
+          call dels(jdim,kdim,idim,STR(:,1),sj,sk,si,vol,
+     .          PTMQ%D2(:,1:3),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!  S12
+          call dels(jdim,kdim,idim,STR(:,2),sj,sk,si,vol,
+     .          PTMQ%D2(:,4:5),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!  S13
+          call dels(jdim,kdim,idim,STR(:,3),sj,sk,si,vol,
+     .          PTMQ%D2(:,7:9),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!  S22
+          call dels(jdim,kdim,idim,STR(:,4),sj,sk,si,vol,
+     .          PTMQ%D2(:,10:12),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!  S23
+          call dels(jdim,kdim,idim,STR(:,5),sj,sk,si,vol,
+     .          PTMQ%D2(:,13:15),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!  S33
+          call dels(jdim,kdim,idim,STR(:,6),sj,sk,si,vol,
+     .          PTMQ%D2(:,16:18),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
       END IF 
 !
 !     GET STORED GRADIENTS OF STRAIN-RATE
@@ -413,49 +433,87 @@ c
 !  calculate 2nd - strain-rate gradients
 !
       PTMQ => FLL_LOCATE(PGRID,'SS2GRAD','*',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
+     .                       1_LINT,.FALSE.,FPAR)
+
       IF(LIHDT) THEN
 !
 !  calculate 2nd spactial derivative of strain rate
 !
-        TTEMP=GRS11X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 1: 3),1)
-        TTEMP=GRS11Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 4: 6),1)
-        TTEMP=GRS11Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 7: 9),1)
-        TTEMP=GRS12X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 10: 12),1)
-        TTEMP=GRS12Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 13: 15),1)
-        TTEMP=GRS12Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 16: 18),1)
-        TTEMP=GRS13X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 19: 21),1)
-        TTEMP=GRS13Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 22: 24),1)
-        TTEMP=GRS13Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 25: 27),1)
+!       GRS11X
+          call dels(jdim,kdim,idim,GRS11X,sj,sk,si,vol,
+     .          PTMQ%D2(:,1:3),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS11Y        
+          call dels(jdim,kdim,idim,GRS11Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,4:6),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS11Z   
+          call dels(jdim,kdim,idim,GRS11Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,7:9),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS12X
+          call dels(jdim,kdim,idim,GRS12X,sj,sk,si,vol,
+     .          PTMQ%D2(:,10:12),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS12Y        
+          call dels(jdim,kdim,idim,GRS12Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,13:15),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS12Z   
+          call dels(jdim,kdim,idim,GRS12Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,16:18),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS13X
+          call dels(jdim,kdim,idim,GRS13X,sj,sk,si,vol,
+     .          PTMQ%D2(:,19:21),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS13Y        
+          call dels(jdim,kdim,idim,GRS13Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,22:24),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS13Z   
+          call dels(jdim,kdim,idim,GRS13Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,25:27),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
         
-        TTEMP=GRS22X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 28: 30),1)
-        TTEMP=GRS22Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 31: 33),1)
-        TTEMP=GRS22Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 34: 36),1)
+!       GRS22X
+          call dels(jdim,kdim,idim,GRS22X,sj,sk,si,vol,
+     .          PTMQ%D2(:,28:30),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS22Y        
+          call dels(jdim,kdim,idim,GRS22Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,31:33),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS22Z   
+          call dels(jdim,kdim,idim,GRS22Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,34:36),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
         
-        TTEMP=GRS23X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 37: 39),1)
-        TTEMP=GRS23Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 40: 42),1)
-        TTEMP=GRS23Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 43: 45),1)
-        TTEMP=GRS33X
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 46: 48),1)
-        TTEMP=GRS33Y        
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 49: 51),1)
-        TTEMP=GRS33Z   
-!        CALL DERIVATIVE(PTMP%D2,PTMQ%D2(:, 52: 54),1)
+!       GRS23X
+          call dels(jdim,kdim,idim,GRS23X,sj,sk,si,vol,
+     .          PTMQ%D2(:,37:39),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS23Y        
+          call dels(jdim,kdim,idim,GRS23Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,40:42),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS23Z   
+          call dels(jdim,kdim,idim,GRS23Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,43:45),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+
+!       GRS33X
+          call dels(jdim,kdim,idim,GRS33X,sj,sk,si,vol,
+     .          PTMQ%D2(:,46:48),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS33Y        
+          call dels(jdim,kdim,idim,GRS33Y,sj,sk,si,vol,
+     .          PTMQ%D2(:,49:51),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
+!       GRS33Z   
+          call dels(jdim,kdim,idim,GRS33Z,sj,sk,si,vol,
+     .          PTMQ%D2(:,52:54),blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
         
       END IF
 !
@@ -547,11 +605,6 @@ c
 c
 c   end of initiation of non-equlibium model
 c
-
-
-	WRITE(*,*)' HERE6 '
-
-
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
@@ -5788,7 +5841,7 @@ c
       IF(IHDM == 1)THEN
        DEALLOCATE(MUT, STAT = ISTAT)
           IF(ISTAT /= O)
-     .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5740 '
+     .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5877 '
       END IF
 
 
