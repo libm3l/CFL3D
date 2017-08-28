@@ -523,7 +523,7 @@ c
 
 !           IF (IHDM==1) THEN
              PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
-             PTMP%I0 = MSEQ - J + 1
+             PTMP%I0 = J   ! MSEQ - J + 1
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
 
              PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
