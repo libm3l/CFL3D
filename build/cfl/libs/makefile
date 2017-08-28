@@ -41,7 +41,7 @@ FSRC_LIBS = \
 	collv.F        dlutrp.F       init.F         q8vrev.F \
 	collx.F        dsmin.F        initvist.F     lamfix.F \
 	collxtb.F      expand.F       int2.F         bc9999.F \
-	extra.F        extrae.F       lead.F  delS.F\
+	extra.F        extrae.F       lead.F  \
 	amafi.F        ffluxl.F       l2norm.F       bc_xmera.F \
 	amafj.F        dabciz.F       fhat.F         l2norm2.F \
 	amafk.F        dabcjz.F       fill.F         blkmax.F \
