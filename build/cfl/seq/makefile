@@ -104,7 +104,7 @@ $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB)
 
 cleano:
 	@touch temp.o
-	-rm -f *.o
+	-rm -f *.o *.mod
 
 cleane:
 	-rm -f $(EXEC) 
