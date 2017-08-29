@@ -238,8 +238,8 @@ c
       REAL(RDOUBLE), POINTER :: S22D_N2(:),S23D_N2(:),S33D_N2(:)
       REAL(RDOUBLE), POINTER :: STILDETRACE(:)
 
-      REAL(RDOUBLE) :: S11DT,S12DT,S13DT,S21DT,S22DT,S23DT
-      REAL(RDOUBLE) :: S31DT,S32DT,S33DT,SKK
+      REAL(RDOUBLE) :: S11DT,S13DT,S12DT,S22DT,S23DT
+      REAL(RDOUBLE) :: S33DT,SKK
 
       REAL(RDOUBLE), POINTER :: GRS11X_X(:),GRS11X_Y(:),GRS11X_Z(:)
       REAL(RDOUBLE), POINTER :: GRS11Y_X(:),GRS11Y_Y(:),GRS11Y_Z(:)
@@ -274,20 +274,19 @@ c
       REAL(RDOUBLE), POINTER :: UU_NN(:),VV_NN(:),WW_NN(:)
       REAL(RDOUBLE), POINTER :: UU_NN1(:),VV_NN1(:),WW_NN1(:)
 
-      REAL(RDOUBLE), POINTER :: TTEMP(:)
-
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE
+     .  OMFREE, LAMBDA,EPS
 
       INTEGER :: ISTAT
 
       LOGICAL :: LIHDT
 
       LARGE = 10.E20
+      EPS   = 10.E-20
       TEDAMP= 0.01
-!      OMFREE = FREE_STREAM_OMEGA
+      OMFREE = 1000
       OMDAMP= OMFREE*TEDAMP
       CLAMB = 0.26
       CMU   = 0.09
@@ -305,8 +304,8 @@ c
       IF(IHDM == 1)THEN
 
       SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
-      ALLOCATE(MUT(IMDIM*JMDIM*KMDIM), STAT = ISTAT)
-       IF(ISTAT /= O)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
+      ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
+       IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
 
       NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
       DO IGRID=1,NGRID
@@ -326,11 +325,13 @@ c
 
 
       LIHDT = .TRUE.
+!      i_wilcox98  = 1
 
 
 
 
       IF(IHDM == 1)THEN
+       write(*,*)' IHDM ---  getting data'
 
        PTMP => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
@@ -425,7 +426,7 @@ c
 !     LIMIT VALUES
 ! 
       DO II=1,18
-        DO I=1,NNODES
+        DO I=1,IDIM*JDIM*KDIM
           PTMQ%D2(I,II) = MAX(-LARGE, MIN(PTMQ%D2(I,II), LARGE))
         END DO
       END DO
@@ -583,7 +584,7 @@ c
 !     LIMIT VALUES
 !
        DO II=1,54
-        DO I=1,NNODES
+        DO I=1,idim*jdim*kdim
           PTMQ%D2(I,II) = MAX(-LARGE, MIN(PTMQ%D2(I,II), LARGE))
         END DO
        END DO
@@ -2792,7 +2793,7 @@ c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
           call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         end if
 c
-        write(*,*)' JKA GET Sij'
+        write(*,*)' JKA GET Sij', IHDM,i_wilcox98
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2818,7 +2819,7 @@ c            or 0.33333 (3D))
      +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1 .or.
      +            isstrc .eq. 2 .or. isst2003 .eq. 1) then
-                s11 = ux(j,k,i,1)   !JKA here is strain rate tensor
+                s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
@@ -2836,7 +2837,19 @@ c            or 0.33333 (3D))
                 w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
 
-                IF(IHDM == 1)THEN
+              elseif(ivmx .eq. 6 .and. i_wilcox98 .eq. 0 
+     +            .and. IHDM == 1)then
+
+!                IF(IHDM == 1)THEN
+
+                s11 = ux(j,k,i,1)   !JKA here is strain rate tensor
+                s22 = ux(j,k,i,5)
+                s33 = ux(j,k,i,9)
+                s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+                s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+                s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+
+                write(*,*)' IHDMMMMMMMMMMMMMM   1'
 !
 !   if non-equilibrium model do additional stuff
 !   save it in additional structure
@@ -2857,11 +2870,16 @@ c            or 0.33333 (3D))
 !
                 S11DT= (3.*S11-4.*STRN1(IND,1)+STRN2(IND,1))
      .                /(2.*dt)
-                S12DT= (3.*S12-4.*S12O+S12OO)/(2.*dt)
-                S13DT= (3.*S13-4.*S13O+S13OO)/(2.*dt)
-                S22DT= (3.*S22-4.*S22O+S22OO)/(2.*dt)
-                S23DT= (3.*S23-4.*S23O+S23OO)/(2.*dt)
-                S33DT= (3.*S33-4.*S33O+S33OO)/(2.*dt)
+                S12DT= (3.*S11-4.*STRN1(IND,2)+STRN2(IND,2))
+     .                /(2.*dt)
+                S13DT= (3.*S11-4.*STRN1(IND,3)+STRN2(IND,3))
+     .                /(2.*dt)
+                S22DT= (3.*S11-4.*STRN1(IND,4)+STRN2(IND,4))
+     .                /(2.*dt)
+                S23DT= (3.*S11-4.*STRN1(IND,5)+STRN2(IND,5))
+     .                /(2.*dt)
+                S33DT= (3.*S11-4.*STRN1(IND,6)+STRN2(IND,6))
+     .                /(2.*dt)
 !          
 !  add velocity times covariant derivative
 !
@@ -2889,12 +2907,18 @@ c            or 0.33333 (3D))
 !
 !  second derivative of strain rate
 !
-                S11DT = (S11O-2*S11OO+S11OOO)/(dt*dt)
-                S12DT = (S12O-2*S12OO+S12OOO)/(dt*dt)
-                S13DT = (S13O-2*S13OO+S13OOO)/(dt*dt)
-                S22DT = (S22O-2*S22OO+S22OOO)/(dt*dt)
-                S23DT = (S23O-2*S23OO+S23OOO)/(dt*dt)
-                S33DT = (S33O-2*S33OO+S33OOO)/(dt*dt)
+                S11DT= (S11-2.*STRN1(IND,1)+STRN2(IND,1))
+     .                /(dt*dt)
+                S12DT= (S11-2.*STRN1(IND,2)+STRN2(IND,2))
+     .                /(dt*dt)
+                S13DT= (S11-2.*STRN1(IND,3)+STRN2(IND,3))
+     .                /(dt*dt)
+                S22DT= (S11-2.*STRN1(IND,4)+STRN2(IND,4))
+     .                /(dt*dt)
+                S23DT= (S11-2.*STRN1(IND,5)+STRN2(IND,5))
+     .                /(dt*dt)
+                S33DT= (S11-2.*STRN1(IND,6)+STRN2(IND,6))
+     .                /(dt*dt)
           
        S11DT2 = S11DT+q(j,k,i,2)*
      .          (GRS11X_X(IND)+GRS11X_Y(IND)+GRS11X_Z(IND))
@@ -3000,9 +3024,9 @@ c            or 0.33333 (3D))
        AEX23(IND)=2*MUT(IND)*MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
        AEX33(IND)=2*MUT(IND)*MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
+                write(*,*)' IHDMMMMMMMMMMMMMM  2'
 
-
-          END IF ! IHDM == 1
+!          END IF ! IHDM == 1
 
               end if
               if (isstrc .eq. 2) then
@@ -3107,6 +3131,8 @@ c   Get Pk and Dk:
                 end if
 
               elseif(IHDM == 1)THEN
+
+                               write(*,*)' IHDMMMMMMMMMMMMMM   3'
 !
 !  non-equilibrium model
 !
@@ -3114,7 +3140,7 @@ c   Get Pk and Dk:
 !
 !      sijtilde = sij * sij~
 !
-               SIJTILDE = STILDETRACE(FIND(I,J,K,IMDIM,JDIM,KDIM)) 
+               SIJTILDE = STILDETRACE(FIND(I,J,K,idim,JDIM,KDIM)) 
           
                NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
@@ -3129,6 +3155,8 @@ c   Get Pk and Dk:
           
                PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
+
+                write(*,*)' IHDMMMMMMMMMMMMMM   4'
  
               else
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
@@ -5126,11 +5154,13 @@ c Update VIST3D and save omega and k values
         do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            if (i_wilcox06 .eq. 1 .AND. IHDM == 1) then
+            if (IHDM == 1) then
+                write(*,*)' IHDMMMMMMMMMMMMMM   5'
 !
 !  save viscosity already calculated by non-eq model
 !
               vist3d(j,k,i)=MUT(FIND(I,J,K,IDIM,JDIM,KDIM))
+                write(*,*)' IHDMMMMMMMMMMMMMM   6'
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
@@ -5839,10 +5869,15 @@ c-----END HARDWIRED OUTPUT SECTION
 c
 
       IF(IHDM == 1)THEN
+                write(*,*)' IHDMMMMMMMMMMMMMM   7'
        DEALLOCATE(MUT, STAT = ISTAT)
-          IF(ISTAT /= O)
+          IF(ISTAT /= 0)
      .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5877 '
       END IF
+
+                write(*,*)' IHDMMMMMMMMMMMMMM   8'
+
+       
 
 
       return
