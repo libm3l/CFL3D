@@ -140,6 +140,8 @@ setqc0.o :
 
 amafi.o : 
 
+shift.o : 
+
 l2norm2.o : 
 
 gfluxr.o : 

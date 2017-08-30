@@ -9,8 +9,6 @@ qout.o :  \
 	../../../build/cfl/libs/module_contour.o \
 	../../../build/cfl/libs/module_profileout.o
 
-termn8.o : 
-
 setslave.o : 
 
 updatedg.o : 
@@ -31,9 +29,7 @@ plot3d_coarse.o :
 
 writ_buf.o : 
 
-mgbl.o :  \
-	../../../build/cfl/libs/module_kwstm.o \
-	mgblk.o
+termn8.o : 
 
 newalpha.o : 
 
@@ -77,6 +73,10 @@ plot3t.o :
 
 wrest.o : 
 
+mgbl.o :  \
+	../../../build/cfl/libs/module_kwstm.o \
+	mgblk.o
+
 sizer.o : 
 
 compg2n.o : 
@@ -103,6 +103,7 @@ umalloc_c.o :
 yplusout.o : 
 
 mgblk.o :  \
+	../../../build/cfl/libs/shift.o \
 	../../../build/cfl/libs/resid.o
 
 plot3d.o : 

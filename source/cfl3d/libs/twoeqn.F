@@ -271,6 +271,7 @@ c
       REAL(RDOUBLE) :: AE11,AE12,AE22,AE13,AE23,AE33
       REAL(RDOUBLE) :: LARGE
 
+      REAL(RDOUBLE), POINTER :: UUC(:),VVC(:),WWC(:)
       REAL(RDOUBLE), POINTER :: UU_NN(:),VV_NN(:),WW_NN(:)
       REAL(RDOUBLE), POINTER :: UU_NN1(:),VV_NN1(:),WW_NN1(:)
 
@@ -279,7 +280,7 @@ c
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
      .  OMFREE, LAMBDA,EPS
 
-      INTEGER :: ISTAT
+      INTEGER :: ISTAT,SHIFT,INDTMP
 
       LOGICAL :: LIHDT
 
@@ -302,10 +303,11 @@ c
 !   do only for non-equilibrium model
 !
       IF(IHDM == 1)THEN
+      SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
 
       SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
       ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
-       IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
+        IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
 
       NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
       DO IGRID=1,NGRID
@@ -313,7 +315,6 @@ c
      .                       IGRID,.FALSE.,FPAR)
          ILEV = FLL_GETNDATA_I0(PGRID,'level',1_LINT,FPAR)
          IF(ILEV == nbl)THEN
-           LIHDT =.FALSE.
            IHDM = 1
            EXIT
          END IF
@@ -321,17 +322,25 @@ c
       END DO
 
       END IF
-
-
-
-      LIHDT = .TRUE.
-!      i_wilcox98  = 1
-
-
-
-
+!
+!  if non-equilibrium model
+!
       IF(IHDM == 1)THEN
-       write(*,*)' IHDM ---  getting data'
+!
+!  find if calculate time derivative, this is calculated only at the beginning of 
+!  subiterational process and indicated by value of shift == 1
+!
+        IF(SHIFT == 1)THEN
+         LIHDT = .TRUE.
+        ELSE
+         LIHDT = .FALSE.
+        END IF
+
+       PTMP => FLL_LOCATE(PGRID,'velocity','D',-1_LINT,
+     .                       1_LINT,.FALSE.,FPAR)
+       UUC     => PTMP%D2(:,1)
+       VVC     => PTMP%D2(:,2)
+       WWC     => PTMP%D2(:,3)
 
        PTMP => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
@@ -2793,7 +2802,7 @@ c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
           call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         end if
 c
-        write(*,*)' JKA GET Sij', IHDM,i_wilcox98
+!        write(*,*)' JKA GET Sij', IHDM,i_wilcox98
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2849,7 +2858,7 @@ c            or 0.33333 (3D))
                 s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
                 s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
 
-                write(*,*)' IHDMMMMMMMMMMMMMM   1'
+!                write(*,*)' IHDMMMMMMMMMMMMMM   1'
 !
 !   if non-equilibrium model do additional stuff
 !   save it in additional structure
@@ -3024,7 +3033,7 @@ c            or 0.33333 (3D))
        AEX23(IND)=2*MUT(IND)*MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
        AEX33(IND)=2*MUT(IND)*MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
-                write(*,*)' IHDMMMMMMMMMMMMMM  2'
+!                write(*,*)' IHDMMMMMMMMMMMMMM  2'
 
 !          END IF ! IHDM == 1
 
@@ -3132,7 +3141,7 @@ c   Get Pk and Dk:
 
               elseif(IHDM == 1)THEN
 
-                               write(*,*)' IHDMMMMMMMMMMMMMM   3'
+!                               write(*,*)' IHDMMMMMMMMMMMMMM   3'
 !
 !  non-equilibrium model
 !
@@ -3156,7 +3165,7 @@ c   Get Pk and Dk:
                PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
 
-                write(*,*)' IHDMMMMMMMMMMMMMM   4'
+!                write(*,*)' IHDMMMMMMMMMMMMMM   4'
  
               else
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
@@ -5155,12 +5164,17 @@ c Update VIST3D and save omega and k values
         do k=1,kdim-1
           do j=1,jdim-1
             if (IHDM == 1) then
-                write(*,*)' IHDMMMMMMMMMMMMMM   5'
+!                write(*,*)' IHDMMMMMMMMMMMMMM   5'
 !
 !  save viscosity already calculated by non-eq model
 !
-              vist3d(j,k,i)=MUT(FIND(I,J,K,IDIM,JDIM,KDIM))
-                write(*,*)' IHDMMMMMMMMMMMMMM   6'
+              INDTMP = FIND(I,J,K,IDIM,JDIM,KDIM)
+              vist3d(j,k,i)=MUT(INDTMP)
+
+              UUC(INDTMP) = q(j,k,i,2)
+              VVC(INDTMP) = q(j,k,i,3)
+              WWC(INDTMP) = q(j,k,i,4)
+!                write(*,*)' IHDMMMMMMMMMMMMMM   6'
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
@@ -5869,13 +5883,13 @@ c-----END HARDWIRED OUTPUT SECTION
 c
 
       IF(IHDM == 1)THEN
-                write(*,*)' IHDMMMMMMMMMMMMMM   7'
+!                write(*,*)' IHDMMMMMMMMMMMMMM   7'
        DEALLOCATE(MUT, STAT = ISTAT)
           IF(ISTAT /= 0)
      .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5877 '
       END IF
 
-                write(*,*)' IHDMMMMMMMMMMMMMM   8'
+!                write(*,*)' IHDMMMMMMMMMMMMMM   8'
 
        
 

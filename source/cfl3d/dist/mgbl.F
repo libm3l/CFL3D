@@ -501,8 +501,13 @@ c
        PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
        PTMP%I0 = 1
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
        PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
        PTMP%D0 = 1.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
+       PTMP => FLL_MK('shift','I',1_LINT,1_LINT, FPAR)
+       PTMP%I0 = 0
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
 
@@ -515,15 +520,22 @@ c
            NDIMS = 3*3
          END IF
        
-         WRITE(*,*)MSEQ,NGRID, NBLOCK
+         WRITE(*,*)'======================= ',  MSEQ,NGRID, NBLOCK
+
+         DO I=1,NBLOCK
+
+           WRITE(*,*)' DIMS', idimg(j),jdimg(j),kdimg(j) 
+
+         END DO
+
          DO I = 1,NGRID  ! NBLOCK
 
            PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
            IF(.NOT.FLL_MV(PGRID, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
-!           IF (IHDM==1) THEN
+
              PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
-             PTMP%I0 = J   ! MSEQ - J + 1
+             PTMP%I0 = J
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
 
              PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
@@ -542,6 +554,9 @@ c
              PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
 
+             PTMP => FLL_MK('velocity','D',dims,3_LINT, FPAR)
+             PTMP%D2 = 0.
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
              PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
              PTMP%D2 = 0.
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'

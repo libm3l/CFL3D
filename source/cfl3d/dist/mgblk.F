@@ -90,6 +90,7 @@ c
 
       USE FLL_MODS_M
       USE RESID_M
+      USE SHIFT_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -316,7 +317,7 @@ c
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGLOB,PTMP
       TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c      time step cycle:
@@ -969,6 +970,9 @@ c
       do 7000 icyc=1,ncyc
 c
       if (icyc.gt.1) isklton = 0
+
+
+      write(*,*)' Multigtid cycle: ', icyc,ncyc
 c
 c     check for user stop file - will then stop on next MG cycle
 c     (if unsteady, we don't want to stop until the next time step,
@@ -1526,7 +1530,12 @@ c        flux contributions
 c
          isf = 0
          if (level.gt.lglobal .and. ntime.eq.nit1) isf = min(1,iconsf)
-!         write(*,*)'JKA calling RESID',nbl,jdim,kdim,idim
+!         write(*,*)'JKA calling RESID',nbl,jdim,kdim,idim,mod(icyc,ncyc)
+
+         PTMP=>FLL_LOCATE(PGLOB,'shift','I',-1_LINT,
+     .             1_LINT,.FALSE.,FPAR)
+         PTMP%I0 = MOD(icyc,ncyc)
+
          call resid(nbl,ntime,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .              w(lqi0),w(lsj),w(lsk),w(lsi),w(lvol),w(ldtj),w(lx),
      .              w(ly),w(lz),w(lvis),w(lsni0),w(lsnk0),w(lsni0),
@@ -1853,9 +1862,6 @@ c
 c
 c     restrict q and r to coarser grid levels
 c
-
-!      write(*,*)'JKA LEV 1 ', level, levb
-
       if (mgflag.gt.0 .and. ntime.eq.nit1 .and. level.ne.levb) then
 c
          if (mblk2nd(nbl) .eq. myid) then
@@ -2664,9 +2670,24 @@ c
             time2mc = time2mc + dt
             do 800 nbl=1,nblock
             time2(nbl) = time2(nbl) + dt
+!
+!   JKA shift data for non-eq model
+!
+            write(*,*)'========================='
+            write(*,*)'- shifting time ',dt,time,time2mc
+            write(*,*)' block ', nbl, nblock
+            write(*,*)idimg(nbl), jdimg(nbl), kdimg(nbl),ngrid,level, levt
+            write(*,*)'========================='
+
+!            CALL SHIFT(PGLOB, 
+
   800       continue
             timekeep(ntt) = time
          end if
+!
+!       shift data for non-equilibrium model
+!
+         CALL SHIFT(PGLOB)
       end if
 c
 c     aeroelastic corrector step

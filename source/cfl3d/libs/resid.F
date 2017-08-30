@@ -662,6 +662,9 @@ c allocate for DES and DDES
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
      + wk(iwk82),nummem,iccnum,pglob)
+
+      write(*,*)' JKA after calling twoeqn'
+
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1
