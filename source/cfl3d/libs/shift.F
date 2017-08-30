@@ -42,6 +42,10 @@ c
       TYPE(FUNC_DATA_SET)  :: FPAR
 
       INTEGER(LINT) :: IGRID,NGRID
+      INTEGER :: IHDM
+
+      IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+      IF(IHDM /= 1)RETURN
 
       NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
       DO IGRID=1,NGRID
