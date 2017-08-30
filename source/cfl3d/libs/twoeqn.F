@@ -307,7 +307,7 @@ c
 
       SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
       ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
-        IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:311 '
+        IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310 '
 
       NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
       DO IGRID=1,NGRID
@@ -335,7 +335,9 @@ c
         ELSE
          LIHDT = .FALSE.
         END IF
-
+!
+!  get velocities at three time levels  , t, t-1 and t-2
+!
        PTMP => FLL_LOCATE(PGRID,'velocity','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
        UUC     => PTMP%D2(:,1)
@@ -354,12 +356,14 @@ c
        VV_NN1     => PTMP%D2(:,2)
        WW_NN1     => PTMP%D2(:,3)
 !
-!     find strain rate tensor
+!     find strain rate tensor in three time steps t, t-1 and t-2
 !   
       STR   => FLL_GETNDATA_D2(PGRID,'ST'  , 1_LINT, FPAR)
       STRN1 => FLL_GETNDATA_D2(PGRID,'STN1', 1_LINT, FPAR)
       STRN2 => FLL_GETNDATA_D2(PGRID,'STN2', 1_LINT, FPAR)
-
+!
+!  this contains DS/Dt and trace of it
+!
       PTMQ =>         FLL_LOCATE(PGRID,'DSDT_N','*',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
       S11D_N   => PTMQ%D2(:,1)
@@ -384,6 +388,8 @@ c
       IF(LIHDT) THEN
 !
 !  calculate 1st spactial derivative of strain rate
+!  do it only at the beginning of the next time step
+!  seems to be most stable solution
 !
 !  S11
           call dels(jdim,kdim,idim,STR(:,1),sj,sk,si,vol,
@@ -411,7 +417,7 @@ c
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
       END IF 
 !
-!     GET STORED GRADIENTS OF STRAIN-RATE
+!     get stored gradients of strain-rate
 !
       GRS11X   => PTMQ%D2(:,1)
       GRS11Y   => PTMQ%D2(:,2)
@@ -432,7 +438,7 @@ c
       GRS33Y   => PTMQ%D2(:,17)
       GRS33Z   => PTMQ%D2(:,18)
 !
-!     LIMIT VALUES
+!     limit values
 ! 
       DO II=1,18
         DO I=1,IDIM*JDIM*KDIM
@@ -527,7 +533,7 @@ c
         
       END IF
 !
-!     get stored gradients of strain-rate second derivative
+!     get stored gradients of strain-rate 2nd derivative
 !
        GRS11X_X   => PTMQ%D2(:,1)
        GRS11X_Y   => PTMQ%D2(:,2)
@@ -590,7 +596,7 @@ c
        GRS33Z_Y   => PTMQ%D2(:,53)
        GRS33Z_Z   => PTMQ%D2(:,54)
 !
-!     LIMIT VALUES
+!     limit values
 !
        DO II=1,54
         DO I=1,idim*jdim*kdim
@@ -2802,7 +2808,6 @@ c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
           call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         end if
 c
-!        write(*,*)' JKA GET Sij', IHDM,i_wilcox98
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2848,10 +2853,11 @@ c            or 0.33333 (3D))
 
               elseif(ivmx .eq. 6 .and. i_wilcox98 .eq. 0 
      +            .and. IHDM == 1)then
+!
+!   non-equilibrium model 
+!
 
-!                IF(IHDM == 1)THEN
-
-                s11 = ux(j,k,i,1)   !JKA here is strain rate tensor
+                s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
@@ -2860,8 +2866,7 @@ c            or 0.33333 (3D))
 
 !                write(*,*)' IHDMMMMMMMMMMMMMM   1'
 !
-!   if non-equilibrium model do additional stuff
-!   save it in additional structure
+!   save strain rate tensor 
 !
                 IND = FIND(I,J,K,IDIM,JDIM,KDIM)
                 STR(IND,1) = s11
@@ -2872,9 +2877,8 @@ c            or 0.33333 (3D))
                 STR(IND,6) = s33
 
              if(LIHDT)then
-
 !
-!   if first subiter in time step
+!   if beginning of new time step, 
 !   calculate time derivative
 !
                 S11DT= (3.*S11-4.*STRN1(IND,1)+STRN2(IND,1))
@@ -2892,18 +2896,24 @@ c            or 0.33333 (3D))
 !          
 !  add velocity times covariant derivative
 !
-            S11DT = S11DT+q(j,k,i,2)*GRS11X(IND)+q(j,k,i,3)*GRS11Y(IND)
-     .      + q(j,k,i,4)*GRS11Z(IND)
-            S12DT = S12DT+q(j,k,i,2)*GRS12X(IND)+q(j,k,i,3)*GRS12Y(IND)
-     .      + q(j,k,i,4)*GRS12Z(IND) 
-            S13DT = S13DT+q(j,k,i,2)*GRS13X(IND)+q(j,k,i,3)*GRS13Y(IND)
-     .      + q(j,k,i,4)*GRS13Z(IND) 
-            S22DT = S22DT+q(j,k,i,2)*GRS22X(IND)+q(j,k,i,3)*GRS22Y(IND)
-     .      + q(j,k,i,4)*GRS22Z(IND) 
-            S23DT = S23DT+q(j,k,i,2)*GRS23X(IND)+q(j,k,i,3)*GRS23Y(IND)
-     .      + q(j,k,i,4)*GRS23Z(IND) 
-            S33DT = S33DT+q(j,k,i,2)*GRS33X(IND)+q(j,k,i,3)*GRS33Y(IND)  
-     .      + q(j,k,i,4)*GRS33Z(IND)
+                S11DT = S11DT+
+     .            q(j,k,i,2)*GRS11X(IND)+q(j,k,i,3)*GRS11Y(IND)
+     .          + q(j,k,i,4)*GRS11Z(IND)
+                S12DT = S12DT+
+     .            q(j,k,i,2)*GRS12X(IND)+q(j,k,i,3)*GRS12Y(IND)
+     .          + q(j,k,i,4)*GRS12Z(IND) 
+                S13DT = S13DT+
+     .            q(j,k,i,2)*GRS13X(IND)+q(j,k,i,3)*GRS13Y(IND)
+     .          + q(j,k,i,4)*GRS13Z(IND) 
+                S22DT = S22DT+
+     .            q(j,k,i,2)*GRS22X(IND)+q(j,k,i,3)*GRS22Y(IND)
+     .          + q(j,k,i,4)*GRS22Z(IND) 
+                S23DT = S23DT+
+     .            q(j,k,i,2)*GRS23X(IND)+q(j,k,i,3)*GRS23Y(IND)
+     .          + q(j,k,i,4)*GRS23Z(IND) 
+                S33DT = S33DT+
+     .            q(j,k,i,2)*GRS33X(IND)+q(j,k,i,3)*GRS33Y(IND)  
+     .          + q(j,k,i,4)*GRS33Z(IND)
 !
 !   store it
 !
@@ -2929,109 +2939,131 @@ c            or 0.33333 (3D))
                 S33DT= (S33-2.*STRN1(IND,6)+STRN2(IND,6))
      .                /(dt*dt)
           
-       S11DT2 = S11DT+q(j,k,i,2)*
+                S11DT2 = S11DT+q(j,k,i,2)*
      .          (GRS11X_X(IND)+GRS11X_Y(IND)+GRS11X_Z(IND))
      .          +q(j,k,i,3)*(GRS11Y_X(IND)+GRS11Y_Y(IND)+GRS11Y_Z(IND)) 
      .          +q(j,k,i,4)*(GRS11Z_X(IND)+GRS11Z_Y(IND)+GRS11Z_Z(IND))
-       S12DT2 = S12DT+q(j,k,i,2)*
+
+                S12DT2 = S12DT+q(j,k,i,2)*
      .          (GRS12X_X(IND)+GRS12X_Y(IND)+GRS12X_Z(IND))
      .          +q(j,k,i,3)*(GRS12Y_X(IND)+GRS12Y_Y(IND)+GRS12Y_Z(IND)) 
      .          +q(j,k,i,4)*(GRS12Z_X(IND)+GRS12Z_Y(IND)+GRS12Z_Z(IND))
-       S13DT2 = S13DT+q(j,k,i,2)*
+
+                S13DT2 = S13DT+q(j,k,i,2)*
      .          (GRS13X_X(IND)+GRS13X_Y(IND)+GRS13X_Z(IND))
      .          +q(j,k,i,3)*(GRS13Y_X(IND)+GRS13Y_Y(IND)+GRS13Y_Z(IND)) 
      .          +q(j,k,i,4)*(GRS13Z_X(IND)+GRS13Z_Y(IND)+GRS13Z_Z(IND))
-       S22DT2 = S22DT+q(j,k,i,2)*
+
+                S22DT2 = S22DT+q(j,k,i,2)*
      .          (GRS22X_X(IND)+GRS22X_Y(IND)+GRS22X_Z(IND))
      .          +q(j,k,i,3)*(GRS22Y_X(IND)+GRS22Y_Y(IND)+GRS22Y_Z(IND)) 
-     .          +q(j,k,i,4)*(GRS22Z_X(IND)+GRS22Z_Y(IND)+GRS22Z_Z(IND))                                       
-       S23DT2 = S23DT+q(j,k,i,2)*
+     .          +q(j,k,i,4)*(GRS22Z_X(IND)+GRS22Z_Y(IND)+GRS22Z_Z(IND)) 
+                                      
+                S23DT2 = S23DT+q(j,k,i,2)*
      .          (GRS23X_X(IND)+GRS23X_Y(IND)+GRS23X_Z(IND))
      .          +q(j,k,i,3)*(GRS23Y_X(IND)+GRS23Y_Y(IND)+GRS23Y_Z(IND)) 
      .          +q(j,k,i,4)*(GRS23Z_X(IND)+GRS23Z_Y(IND)+GRS23Z_Z(IND))
-       S33DT2 = S33DT+q(j,k,i,2)*
+
+                S33DT2 = S33DT+q(j,k,i,2)*
      .          (GRS33X_X(IND)+GRS33X_Y(IND)+GRS33X_Z(IND))
      .          +q(j,k,i,3)*(GRS33Y_X(IND)+GRS33Y_Y(IND)+GRS33Y_Z(IND)) 
      .          +q(j,k,i,4)*(GRS33Z_X(IND)+GRS33Z_Y(IND)+GRS33Z_Z(IND))                                      
 
  
-          UUACC= (3.*q(j,k,i,2)-4.*UU_NN(IND)+UU_NN1(IND))/(2.*dt)
-          VVACC= (3.*q(j,k,i,3)-4.*VV_NN(IND)+VV_NN1(IND))/(2.*dt)
-          WWACC= (3.*q(j,k,i,4)-4.*WW_NN(IND)+WW_NN1(IND))/(2.*dt)
+                UUACC=(3.*q(j,k,i,2)-4.*UU_NN(IND)+UU_NN1(IND))/(2.*dt)
+                VVACC=(3.*q(j,k,i,3)-4.*VV_NN(IND)+VV_NN1(IND))/(2.*dt)
+                WWACC=(3.*q(j,k,i,4)-4.*WW_NN(IND)+WW_NN1(IND))/(2.*dt)
           
-          S11D_N2(IND) = S11DT2 + UUACC*GRS11X(IND)  + VVACC*GRS11Y(IND)
-     .     + WWACC*GRS11Z(IND)
-          S12D_N2(IND) = S12DT2 + UUACC*GRS12X(IND)  + VVACC*GRS12Y(IND)
-     .     + WWACC*GRS12Z(IND) 
-          S13D_N2(IND) = S13DT2 + UUACC*GRS13X(IND)  + VVACC*GRS13Y(IND)
-     .     + WWACC*GRS13Z(IND) 
-          S22D_N2(IND) = S22DT2 + UUACC*GRS22X(IND)  + VVACC*GRS22Y(IND)
-     .     + WWACC*GRS22Z(IND) 
-          S23D_N2(IND) = S23DT2 + UUACC*GRS23X(IND)  + VVACC*GRS23Y(IND)
-     .     + WWACC*GRS23Z(IND) 
-          S33D_N2(IND) = S33DT2 + UUACC*GRS33X(IND)  + VVACC*GRS33Y(IND)
-     .     + WWACC*GRS33Z(IND) 
+                S11D_N2(IND) = S11DT2
+     .          + UUACC*GRS11X(IND)  + VVACC*GRS11Y(IND)
+     .          + WWACC*GRS11Z(IND)
+
+                S12D_N2(IND) = S12DT2 
+     .          + UUACC*GRS12X(IND)  + VVACC*GRS12Y(IND)
+     .          + WWACC*GRS12Z(IND) 
+
+                S13D_N2(IND) = S13DT2 
+     .          + UUACC*GRS13X(IND)  + VVACC*GRS13Y(IND)
+     .          + WWACC*GRS13Z(IND) 
+
+                S22D_N2(IND) = S22DT2 
+     .          + UUACC*GRS22X(IND)  + VVACC*GRS22Y(IND)
+     .          + WWACC*GRS22Z(IND) 
+
+                S23D_N2(IND) = S23DT2 
+     .          + UUACC*GRS23X(IND)  + VVACC*GRS23Y(IND)
+     .          + WWACC*GRS23Z(IND) 
+
+                S33D_N2(IND) = S33DT2 
+     .          + UUACC*GRS33X(IND)  + VVACC*GRS33Y(IND)
+     .          + WWACC*GRS33Z(IND) 
 
              end if
 !
 !     STRAIN-RATE
 !
-          S11DT = S11D_N(IND)
-          S12DT = S12D_N(IND)
-          S13DT = S13D_N(IND)
-          S22DT = S22D_N(IND)
-          S23DT = S23D_N(IND)
-          S33DT = S33D_N(IND)
+                S11DT = S11D_N(IND)
+                S12DT = S12D_N(IND)
+                S13DT = S13D_N(IND)
+                S22DT = S22D_N(IND)
+                S23DT = S23D_N(IND)
+                S33DT = S33D_N(IND)
         
-          S11DT2 = S11D_N2(IND)
-          S12DT2 = S12D_N2(IND)
-          S13DT2 = S13D_N2(IND)
-          S22DT2 = S22D_N2(IND)
-          S23DT2 = S23D_N2(IND)
-          S33DT2 = S33D_N2(IND)
+                S11DT2 = S11D_N2(IND)
+                S12DT2 = S12D_N2(IND)
+                S13DT2 = S13D_N2(IND)
+                S22DT2 = S22D_N2(IND)
+                S23DT2 = S23D_N2(IND)
+                S33DT2 = S33D_N2(IND)
 
-          TSCALE  = 1./MAX(EPS,CMU*turre(j,k,i,1))          
-          LAMBDA  = CLAMB*TSCALE
+                TSCALE  = 1./MAX(EPS,CMU*turre(j,k,i,1))          
+                LAMBDA  = CLAMB*TSCALE
 
-          AE11 = (-LAMBDA*S11DT+LAMBDA*LAMBDA*S11DT2)
-          AE12 = (-LAMBDA*S12DT+LAMBDA*LAMBDA*S12DT2)
-          AE13 = (-LAMBDA*S13DT+LAMBDA*LAMBDA*S13DT2)
-          AE22 = (-LAMBDA*S22DT+LAMBDA*LAMBDA*S22DT2)
-          AE23 = (-LAMBDA*S23DT+LAMBDA*LAMBDA*S23DT2)
-          AE33 = (-LAMBDA*S33DT+LAMBDA*LAMBDA*S33DT2)
+                AE11 = (-LAMBDA*S11DT+LAMBDA*LAMBDA*S11DT2)
+                AE12 = (-LAMBDA*S12DT+LAMBDA*LAMBDA*S12DT2)
+                AE13 = (-LAMBDA*S13DT+LAMBDA*LAMBDA*S13DT2)
+                AE22 = (-LAMBDA*S22DT+LAMBDA*LAMBDA*S22DT2)
+                AE23 = (-LAMBDA*S23DT+LAMBDA*LAMBDA*S23DT2)
+                AE33 = (-LAMBDA*S33DT+LAMBDA*LAMBDA*S33DT2)
           
-          SIJTILDE = MAX(EPS,S11*(S11+AE11) + 2*S12*(S12+AE12)
-     .   + 2*S13*(S13+AE13)  +
-     .   S22*(S22+AE22) + 2*S23*(S23+AE23)  + S33*(S33+AE33) )
+                SIJTILDE = MAX(EPS,S11*(S11+AE11)+2*S12*(S12+AE12)
+     .         + 2*S13*(S13+AE13)
+     .         + S22*(S22+AE22) + 2*S23*(S23+AE23) +S33*(S33+AE33))
 
-          SKK         =  MAX(EPS,S11*S11 + 2*S12*S12 
-     .      +2*S13*S13 + S22*S22 + 2*S23*S23 + S33*S33 )
+                SKK =  MAX(EPS,S11*S11 + 2*S12*S12 
+     .            +2*S13*S13 + S22*S22 + 2*S23*S23 + S33*S33 )
 
-          SIJTILDE = MIN(SIJTILDE, SKK/SLIMITER)
+                SIJTILDE = MIN(SIJTILDE, SKK/SLIMITER)
         
-          STILDETRACE(IND) = SIJTILDE
+                STILDETRACE(IND) = SIJTILDE
 
-          NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
+                NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
-          IF(ABS(NU) > EPSILON(NU))THEN
-            CMUTILDE = -8./15/2.*(1.-1.5)
-            CMUTILDE = (1.-1.5)/(4*NU*NU)
-            CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
-     .        *vist3d(j,k,i)*vist3d(j,k,i)*(1.+0.)/(1.-1.5)**2 ))
-          ELSE
-            CMUTILDE = -8./15/2.*(1.-1.5)
-          END IF
-          CMUTILDE = MIN(CMU, CMUTILDE)        
+                IF(ABS(NU) > EPSILON(NU))THEN
+                  CMUTILDE = -8./15/2.*(1.-1.5)
+                  CMUTILDE = (1.-1.5)/(4*NU*NU)
+                  CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
+     .             *vist3d(j,k,i)*vist3d(j,k,i)*(1.+0.)/(1.-1.5)**2))
+                ELSE
+                  CMUTILDE = -8./15/2.*(1.-1.5)
+                END IF
+                CMUTILDE = MIN(CMU, CMUTILDE)        
         
-          MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-          MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP
+                MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
+                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP
           
-       AEX11(IND)=2*MUT(IND)*MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
-       AEX12(IND)=2*MUT(IND)*MIN(S12/SLIMITER,MAX(-S12/SLIMITER,AE12))
-       AEX13(IND)=2*MUT(IND)*MIN(S13/SLIMITER,MAX(-S13/SLIMITER,AE13))
-       AEX22(IND)=2*MUT(IND)*MIN(S22/SLIMITER,MAX(-S22/SLIMITER,AE22))
-       AEX23(IND)=2*MUT(IND)*MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
-       AEX33(IND)=2*MUT(IND)*MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
+                AEX11(IND)=2*MUT(IND)
+     .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
+                AEX12(IND)=2*MUT(IND)
+     .            *MIN(S12/SLIMITER,MAX(-S12/SLIMITER,AE12))
+                AEX13(IND)=2*MUT(IND)
+     .            *MIN(S13/SLIMITER,MAX(-S13/SLIMITER,AE13))
+                AEX22(IND)=2*MUT(IND)
+     .            *MIN(S22/SLIMITER,MAX(-S22/SLIMITER,AE22))
+                AEX23(IND)=2*MUT(IND)
+     .            *MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
+                AEX33(IND)=2*MUT(IND)
+     .            *MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
 !                write(*,*)' IHDMMMMMMMMMMMMMM  2'
 
@@ -3145,24 +3177,24 @@ c   Get Pk and Dk:
 !
 !  non-equilibrium model
 !
-               TSCALE = 1./MAX(EPS,CMU*turre(j,k,i,1))
+                TSCALE = 1./MAX(EPS,CMU*turre(j,k,i,1))
 !
 !      sijtilde = sij * sij~
 !
-               SIJTILDE = STILDETRACE(FIND(I,J,K,idim,JDIM,KDIM)) 
+                SIJTILDE = STILDETRACE(FIND(I,J,K,idim,JDIM,KDIM)) 
           
-               NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
+                NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
-               IF(ABS(NU) > EPSILON(NU))THEN
+                IF(ABS(NU) > EPSILON(NU))THEN
                  CMUTILDE = (1.-1.5)/(4*NU*NU)
                  CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
      .             *NU*NU*(1.+0.)/(1.-1.5)**2 ))
-               ELSE
+                ELSE
                   CMUTILDE = -8./15/2.*(1.-1.5)
-               END IF
-               CMUTILDE = MIN(CMU, CMUTILDE)
+                END IF
+                CMUTILDE = MIN(CMU, CMUTILDE)
           
-               PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
+                PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
 
 !                write(*,*)' IHDMMMMMMMMMMMMMM   4'
@@ -5167,6 +5199,10 @@ c Update VIST3D and save omega and k values
 !                write(*,*)' IHDMMMMMMMMMMMMMM   5'
 !
 !  save viscosity already calculated by non-eq model
+!  and velocity. It is a duplicate allocation of memory 
+!  but makes coding a bit simpler
+!  If changed (ie. velocity array in PBLOG not allocated
+!  the only other change needs to be done is in shift.F
 !
               INDTMP = FIND(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
@@ -5881,18 +5917,14 @@ c
 c
 c-----END HARDWIRED OUTPUT SECTION
 c
-
       IF(IHDM == 1)THEN
-!                write(*,*)' IHDMMMMMMMMMMMMMM   7'
-       DEALLOCATE(MUT, STAT = ISTAT)
+!
+!  if non-equilibitum model, deallocate MUT array which stored viscosity
+!
+         DEALLOCATE(MUT, STAT = ISTAT)
           IF(ISTAT /= 0)
-     .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5877 '
+     .       STOP'ERROR DEALLOCATING MEMORY ==> twoeqn ERR:5926 '
       END IF
-
-!                write(*,*)' IHDMMMMMMMMMMMMMM   8'
-
-       
-
 
       return
       end

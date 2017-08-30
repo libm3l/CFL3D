@@ -77,7 +77,7 @@ c
       ifk=1
 
       allocate(wt(jdim+1,kdim+1,3), stat = istat)
-        if(istat /= 0)stop'ERROR ALLOCATING MEMORY ==> delS ERR:82 '
+        if(istat /= 0)stop'ERROR ALLOCATING MEMORY ==> delS ERR:80 '
       jdim1 = jdim-1
       kdim1 = kdim-1
       idim1 = idim-1
@@ -254,7 +254,7 @@ c
       end if
 c
       deallocate(wt, stat = istat)
-        if(istat /= 0)stop'ERROR DEALLOCATING MEMORY ==> delS ERR:261 '
+        if(istat /= 0)stop'ERROR DEALLOCATING MEMORY ==> delS ERR:257 '
 
       return
       end
