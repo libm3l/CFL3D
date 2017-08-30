@@ -972,7 +972,7 @@ c
       if (icyc.gt.1) isklton = 0
 
 
-      write(*,*)' Multigtid cycle: ', icyc,ncyc
+!      write(*,*)' Multigtid cycle: ', icyc,ncyc
 c
 c     check for user stop file - will then stop on next MG cycle
 c     (if unsteady, we don't want to stop until the next time step,
@@ -2668,16 +2668,18 @@ c
          if (level.eq.levt) then
             time    = time  + dt
             time2mc = time2mc + dt
+            write(*,*)'Iteration and time step ', nt, dt,time
+!            write(*,*)'Time step',dt,time
             do 800 nbl=1,nblock
             time2(nbl) = time2(nbl) + dt
 !
 !   JKA shift data for non-eq model
 !
-            write(*,*)'========================='
-            write(*,*)'- shifting time ',dt,time,time2mc
-            write(*,*)' block ', nbl, nblock
-            write(*,*)idimg(nbl), jdimg(nbl), kdimg(nbl),ngrid,level, levt
-            write(*,*)'========================='
+!            write(*,*)'========================='
+!            write(*,*)'- shifting time ',dt,time,time2mc
+!            write(*,*)' block ', nbl, nblock
+!            write(*,*)idimg(nbl), jdimg(nbl), kdimg(nbl),ngrid,level, levt
+!            write(*,*)'========================='
 
 !            CALL SHIFT(PGLOB, 
 

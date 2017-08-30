@@ -75,7 +75,8 @@ wrest.o :
 
 mgbl.o :  \
 	../../../build/cfl/libs/module_kwstm.o \
-	mgblk.o
+	mgblk.o \
+	addnoneqstr.o
 
 sizer.o : 
 
@@ -86,6 +87,8 @@ rrest.o :
 qinter.o : 
 
 updateg.o : 
+
+addnoneqstr.o : 
 
 bc_embed.o : 
 

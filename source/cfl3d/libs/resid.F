@@ -638,7 +638,7 @@ c allocate for DES and DDES
        write(bou(nou(1),1),'('' nroom='',i12)') nroom
        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
-      write(*,*)' JKA calling twoeqn',jdim,kdim,idim,'---',nbl
+!      write(*,*)' JKA calling twoeqn',jdim,kdim,idim,'---',nbl
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
      + wk(iwk5),
@@ -663,7 +663,7 @@ c allocate for DES and DDES
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
      + wk(iwk82),nummem,iccnum,pglob)
 
-      write(*,*)' JKA after calling twoeqn'
+!      write(*,*)' JKA after calling twoeqn'
 
       else if (ivmx .eq. 30) then
 c   three-equation turb model

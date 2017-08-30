@@ -79,6 +79,7 @@ c
 
       USE FLL_MODS_M
       USE MGBLK_M
+      USE ADDNONEQSTR_M
 
 #   ifdef CMPLX
 #   else
@@ -498,127 +499,7 @@ c
             iwork(iii) = 0
          end do
 
-       PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 1
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-       PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
-       PTMP%D0 = 1.
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-       PTMP => FLL_MK('shift','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 0
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-
-       DO J = 1,MSEQ
-
-         DIMS = IDIMG(J)*JDIMG(J)*KDIMG(J)
-         IF(IDIMG(J) == 2)THEN
-           NDIMS = 2*2
-         ELSE
-           NDIMS = 3*3
-         END IF
-       
-         WRITE(*,*)'======================= ',  MSEQ,NGRID, NBLOCK
-
-         DO I=1,NBLOCK
-
-           WRITE(*,*)' DIMS', idimg(j),jdimg(j),kdimg(j) 
-
-         END DO
-
-         DO I = 1,NGRID  ! NBLOCK
-
-           PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
-           IF(.NOT.FLL_MV(PGRID, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-
-             PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
-             PTMP%I0 = J
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
-             PTMP%L1(1) = idimg(j)
-             PTMP%L1(2) = jdimg(j)
-             PTMP%L1(3) = kdimg(j)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP%D2 = 0.
-             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP%D2 = 0.
-             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-
-             PTMP => FLL_MK('velocity','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             
-!             IF(NDIMS == 4)THEN
-!               PTMP => FLL_MK('SSGRAD','D',dims,6_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('SS2GRAD','D',dims,12_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('SSGRAD','D',dims,18_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('SS2GRAD','D',dims,54_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4)THEN
-!               PTMP => FLL_MK('ST','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('STN1','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!               PTMP => FLL_MK('STN2','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('ST','D',dims,6_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('STN1','D',dims,6_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-               PTMP => FLL_MK('STN2','D',dims,6_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4) THEN
-!               PTMP => FLL_MK('DSDT_N','D',dims,7_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('DSDT_N','D',dims,13_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-!             IF(NDIMS == 4) THEN
-!               PTMP => FLL_MK('Extra_Strain','D',dims,3_LINT, FPAR)
-!               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             ELSE
-               PTMP => FLL_MK('Extra_Strain','D',dims,6_LINT, FPAR)
-               PTMP%D2 = 0.
-               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-!             END IF
-
-         END DO
-       END DO
-
-       CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
+       CALL ADDNONEQSTR(PGLOB,MSEQ,NGRID,NBLOCK,IDIMG,JDIMG,KDIMG)
 c
 #if defined DIST_MPI
 c
