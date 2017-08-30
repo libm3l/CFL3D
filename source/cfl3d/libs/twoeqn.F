@@ -44,9 +44,15 @@ c
 c***********************************************************************
 c     Purpose:  Compute turbulent viscosity distributions using
 c     2-equation turbulence models
+c
+c     CHANGELOG
 c     (reprogrammed by Rumsey for CFL3D Version 5 - 5/96)
 c     Alterations to EASM #8,9,13,14 by Rumsey - 5/00)
-c     added non-equilibrium model by Adam Jirasek / USAFA / CU Boulder/ 08/17
+
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     non-equilibirum k-w model
+c                                               need to use fll library (https:/github.com/libm3l/fll
 c***********************************************************************
 c
 #   ifdef CMPLX

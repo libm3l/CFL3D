@@ -47,6 +47,14 @@ c     Purpose: Compute the residual contributions to the right-hand-side.
 c     Note: viscous flux routines called even if block is not advanced
 c     in order to compute and store the vmui/j/k arrays (though these
 c     routines are then exited as soon as those arrays are computed)
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL)_MODS_M
 c***********************************************************************
 c
 #   ifdef CMPLX

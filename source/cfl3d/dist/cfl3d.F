@@ -31,11 +31,14 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Allocate memory and execute flow solver
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     add pglob pointer
+c                                               need to use FLL_MODS_M
+c                                               need to link fll library (https:/github.com/libm3l/fll
 c***********************************************************************
 c
-c
-c   use fll library which it exxentially a linked list 
-c   will be used to store additional data
 c
       USE FLL_MODS_M
       USE MGBL_M
