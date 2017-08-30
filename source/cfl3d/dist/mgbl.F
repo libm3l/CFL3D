@@ -499,7 +499,7 @@ c
          end do
 
        PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 0
+       PTMP%I0 = 1
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
        PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
