@@ -86,9 +86,9 @@ c
 c     CHANGELOG
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     5.0       08/17    Adam Jirasek/USAFA     add pblog pointer for non-equilibrium model
+c     5.0       08/17    Adam Jirasek/USAFA     add pglob pointer for non-equilibrium model
 c                                               need to use fll library (https:/github.com/libm3l/fll
-c                                               and FLL)_MODS_M
+c                                               and FLL_MODS_M
 c                                               wrap routine in module
 c***********************************************************************
 c
