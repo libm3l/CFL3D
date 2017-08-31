@@ -20,19 +20,34 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE AF3F_M
+      CONTAINS
       subroutine af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .                res,vist3d,x,y,z,blank,vmuk,resid,wk,nwork,wk0,
      .                nwk0,iover,vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,
      .                myid,mblk2nd,maxbl,volk0,tursav,tk0,cmuv,
-     .                iadvance,nummem,ux)
+     .                iadvance,nummem,ux,PGLOB)
 c
 c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Advance the solution in time using a 3-factor
 c     spatially-split approximate factorization algorithm.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
 c
+      USE FLL_MODS_M
+      USE FFLUXV_M
+      USE GFLUXV_M
+      USE HFLUXV_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -66,6 +81,9 @@ c
       common /sklton/ isklton
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -212,7 +230,8 @@ c        Call viscous LHS.
          call hfluxv(i,npl,jdim,kdim,idim,1,wk(iwka),wk(iwkb),wk(iwkc),
      .               res,q,qk0,sk,vol,wk(iwkd),nvtq,wk0,vist3d,vmuk,
      .               vk0,bck,tursav,tk0,cmuv,
-     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux)
+     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux
+     .               ,pglob)
       end if
 c
       if (iover.eq.1) call abckz(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),
@@ -331,3 +350,4 @@ c****************** spatially-split af ***********************
 c
       return
       end
+      END MODULE AF3F_M

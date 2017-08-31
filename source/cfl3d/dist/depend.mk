@@ -107,7 +107,8 @@ yplusout.o :
 
 mgblk.o :  \
 	../../../build/cfl/libs/shift.o \
-	../../../build/cfl/libs/resid.o
+	../../../build/cfl/libs/resid.o \
+	../../../build/cfl/libs/update.o
 
 plot3d.o : 
 

@@ -31,6 +31,7 @@ c
 c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     I-direction due to the viscous terms.
+c
 c     CHANGELOG
 c
 c     Version   Date       Author               Comment

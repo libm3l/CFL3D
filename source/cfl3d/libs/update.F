@@ -20,11 +20,13 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE UPDATE_M
+      CONTAINS
       subroutine update(jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,vol,dtj,
      .                  vist3d,blank,x,y,z,res,wk0,vmuk,vmuj,vmui,wk,
      .                  nwork,nbl,iover,vk0,bcj,bck,bci,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,volk0,tursav,
-     .                  tk0,cmuv,iadvance,nummem,ux)
+     .                  tk0,cmuv,iadvance,nummem,ux,PGLOB)
 c
 c     $Id$
 c
@@ -32,6 +34,8 @@ c***********************************************************************
 c     Purpose:  Update the solution in time.
 c***********************************************************************
 c
+      USE FLL_MODS_M
+      USE AF3F_M
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -64,6 +68,9 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /iupdate/ iupdatemean
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
       if (iupdatemean .eq. 0) return
       jdim1 = jdim-1
@@ -90,7 +97,7 @@ c
       call af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .          res,vist3d,x,y,z,blank,vmuk,resd,wk,nwork,wk0,1,iover,
      .          vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
-     .          volk0,tursav,tk0,cmuv,iadvance,nummem,ux)
+     .          volk0,tursav,tk0,cmuv,iadvance,nummem,ux,pglob)
 c
 c      update 3-d solution
 c
@@ -152,3 +159,4 @@ c
  1500 format(1x,32h *neg. (or large) d/p*(j,k,i,q)=,3i5,5e12.5)
       return
       end
+      END MODULE UPDATE_M

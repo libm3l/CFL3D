@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE SETUP_M
+      CONTAINS
       subroutine setup(lw,lw2,w,mgwk,wk,nwork,iwk,iwork,itest,
      .                 jtest,ktest,maxbl,mxbli,maxgr,maxseg,nsub1,
      .                 maxxe,intmax,iitot,ncycmax,lwdat,lig,lbg,iovrlp,
@@ -55,6 +57,7 @@ c
 #   else
       use module_kwstm, only:kws_init
 #   endif
+      USE FLL_MODS_M
 c
 c     $Id$
 c
@@ -3098,3 +3101,5 @@ c
 c
       return
       end
+
+      END MODULE SETUP_M

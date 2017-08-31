@@ -99,6 +99,7 @@ c
       USE FLL_MODS_M
       USE RESID_M
       USE SHIFT_M
+      USE UPDATE_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -1735,7 +1736,7 @@ c
      .                  nbl,iovrlp(nbl),w(lvk0),w(lbcj),w(lbck),w(lbci),
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  w(lvolk0),w(lxib),w(ltk0),w(lcmuv),
-     .                  iadvance,nummem,w(lux))
+     .                  iadvance,nummem,w(lux),PGLOB)
 c 
 c           update the overlapped values if chimera scheme is used
 c

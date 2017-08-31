@@ -2,7 +2,10 @@
 
 i2xsj_d.o : 
 
-af3f.o : 
+af3f.o :  \
+	hfluxv.o \
+	gfluxv.o \
+	ffluxv.o
 
 bc9999.o : 
 
@@ -529,7 +532,8 @@ pltmode.o :
 
 gfluxl.o : 
 
-update.o : 
+update.o :  \
+	af3f.o
 
 hfluxv.o : 
 

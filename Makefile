@@ -33,16 +33,23 @@
 #
 #
 
-include ../../config.mk
+include config.mk
 
 SUBDIRS= \
-        libs\
-	dist\
+        source\
 
 
 ###########################################################################
 
-include ../../rules.mk
+include rules.mk
 
 depend: $(SUBDIRS:%=%.depend)
+
+init:
+	echo PROJ_ROOT_PATH=$(PWD) > config.mk
+	echo MAKEDEPEND=$(PWD)/python_dep/fort_depend.py >> config.mk
+	echo VERBOSE=-vvv >> config.mk
+	echo FLLLOC = /home/jiraseka/LL/fll_exec
+
+
 
