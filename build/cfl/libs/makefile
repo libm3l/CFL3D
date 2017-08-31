@@ -17,6 +17,7 @@ lncode:
 	ln -sf $(CFLSRC_S)/*.F .
 	ln -sf $(CFLSRC_S)/*.F90 .
 	ln -sf $(CFLSRC_S)/*.c .
+	ln -sf $(CFLSRC_S)/depend.mk .
 
 lnhead:
 
