@@ -39,6 +39,12 @@ c
 
       use TWOEQN_M
       USE FLL_MODS_M
+      USE FFLUXV_M
+      USE FFLUXV1_M
+      USE GFLUXV_M
+      USE GFLUXV1_M
+      USE HFLUXV_M
+      USE HFLUXV1_M
 c
 c     $Id$
 c
@@ -1037,7 +1043,8 @@ c
          nvtq = npl*jdim*kdim
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
-     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux)
+     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux,
+     .               pglob)
 c
 c-- full viscous terms
 c
@@ -1045,7 +1052,8 @@ c
          call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
      .                bcj,bck,bci,volj0,
-     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl),
+     .                pglob)
          end if
   201    continue
       end if
@@ -1091,7 +1099,7 @@ c
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .               iadvance(nbl),nummem,ux)
+     .               iadvance(nbl),nummem,ux,pglob)
 c
 c-- full viscous terms
 c
@@ -1099,7 +1107,7 @@ c
          call hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wk0,vist3d,vk0,
      .                bcj,bck,bci,volk0,
-     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
          end if
   211    continue
       end if
@@ -1149,7 +1157,7 @@ c
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
      .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem
-     .                  ,ux)
+     .                  ,ux,pglob)
 c
 c-- full viscous terms
 c
@@ -1157,7 +1165,7 @@ c
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,
-     .                   nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
             end if
   277       continue
          end if

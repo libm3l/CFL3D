@@ -107,8 +107,14 @@ dsmin.o :
 dlutr.o : 
 
 resid.o :  \
+	hfluxv.o \
+	gfluxv1.o \
+	ffluxv1.o \
+	twoeqn.o \
+	ffluxv.o \
 	module_kwstm.o \
-	twoeqn.o
+	gfluxv.o \
+	hfluxv1.o
 
 cblkk_d.o : 
 

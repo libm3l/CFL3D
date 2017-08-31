@@ -20,17 +20,30 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE GFLUXV_M
+      CONTAINS 
+
       subroutine gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,t,nvtq,
      .                  wj0,vist3d,vmuj,vj0,bcj,zksav,tj0,cmuv,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,PGLOB)
 c
 c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     J-direction due to the viscous terms.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
 c
+      USE FLL_MODS_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -61,6 +74,9 @@ c
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       real :: coef_eddy
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c******************************************************************************
 c     right-hand-side residual contribution in J-direction (viscous terms)
@@ -1539,3 +1555,5 @@ c   sign (this term is going into -d/dxj(Gv) term)
       end if
       return
       end 
+
+      END MODULE GFLUXV_M

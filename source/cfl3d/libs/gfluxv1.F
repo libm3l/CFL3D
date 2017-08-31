@@ -20,10 +20,12 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE GFLUXV1_M
+      CONTAINS 
       subroutine gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                  sj,sk,si,vol,t,nvtq,wj0,vist3d,vj0,
      .                  bcj,bck,bci,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv)
+     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB)
 c
 c     $Id$
 c
@@ -31,7 +33,16 @@ c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     J-direction due to the viscous terms missing in the thin-layer 
 c     formulation.
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
+c
+      USE FLL_MODS_M
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -64,6 +75,9 @@ c
       common /sklton/ isklton
       common /twod/ i2d
       REAL :: coef_eddy
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey
@@ -1335,3 +1349,5 @@ cdir$ ivdep
   400 continue
       return
       end 
+
+      END MODULE GFLUXV1_M
