@@ -1,4 +1,4 @@
-c  ---------------------------------------------------------------------------
+c  ------------------------------------------------------------
 c  CFL3D is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged
 c  Navier-Stokes (RANS) code. It can be run in parallel on multiple grid zones
 c  with point-matched, patched, overset, or embedded connectivities. Both
@@ -18,7 +18,7 @@ c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
 c  License for the specific language governing permissions and limitations 
 c  under the License.
-c  ---------------------------------------------------------------------------
+c  ------------------------------------------------------------
 c
       MODULE TWOEQN_M
       CONTAINS
@@ -1456,6 +1456,8 @@ c Get TURRE values
       do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
+            if(isnan(zksav(j,k,i,1)))zksav(j,k,i,1) = 10000
+            if(isnan(zksav(j,k,i,2)))zksav(j,k,i,2) = 1
             turre(j,k,i,1)=zksav(j,k,i,1)
             turre(j,k,i,2)=zksav(j,k,i,2)
           enddo
@@ -2872,7 +2874,7 @@ c            or 0.33333 (3D))
                 s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
                 s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
 
-!                write(*,*)' IHDMMMMMMMMMMMMMM   1'
+                !write(*,*)' IHDMMMMMMMMMMMMMM   1'
 !
 !   save strain rate tensor 
 !
@@ -3073,12 +3075,19 @@ c            or 0.33333 (3D))
                 AEX33(IND)=2*MUT(IND)
      .            *MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
-!                write(*,*)' IHDMMMMMMMMMMMMMM  2'
+
+                xis = s11t*s11t + s22t*s22t + s33t*s33t +
+     +                2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+                w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
+                w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+                w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
 
 !          END IF ! IHDM == 1
 
               end if
               if (isstrc .eq. 2) then
+
                 ss=sqrt(2.*wis)
                 ss=ccmax(ss,xminn)
                 xisabs=sqrt(2.*xis)
@@ -3179,9 +3188,10 @@ c   Get Pk and Dk:
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
 
+
               elseif(IHDM == 1)THEN
 
-!                               write(*,*)' IHDMMMMMMMMMMMMMM   3'
+                               !write(*,*)' IHDMMMMMMMMMMMMMM   3'
 !
 !  non-equilibrium model
 !
@@ -3202,12 +3212,14 @@ c   Get Pk and Dk:
                 END IF
                 CMUTILDE = MIN(CMU, CMUTILDE)
           
-                PK = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
+                pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
 
-!                write(*,*)' IHDMMMMMMMMMMMMMM   4'
+!                write(*,*)q(j,k,i,1),re, CMUTILDE, cmu,turre(j,k,i,2),
+!     .    turre(j,k,i,1),SIJTILDE
  
               else
+                !write(*,*)' NO------------------------IHDM 14'
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               pk=pk*fr1
@@ -3221,7 +3233,11 @@ c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               else
+                !write(*,*)' NO------------------------IHDM 15'
+!                write(*,*)q(j,k,i,1),re, CMUTILDE, cmu,turre(j,k,i,2),
+!     .    turre(j,k,i,1),SIJTILDE
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
+!                write(*,*)'Productions ', pk,pw
               end if
               dw=f5*f4*re*betax*turre(j,k,i,1)**2
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*pw-dw
@@ -4218,6 +4234,7 @@ c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
               if (ivmx .eq. 6) then
+                !write(*,*)' NO------------------------IHDM 19'
                 cyadd= 2.*re*beta1*turre(j,k,i,1)
                 cy2add=re*cmuc1*turre(j,k,i,1)
               else if (ivmx .eq. 7) then
@@ -4572,6 +4589,7 @@ c
         enddo
 c
 c    Implicit F_xi_xi viscous terms.  Do over all i's
+
         do i=1,idim-1
 c         Interior points
           do j=2,jdim-2
@@ -5157,6 +5175,7 @@ c
         end if
 c
 c    Update TURRE
+c
         sumno=0.
         sumnk=0.
         negno=0
@@ -5204,7 +5223,7 @@ c Update VIST3D and save omega and k values
         do k=1,kdim-1
           do j=1,jdim-1
             if (IHDM == 1) then
-!                write(*,*)' IHDMMMMMMMMMMMMMM   5'
+                !write(*,*)' IHDMMMMMMMMMMMMMM   5'
 !
 !  save viscosity already calculated by non-eq model
 !  and velocity. It is a duplicate allocation of memory 
@@ -5218,7 +5237,7 @@ c Update VIST3D and save omega and k values
               UUC(INDTMP) = q(j,k,i,2)
               VVC(INDTMP) = q(j,k,i,3)
               WWC(INDTMP) = q(j,k,i,4)
-!                write(*,*)' IHDMMMMMMMMMMMMMM   6'
+!                !write(*,*)' IHDMMMMMMMMMMMMMM   6'
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
@@ -5238,14 +5257,21 @@ c            Determine Sij values:
               denom=ccmax(turre(j,k,i,1),xxx*0.875/(re*sqrt(cmuc2)))
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/denom
             else
+                !write(*,*)' NO------------------------IHDM 32'
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
             end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)
+
+!              write(*,*)'VISC   ',vist3d(j,k,i)
+
+
           enddo
         enddo
         enddo
+
+!         write(*,*)'   NEW ====================== '
       else if (ivmx .eq. 7) then
         do i=1,idim-1
         do k=1,kdim-1
@@ -5626,6 +5652,7 @@ c
 c   for wall functions, force k & omega (or epsilon) in 1st cell off solid wall
 c     wall function in k-direction
       if(iwf(3) .eq. 1) then
+                !write(*,*)' NO------------------------IHDM wall fce 35'
       do 9181 kk=1,2
       if(kk .eq. 1) then
         k=1
