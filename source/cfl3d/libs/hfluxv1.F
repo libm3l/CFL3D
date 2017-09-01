@@ -38,7 +38,7 @@ c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
 c***********************************************************************
@@ -84,6 +84,9 @@ c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey
 c******************************************************************************
 c
+
+      write(*,*)' if hflux1 '
+
       coef_eddy = 1.0
       if(ivisc(3)>=70) coef_eddy = 0.0
       kdim1 = kdim-1
