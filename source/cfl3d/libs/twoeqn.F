@@ -51,10 +51,14 @@ c     Alterations to EASM #8,9,13,14 by Rumsey - 5/00)
 
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     non-equilibirum k-w model
-c                                               need to use fll library (https:/github.com/libm3l/fll
+c     6.0       08/17    Adam Jirasek/USAFA     need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
 c                                               wrap routine in module
+c                                               non-equilibirum k-w model
+c        ref: Peter E. Hamlington and Werner J.A. Dahm: Computational Validation of New Reynolds Stress
+c                               Closure for Nonequilibrium Effects in Turbulent Flows
+c                               47th AIAA Aerospace Sciences Meeting Including The New Horizons Forum and 
+c                               Aerospace Exposition, January 2009
 c***********************************************************************
 c
 #   ifdef CMPLX

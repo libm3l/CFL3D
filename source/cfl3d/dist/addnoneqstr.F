@@ -106,17 +106,6 @@ c
              PTMP%L1(3) = kdimg(j)
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
 !
-!  add data for 
-!             PTMP => FLL_MK('UUGRAD_UNKNNN','D',dims,ndims, FPAR)
-!             PTMP%D2 = 0.
-!             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-!             PTMP%D2 = 0.
-!             PTMP => FLL_MK('UUGRAD_UNKNNN1','D',dims,ndims, FPAR)
-!             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-!             PTMP%D2 = 0.
-!             PTMP => FLL_MK('UUGRAD_UNKNNN2','D',dims,ndims, FPAR)
-!             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-!
 !  save velocity in three time levels, shift in shift.F
 !  value of velcoity calculated in twoeqn.F
 !
