@@ -54,15 +54,15 @@ c
 !
 !   shift gradients
 !
-         PTMP => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN','D',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR) 
-         PTMP1 => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN1','D',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR) 
-         PTMP2 => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN2','D',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR) 
-
-         PTMP2%D2 = PTMP1%D2
-         PTMP1%D2 = PTMP%D2
+!         PTMP => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN','D',-1_LINT,
+!     .                       1_LINT,.FALSE.,FPAR) 
+!         PTMP1 => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN1','D',-1_LINT,
+!     .                       1_LINT,.FALSE.,FPAR) 
+!         PTMP2 => FLL_LOCATE(PGRID,'UUGRAD_UNKNNN2','D',-1_LINT,
+!     .                       1_LINT,.FALSE.,FPAR)
+!
+!         PTMP2%D2 = PTMP1%D2
+!         PTMP1%D2 = PTMP%D2
 !
 !  strain rate
 !
