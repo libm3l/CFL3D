@@ -51,7 +51,7 @@ c     Alterations to EASM #8,9,13,14 by Rumsey - 5/00)
 
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     5.0       08/17    Adam Jirasek/USAFA     non-equilibirum k-w model
+c     6.0       08/17    Adam Jirasek/USAFA     non-equilibirum k-w model
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
 c                                               wrap routine in module
@@ -405,7 +405,7 @@ c
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
 !  S12
           call dels(jdim,kdim,idim,STR(:,2),sj,sk,si,vol,
-     .          PTMQ%D2(:,4:5),blank,iover,
+     .          PTMQ%D2(:,4:6),blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0)
 !  S13
           call dels(jdim,kdim,idim,STR(:,3),sj,sk,si,vol,
@@ -619,9 +619,9 @@ c
      .                       1_LINT,.FALSE.,FPAR)
 
       AEX11 => PTMQ%D2(:,1)
-      AEX22 => PTMQ%D2(:,2)
-      AEX12 => PTMQ%D2(:,3)
-      AEX13 => PTMQ%D2(:,4)
+      AEX12 => PTMQ%D2(:,2)
+      AEX13 => PTMQ%D2(:,3)
+      AEX22 => PTMQ%D2(:,4)
       AEX23 => PTMQ%D2(:,5)
       AEX33 => PTMQ%D2(:,6)
 
