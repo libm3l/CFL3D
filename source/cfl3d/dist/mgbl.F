@@ -821,6 +821,7 @@ c
      .           ''work space for subroutine mgblk'')')
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
+
          call mgblk(iseq,lw,lw2,work,nstart,work(nstart+1),
      .              work(nstart+1+maxbl),nwork1,
      .              iwork(iwk1),iwork(iwk2),iwork(iwk3),mworki1,

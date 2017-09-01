@@ -58,7 +58,7 @@ c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     5.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
 c***********************************************************************
@@ -1041,6 +1041,7 @@ c
          do 201 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
+!         write(*,*)' CALLING   gfluxv',ivisc(1),ivisc(2),ivisc(3),ifullns
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
      .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux,
@@ -1049,6 +1050,7 @@ c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
+         write(*,*)' CALLING   gfluxv1'
          call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
      .                bcj,bck,bci,volj0,
@@ -1096,6 +1098,7 @@ c
          do 211 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
+!         write(*,*)' CALLING   hfluxv'
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
@@ -1104,6 +1107,7 @@ c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
+         write(*,*)' CALLING   hfluxv1'
          call hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wk0,vist3d,vk0,
      .                bcj,bck,bci,volk0,
@@ -1154,6 +1158,7 @@ c
             do 277 k=1,kdim1,nplq
             if (k+npl-1.gt.kdim1) npl = kdim1-k+1
             nvtq = npl*jdim*idim
+         write(*,*)' CALLING   ffluxv'
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
      .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem
@@ -1162,6 +1167,7 @@ c
 c-- full viscous terms
 c
             if (ifullns .ne. 0) then
+         write(*,*)' CALLING   ffluxv1'
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,

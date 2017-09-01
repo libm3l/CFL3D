@@ -49,15 +49,19 @@ c
        PTMP%I0 = 1
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
-      IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
-      IF(IHDM /= 1)RETURN
+       PTMP => FLL_MK('shift','I',1_LINT,1_LINT, FPAR)
+       PTMP%I0 = 0
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
+       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+       write(*,*)' value of ihdm is ', IHDM
+       IF(IHDM /= 1)THEN
+         CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
+         RETURN
+       END IF
 
        PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
        PTMP%D0 = 1.
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-       PTMP => FLL_MK('shift','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 0
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
 

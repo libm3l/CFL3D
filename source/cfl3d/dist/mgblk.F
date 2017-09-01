@@ -2681,16 +2681,6 @@ c
 !            write(*,*)'Time step',dt,time
             do 800 nbl=1,nblock
             time2(nbl) = time2(nbl) + dt
-!
-!   JKA shift data for non-eq model
-!
-!            write(*,*)'========================='
-!            write(*,*)'- shifting time ',dt,time,time2mc
-!            write(*,*)' block ', nbl, nblock
-!            write(*,*)idimg(nbl), jdimg(nbl), kdimg(nbl),ngrid,level, levt
-!            write(*,*)'========================='
-
-!            CALL SHIFT(PGLOB, 
 
   800       continue
             timekeep(ntt) = time
