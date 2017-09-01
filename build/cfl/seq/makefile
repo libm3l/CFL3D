@@ -12,8 +12,7 @@ link:     lncode lnhead lnlibs
 lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_D)/*.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
-	ln -s $(CFLSRC_D)/depend.mk .
+	-ln -s $(CFLSRC_D)/depend.mk .
 
 lnhead:
 
@@ -68,7 +67,7 @@ $(FOBJ_SPEC): $(HEAD_DIST)
 
 #Note: for inlining on cray, ccomplex must appear first in fsrc_main
 
-FSRC_MAIN = ccomplex.F development.F main.F
+FSRC_MAIN = ../libs/ccomplex.F development.F main.F
 
 FOBJ_MAIN = $(FSRC_MAIN:.F=.o)
 
@@ -80,8 +79,7 @@ $(FOBJ_MAIN): $(HEAD_MAIN)
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
-	-ln -s ../libs/*.o .
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) $(FLLLOC)/data_util/*.o 
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o ../libs/*.o $(LLIBS) $(FLLLOC)/data_util/*.o 
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -125,4 +123,4 @@ cleang:
 
 scrub: cleana cleano cleane cleanf cleanh cleang
 
-include depend.mk
+-include depend.mk

@@ -17,7 +17,7 @@ lncode:
 	ln -sf $(CFLSRC_S)/*.F .
 	ln -sf $(CFLSRC_S)/*.F90 .
 	ln -sf $(CFLSRC_S)/*.c .
-	ln -sf $(CFLSRC_S)/depend.mk .
+	-ln -sf $(CFLSRC_S)/depend.mk .
 
 lnhead:
 
@@ -191,4 +191,4 @@ cleanc:
 
 scrub: cleana cleano cleane cleanf cleanh cleang cleanc
 
-include depend.mk
+-include depend.mk
