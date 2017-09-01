@@ -290,6 +290,7 @@ c
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /unit5/ iunit5
+      common /key/ nkey
       common /conversion/ radtodeg
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /proces/ numprocs
