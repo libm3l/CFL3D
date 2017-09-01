@@ -3150,7 +3150,7 @@ c
             if (ntt.eq.ntt/mov_coarse*mov_coarse) then                      
                lhdr   = 0
                iwk1   = 1
-               iwk2   = iwk1  + 3*nblocks/lglobal
+               iwk2   = iwk1  + 3*nblock/lglobal
                iwk3   = iwk2  + maxbl
                iwork1 = iwork - iwk3 + 1
                if (iwork1.le.0) then
@@ -3217,7 +3217,7 @@ c     ! output snapshot every mov_2d time steps
             if (ntt.eq.ntt/mov_2d*mov_2d) then                        
                lhdr   = 0
                iwk1   = 1
-               iwk2   = iwk1  + 3*nblocks/lglobal                         
+               iwk2   = iwk1  + 3*nblock/lglobal                         
                iwk3   = iwk2  + maxbl
                iwork1 = iwork - iwk3 + 1
                if (iwork1.le.0) then
