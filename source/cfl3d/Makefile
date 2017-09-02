@@ -31,28 +31,56 @@
 include src_dir_path.mk
 include ../../config.mk
 
-DEP_FILE=depend.mk
+FMODDIRS  = $(FLLLOC)
+
+SUBDIR_COMP = \
+	libs\
+	seq \
+	mpi
+
 SUBDIRS= \
 	libs\
-	dist\
-	seq\
-	mpi\
-
-
+	dist
+	
+EXEC = SEQ
 
 ###########################################################################
 
-all: $(SUBDIRS:%=%.all)
-
+all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
 include ../../rules.mk
 
-clean: $(SUBDIRS:%=%.clean)
-	rm -f *.x *.o *.mod
+#seq.all: libs.all
+#mpi.all: libs.all
+
+$(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
+	echo Serial version
+	echo $(SUBDIR_COMP)
+	cp $(srcdir)/main.F  main.F
+	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
+	$(FTN) $(LFLAGS) -o cfl3d_seq  main.F libs/*.o  seq/*.o $(FLLLOC)/*.o
+	@echo '************************************************'
+	@echo '*'
+	@echo '* sequential version of CFL3D built successfully!'
+	@echo '*'
+	@echo '************************************************'
+	rm main.o
+	
+$(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
+	echo MPI version
+	cp $(srcdir)/main.F  main.F
+	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
+	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi  main.F  libs/*.o  mpi/*.o $(FLLLOC)/*.o
+	@echo '************************************************'
+	@echo '*'
+	@echo '* MPI version of CFL3D built successfully!'
+	@echo '*'
+	@echo '************************************************'
+	rm main.o
+
+
+clean: $(SUBDIR_COMP:%=%.clean)
+	rm -f *.x *.o *.mod cfl3d_mpi  cfl3d_seq 
 
 depend: $(SUBDIRS:%=%.depend)
 
-install: $(SUBDIRS:%=%.install)
-
-test: $(SUBDIRS:%=%.test)
-
-chk: $(SUBDIRS:%=%.chk)
+install: $(SUBDIR_COMP:%=%.install)

@@ -33,9 +33,6 @@ include ../config.mk
 
 DEP_FILE=depend.mk
 
-#FMODDIRS= ../../data_util
-
-#SUBDIRS= $(dir $(wildcard $(srcdir)/*))
 SUBDIRS= \
 	cfl3d\
 

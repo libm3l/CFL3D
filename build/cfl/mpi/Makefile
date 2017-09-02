@@ -29,10 +29,15 @@
 #
 #
 
-EXEC    = cfl3d_seq
+EXEC    = cfl3d_mpi
 
 include src_dir_path.mk
 include ../../../config.mk
+
+# Use MPI compilation in this file
+FTN          =$(MPI_FTN)
+FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+LFLAGS :=$(MPI_LFLAGS)
 
 DEP_FILE=depend.mk
 
@@ -58,7 +63,7 @@ $(EXEC):  $(OFILES)
 include ../../../rules.mk
 
 clean:
-	rm -f *.x *.o *.mod $(EXEC)
+	rm -f *.x *.o *.mod 
 
 depend: $(FFILES)
 	@echo "Making dependencies!"

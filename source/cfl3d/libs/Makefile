@@ -36,7 +36,7 @@ include ../../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= $(FLLLOC)/data_util
+FMODDIRS= $(FLLLOC)
 
 FCMODINCFLAG = -I
 
@@ -46,7 +46,7 @@ FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
 OFILES1  =$(FFILES:.F=.o)
 OFILES   =$(OFILES1:.F90=.o)
 
-XOFILES+=$(wildcard $(FLLLOC)/data_util/*.o)
+XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
