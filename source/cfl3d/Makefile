@@ -54,25 +54,23 @@ include ../../rules.mk
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	echo Serial version
-	echo $(SUBDIR_COMP)
 	cp $(srcdir)/main.F  main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(FTN) $(LFLAGS) -o cfl3d_seq  main.F libs/*.o  seq/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
-	@echo '* sequential version of CFL3D built successfully!'
+	@echo '* sequential complex version of CFL3D built successfully!'
 	@echo '*'
 	@echo '************************************************'
 	rm main.o
 	
 $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
-	echo MPI version
 	cp $(srcdir)/main.F  main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi  main.F  libs/*.o  mpi/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
-	@echo '* MPI version of CFL3D built successfully!'
+	@echo '* MPI complex version of CFL3D built successfully!'
 	@echo '*'
 	@echo '************************************************'
 	rm main.o

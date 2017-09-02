@@ -31,26 +31,21 @@
 include src_dir_path.mk
 include ../config.mk
 
-DEP_FILE=depend.mk
+FMODDIRS  = $(FLLLOC)
 
 SUBDIRS= \
 	cfl3d\
-
-
+	
 
 ###########################################################################
 
-all: $(SUBDIRS:%=%.all)
-
 include ../rules.mk
 
+
+all: $(SUBDIRS:%=%.all) 
+
 clean: $(SUBDIRS:%=%.clean)
-	rm -f *.x *.o *.mod
 
 depend: $(SUBDIRS:%=%.depend)
 
-install: $(SUBDIRS:%=%.install)
-
-test: $(SUBDIRS:%=%.test)
-
-chk: $(SUBDIRS:%=%.chk)
+install: $(SUBDIR_COMP:%=%.install)

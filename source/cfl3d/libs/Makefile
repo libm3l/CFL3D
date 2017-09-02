@@ -29,8 +29,6 @@
 #
 #
 
-EXEC = cfl3d_libs
-
 include src_dir_path.mk
 include ../../../config.mk
 
@@ -42,17 +40,19 @@ FCMODINCFLAG = -I
 
 FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
+FFILES+= $(notdir $(wildcard $(srcdir)/*.c))
+
 
 OFILES1  =$(FFILES:.F=.o)
-OFILES   =$(OFILES1:.F90=.o)
+OFILES2   =$(OFILES1:.F90=.o)
+OFILES   =$(OFILES2:.c=.o)
+
 
 XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
-all: $(EXEC)
-
-$(EXEC):  $(OFILES)
+all:  $(OFILES)
 include ../../../rules.mk
 
 clean:
