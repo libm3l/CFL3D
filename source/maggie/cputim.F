@@ -34,7 +34,8 @@ c
 #endif
 c
 c     common blocks preserve tim,tm,tsum between calls to this subroutine
-      real*4 tim(3,3),tm(3)
+      real*4 tim(3,3)
+      real (kind=4) tm(3), result
       common/time1/ tim,tm
       dimension ia(3)
 c
@@ -103,10 +104,10 @@ c
 c     timing for workstations
 c
 #if defined ETFLAG
-      call etime_(tm)
+      call etime_(tm,result)
       call itime_(ia)
 #else
-      call etime(tm)
+      call etime(tm,result)
       call itime(ia)
 #endif
 c
