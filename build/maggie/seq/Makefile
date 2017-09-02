@@ -28,42 +28,47 @@
 #
 #
 #
+
+EXE    = maggie_seq
+
 include src_dir_path.mk
-include ../config.mk
+include ../../../config.mk
 
-FMODDIRS  = $(FLLLOC)
+DEP_FILE=depend.mk
 
-SUBDIRS= \
-	cfl3d\
-	maggie\
-	precfl3d\
-	ronnie\
-	splitter\
-	tools
+FMODDIRS= ../../../header
 
+FCMODINCFLAG = -I
 
-SUBDIRS_CMP = \
-       cfl3d\
-       cflcmplx\
-       maggie\
-       precfl3d\
-       preron\
-       ronnie\
-       splitter\
-       splitcmplx\
-       tools
-       
-	
+FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
+FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
+
+OFILES1  =$(FFILES:.F=.o)
+OFILES   =$(OFILES1:.F90=.o)
 
 ###########################################################################
 
-include ../rules.mk
+all: $(EXE).x 
+
+include ../../../rules.mk
+
+$(EXE).x: $(OFILES) $(XOFILES)
+	$(FTN) $(LDFLAGS) -o $@ $^
 
 
-all: $(SUBDIRS_CMP:%=%.all) 
+clean:
+	rm -f *.x *.o *.mod $(EXEC)
 
-clean: $(SUBDIRS_CMP:%=%.clean)
+depend: $(FFILES)
+	@echo "Making dependencies!"
+	echo $(srcdir)
+	echo $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
 
-depend: $(SUBDIRS:%=%.depend)
 
-install: $(SUBDIRS_CMP:%=%.install)
+install: $(EXE).x $(EXE).py
+	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x
+	$(INSTALL) $(EXE).py $(bin_dir)/$(EXE)$(POSTFIX).py
+
+-include $(srcdir)/$(DEP_FILE)
+

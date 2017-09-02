@@ -28,42 +28,45 @@
 #
 #
 #
+
+EXEC    = cfl3d_seq
+
 include src_dir_path.mk
-include ../config.mk
+include ../../config.mk
 
-FMODDIRS  = $(FLLLOC)
+DEP_FILE=depend.mk
 
-SUBDIRS= \
-	cfl3d\
-	maggie\
-	precfl3d\
-	ronnie\
-	splitter\
-	tools
+FMODDIRS= ../../header
 
 
-SUBDIRS_CMP = \
-       cfl3d\
-       cflcmplx\
-       maggie\
-       precfl3d\
-       preron\
-       ronnie\
-       splitter\
-       splitcmplx\
-       tools
-       
-	
+FCMODINCFLAG = -I
+
+FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
+FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
+
+OFILES1  =$(FFILES:.F=.o)
+OFILES   =$(OFILES1:.F90=.o)
 
 ###########################################################################
 
-include ../rules.mk
+all: $(EXEC)
+
+$(EXEC):  $(OFILES)
+include ../../rules.mk
+
+clean:
+	rm -f *.x *.o *.mod $(EXEC)
+
+depend: $(FFILES)
+	@echo "Making dependencies!"
+	echo $(srcdir)
+	echo $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
 
 
-all: $(SUBDIRS_CMP:%=%.all) 
+install: $(EXE).x $(EXE).py
+	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x
+	$(INSTALL) $(EXE).py $(bin_dir)/$(EXE)$(POSTFIX).py
 
-clean: $(SUBDIRS_CMP:%=%.clean)
+-include $(srcdir)/$(DEP_FILE)
 
-depend: $(SUBDIRS:%=%.depend)
-
-install: $(SUBDIRS_CMP:%=%.install)
