@@ -53,10 +53,9 @@ include ../../rules.mk
 #mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
-	echo Serial version
 	cp $(srcdir)/main.F  main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(FTN) $(LFLAGS) -o cfl3d_seq  main.F libs/*.o  seq/*.o $(FLLLOC)/*.o
+	$(FTN) $(LFLAGS) -o cfl3d_seq libs/*.o  seq/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
 	@echo '* sequential complex version of CFL3D built successfully!'
@@ -67,7 +66,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	cp $(srcdir)/main.F  main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi  main.F  libs/*.o  mpi/*.o $(FLLLOC)/*.o
+	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi   libs/*.o  mpi/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
 	@echo '* MPI complex version of CFL3D built successfully!'
