@@ -2,6 +2,6 @@
 
 get_cmd_args.o : 
 
-main.o : 
-
 usrint.o : 
+
+main.o : 

@@ -1,15 +1,15 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 
-setup.o : 
-
 termn8.o : 
 
+ronnie.o : 
+
 main_pre.o : 
+
+usrint.o : 
 
 sizer.o : 
 
 main.o : 
 
-ronnie.o : 
-
-usrint.o : 
+setup.o : 

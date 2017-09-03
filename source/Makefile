@@ -62,6 +62,18 @@ include ../rules.mk
 
 all: $(SUBDIRS_CMP:%=%.all) 
 
+maggie.all: cfl3d.all
+precfl3d.all: cfl3d.all
+precfl3d.all: cfl3d.all
+preron.all: cfl3d.all
+ronnie.all: cfl3d.all
+splitter.all: cfl3d.all
+splitcmplx.all: cfl3d.all
+tools.all: cfl3d.all
+
+
+cfl3d:
+
 clean: $(SUBDIRS_CMP:%=%.clean)
 
 depend: $(SUBDIRS:%=%.depend)
