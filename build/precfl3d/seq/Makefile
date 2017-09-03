@@ -36,7 +36,7 @@ include ../../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= ../../cfl3d/seq  ../../cfl3d/libs
+FMODDIRS= ../../cfl3d/seq  ../../cfl3d/libs $(FLLLOC)
 OFMODDIRS1 = $(wildcard ../../cfl3d/seq/*.o  ../../cfl3d/libs/*.o)
 
 OFMODDIRS= $(filter-out ../../cfl3d/seq/usrint.o, $(OFMODDIRS1))
@@ -57,8 +57,7 @@ all: $(EXE).x
 include ../../../rules.mk
 
 $(EXE).x: $(OFILES) $(XOFILES)
-	-rm main.o
-	$(FTN) $(LDFLAGS) -o $(EXE)  $(srcdir)/main.F *.o  $(OFMODDIRS)
+	$(FTN) $(LDFLAGS) -o $(EXE)  *.o  $(OFMODDIRS) $(FLLLOC)/*.o
 
 
 clean:
