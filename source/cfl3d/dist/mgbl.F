@@ -20,7 +20,10 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
+       module mgbl_m
+       contains
+      subroutine mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,intmax,
+     .                maxxe,
      .                mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .                maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .                ibufdim,nbuf,mxbcfil,istat_size,
@@ -73,6 +76,11 @@ c
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
      .                irdrea)
+
+      USE FLL_MODS_M
+      USE MGBLK_M
+      USE ADDNONEQSTR_M
+
 #   ifdef CMPLX
 #   else
       use module_kwstm, only:kws_get_nummem
@@ -84,6 +92,14 @@ c***********************************************************************
 c     Purpose:  Main routine of cfl3d; drives mesh sequencing and
 c     multigrid solutions to steady/unsteady Euler/Navier-Stokes 
 c     (thin layer form) equations
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     add pblog and allocation routine
+c                                               for non-equilibrium model
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
+c                                               wrap routine in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -122,6 +138,7 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer irdrea(maxgr),stats
+      INTEGER(LINT) :: dims,ndims
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -273,6 +290,7 @@ c
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /unit5/ iunit5
+      common /key/ nkey
       common /conversion/ radtodeg
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /proces/ numprocs
@@ -289,13 +307,16 @@ c
 
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
+
+      TYPE(DNODE), POINTER :: PGLOB, PGRID,PTMP
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
 c     initialization
 c***********************************************************************
 c
 c     initialize timing utility
-c
+c       
       string = ' '
       call cputim(0,1,string,myhost,myid,mycomm,11)
 c
@@ -486,6 +507,8 @@ c
          do iii = 1,iwk5
             iwork(iii) = 0
          end do
+
+       CALL ADDNONEQSTR(PGLOB,MSEQ,NGRID,NBLOCK,IDIMG,JDIMG,KDIMG)
 c
 #if defined DIST_MPI
 c
@@ -799,6 +822,7 @@ c
      .           ''work space for subroutine mgblk'')')
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
+
          call mgblk(iseq,lw,lw2,work,nstart,work(nstart+1),
      .              work(nstart+1+maxbl),nwork1,
      .              iwork(iwk1),iwork(iwk2),iwork(iwk3),mworki1,
@@ -852,7 +876,7 @@ c
      .              xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
      .              yorgae0,zorgae0,icouple,iprnsurf,nblelst,iskmax,
-     .              jskmax,kskmax,ue,nummem)
+     .              jskmax,kskmax,ue,nummem,pglob)
 c
          do iii = 1,mworki
             iwork(iii) = 0
@@ -1105,3 +1129,5 @@ c
       deallocate(nneg)
       return
       end
+
+      end module mgbl_m

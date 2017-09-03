@@ -6,13 +6,13 @@
 #=============================================================================
 
 # ***************************** CREATE LINKS *********************************
-
+include ../../../config.mk
 link:     lncode lnhead lnlibs
 
 lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_D)/*.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
+	-ln -s $(CFLSRC_D)/depend.mk .
 
 lnhead:
 
@@ -22,7 +22,7 @@ lnlibs:
 # ****************************** SUFFIX RULES ********************************
 
 .F.o:
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
 
 # **************************** CREATE LIBRARIES  *****************************
 
@@ -40,7 +40,8 @@ FSRC_DIST = \
 	yplusout.F     sizer.F        cfl3d.F        trnsfr_vals.F \
 	updatedg.F     ae_corr.F      mgbl.F         setslave.F \
 	umalloc.F      reass.F        qoutavg.F      plot3davg.F \
-        qout_coarse.F  qout_2d.F      plot3d_2d.F    plot3d_coarse.F
+        qout_coarse.F  qout_2d.F      plot3d_2d.F    plot3d_coarse.F\
+        addnoneqstr.F
 
 FSRC_SPEC =
 
@@ -55,35 +56,30 @@ $(DISTLIB): $(FSRC_DIST) $(FOBJ_DIST) $(FSRC_SPEC) $(FOBJ_SPEC)
 	@$(RANLIB) $(DISTLIB)
 
 HEAD_DIST = 
-qout.o: ../libs/module_kwstm.o ../libs/module_profileout.o ../libs/module_contour.o
-pointers.o: ../libs/module_kwstm.o
-mgbl.o: ../libs/module_kwstm.o
-setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/ -I$(FLLLOC)/data_util/ 
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F  -I$(FLLLOC)/data_util/ 
 
 # *************************** CREATE EXECUTABLE ******************************
 
 #Note: for inlining on cray, ccomplex must appear first in fsrc_main
 
-FSRC_MAIN = ccomplex.F development.F main.F
+FSRC_MAIN = ../libs/ccomplex.F development.F main.F
 
 FOBJ_MAIN = $(FSRC_MAIN:.F=.o)
 
 HEAD_MAIN = 
 
 $(FOBJ_MAIN): $(HEAD_MAIN)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F -I$(FLLLOC)/data_util/ 
 
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
-	-ln -s ../libs/*.o .
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o ../libs/*.o $(LLIBS) $(FLLLOC)/data_util/*.o 
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -104,7 +100,7 @@ $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB)
 
 cleano:
 	@touch temp.o
-	-rm -f *.o
+	-rm -f *.o *.mod
 
 cleane:
 	-rm -f $(EXEC) 
@@ -126,3 +122,5 @@ cleang:
 	-rm -f *.F
 
 scrub: cleana cleano cleane cleanf cleanh cleang
+
+-include depend.mk

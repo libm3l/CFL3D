@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE MGBLK_M
+      CONTAINS
       subroutine mgblk(iseq,lw,lw2,w,mgwk,timesave,wk,nwork,iw,ireq_qb,
      .                 iwk,iwork,maxbl,maxgr,maxseg,iitot,intmax,nsub1,
      .                 maxxe,ncycmax,iovrlp,lig,lbg,ibpntsg,iipntsg,
@@ -71,7 +73,8 @@ c
      .                 stm,stmi,xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,
      .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
      .                 timekeep,xorgae0,yorgae0,zorgae0,icouple,
-     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue,nummem)
+     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue,nummem,
+     .                 pglob)
 c
 c     $Id$
 c
@@ -79,11 +82,24 @@ c***********************************************************************
 c     Purpose:  Advance the solution in time using multigrid acceleration
 c     At each level in the multigrid procedure, all the blocks are 
 c     advanced before moving to the next level.
+c
+c     CHANGELOG
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     add pglob pointer for non-equilibrium model
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
+c                                               wrap routine in module
 c***********************************************************************
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
+
+      USE FLL_MODS_M
+      USE RESID_M
+      USE SHIFT_M
+      USE UPDATE_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -309,6 +325,9 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
+
+      TYPE(DNODE), POINTER :: PGLOB,PTMP
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c      time step cycle:
 c
@@ -805,6 +824,7 @@ c
          end do
 c
          iupdat = 1
+
          call updateg(lw,lw2,w,mgwk,wk,nwork,iupdat,iseq,maxbl,
      .                maxgr,maxseg,nbci0,nbcj0,nbck0,nbcidim,
      .                nbcjdim,nbckdim,ibcinfo,jbcinfo,kbcinfo,
@@ -959,6 +979,9 @@ c
       do 7000 icyc=1,ncyc
 c
       if (icyc.gt.1) isklton = 0
+
+
+!      write(*,*)' Multigtid cycle: ', icyc,ncyc
 c
 c     check for user stop file - will then stop on next MG cycle
 c     (if unsteady, we don't want to stop until the next time step,
@@ -1516,6 +1539,12 @@ c        flux contributions
 c
          isf = 0
          if (level.gt.lglobal .and. ntime.eq.nit1) isf = min(1,iconsf)
+!         write(*,*)'JKA calling RESID',nbl,jdim,kdim,idim,mod(icyc,ncyc)
+
+         PTMP=>FLL_LOCATE(PGLOB,'shift','I',-1_LINT,
+     .             1_LINT,.FALSE.,FPAR)
+         PTMP%I0 = MOD(icyc,ncyc)
+
          call resid(nbl,ntime,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .              w(lqi0),w(lsj),w(lsk),w(lsi),w(lvol),w(ldtj),w(lx),
      .              w(ly),w(lz),w(lvis),w(lsni0),w(lsnk0),w(lsni0),
@@ -1530,7 +1559,7 @@ c
      .              nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,maxseg,
      .              nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .              jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,idefrm,
-     .              iadvance,w(lqavg),nummem)
+     .              iadvance,w(lqavg),nummem,pglob)
 c
 c        add 2nd order time terms and subiteration terms
 c
@@ -1707,7 +1736,7 @@ c
      .                  nbl,iovrlp(nbl),w(lvk0),w(lbcj),w(lbck),w(lbci),
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  w(lvolk0),w(lxib),w(ltk0),w(lcmuv),
-     .                  iadvance,nummem,w(lux))
+     .                  iadvance,nummem,w(lux),PGLOB)
 c 
 c           update the overlapped values if chimera scheme is used
 c
@@ -2097,6 +2126,8 @@ c
 c
 #endif
          do 7020 nbl=1,nblock
+
+!	 write(*,*)' JKA upward ',nbl
 c
          if (iadvance(nbl).lt.0) go to 7020
          if (level.ne.levelg(nbl)) go to 7020
@@ -2646,11 +2677,18 @@ c
          if (level.eq.levt) then
             time    = time  + dt
             time2mc = time2mc + dt
+            write(*,*)'Iteration and time step ', nt, dt,time
+!            write(*,*)'Time step',dt,time
             do 800 nbl=1,nblock
             time2(nbl) = time2(nbl) + dt
+
   800       continue
             timekeep(ntt) = time
          end if
+!
+!       shift data for non-equilibrium model
+!
+         CALL SHIFT(PGLOB)
       end if
 c
 c     aeroelastic corrector step
@@ -3112,7 +3150,7 @@ c
             if (ntt.eq.ntt/mov_coarse*mov_coarse) then                      
                lhdr   = 0
                iwk1   = 1
-               iwk2   = iwk1  + 3*nblocks/lglobal
+               iwk2   = iwk1  + 3*nblock/lglobal
                iwk3   = iwk2  + maxbl
                iwork1 = iwork - iwk3 + 1
                if (iwork1.le.0) then
@@ -3179,7 +3217,7 @@ c     ! output snapshot every mov_2d time steps
             if (ntt.eq.ntt/mov_2d*mov_2d) then                        
                lhdr   = 0
                iwk1   = 1
-               iwk2   = iwk1  + 3*nblocks/lglobal                         
+               iwk2   = iwk1  + 3*nblock/lglobal                         
                iwk3   = iwk2  + maxbl
                iwork1 = iwork - iwk3 + 1
                if (iwork1.le.0) then
@@ -3299,3 +3337,5 @@ c
 c
       return
       end
+
+      END MODULE MGBLK_M

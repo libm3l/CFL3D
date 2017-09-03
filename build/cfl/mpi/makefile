@@ -12,7 +12,7 @@ link:     lncode lnhead lnlibs
 lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_D)/*.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
+	-ln -sf $(CFLSRC_D)/depend.mk
 
 lnhead:
 
@@ -61,16 +61,16 @@ mgbl.o: ../libs/module_kwstm.o
 setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F  -I../libs/ -I/home/jiraseka/LL/fll_exec/data_util/
 
 $(FOBJ_SPEC): $(HEAD_DIST)
-	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F 
 
 # *************************** CREATE EXECUTABLE ******************************
 
 #Note: for inlining on cray, ccomplex must appear first in fsrc_main
 
-FSRC_MAIN = ccomplex.F development.F  main.F
+FSRC_MAIN = ../libs/ccomplex.F development.F  main.F
 
 FOBJ_MAIN = $(FSRC_MAIN:.F=.o)
 
@@ -82,8 +82,7 @@ $(FOBJ_MAIN): $(HEAD_MAIN)
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
-	-ln -s ../libs/*.o .
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) 
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o ../libs/*.o $(LLIBS) /home/jiraseka/LL/fll_exec/data_util/*.o
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -104,7 +103,7 @@ $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB)
 
 cleano:
 	@touch temp.o
-	-rm -f *.o
+	-rm -f *.o *.mod
 
 cleane:
 	-rm -f $(EXEC) 
@@ -126,3 +125,5 @@ cleang:
 	-rm -f *.F
 
 scrub: cleana cleano cleane cleanf cleanh cleang
+
+-include depend.mk

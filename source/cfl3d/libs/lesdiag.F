@@ -51,6 +51,8 @@ c
       common /sklton/ isklton
       common /lesinfo/ les_model,les_wallscale,cs_smagorinsky,cs_wale,
      .                 cs_vreman
+      common /twod/ i2d
+      common /zero/ iexp
 c
       dimension q(jdim,kdim,idim,5)
       dimension ux(jdim-1,kdim-1,idim-1,9)

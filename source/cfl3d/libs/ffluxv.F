@@ -20,16 +20,28 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE FFLUXV_M
+      CONTAINS 
       subroutine ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,t,nvtq,
      .                  wi0,vist3d,vmui,vi0,bci,zksav,ti0,cmuv,voli0,
-     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,PGLOB)
 c
 c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     I-direction due to the viscous terms.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
+c
+      USE FLL_MODS_M
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -61,6 +73,9 @@ c
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       real :: coef_eddy
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c     coefficient used to turn off eddy-viscosity based
 c     turbulent stress calculation for ivmx==70 (full
@@ -1529,3 +1544,5 @@ c   sign (this term is going into -d/dxj(Hv) term)
       end if
       return
       end
+
+      END MODULE FFLUXV_M

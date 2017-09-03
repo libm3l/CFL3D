@@ -136,6 +136,9 @@ c
       jend1 = jend-1
       kend1 = kend-1
       iend1 = iend-1
+c      
+c     here just set iuse3 = 0
+      iuse3 = 0
 c
 c     this bc makes use of only one plane of data    
 c

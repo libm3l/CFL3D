@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      module RESID_M
+      CONTAINS
       subroutine resid(nbl,ntime,jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,
      .           vol,dtj,x,y,z,vist3d,snj0,snk0,sni0,res,wj0,wk0,wi0,
      .           vmuk,vmuj,vmui,wk,nwork,isf,iwfa,wfa,delt,blank,iover,
@@ -29,11 +31,20 @@ c
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance,qavg,nummem)
+     .           idefrm,iadvance,qavg,nummem,pglob)
 #   ifdef CMPLX
 #   else
       use module_kwstm, only: kws_main,kws_dump_movie
 #   endif
+
+      use TWOEQN_M
+      USE FLL_MODS_M
+      USE FFLUXV_M
+      USE FFLUXV1_M
+      USE GFLUXV_M
+      USE GFLUXV1_M
+      USE HFLUXV_M
+      USE HFLUXV1_M
 c
 c     $Id$
 c
@@ -42,6 +53,14 @@ c     Purpose: Compute the residual contributions to the right-hand-side.
 c     Note: viscous flux routines called even if block is not advanced
 c     in order to compute and store the vmui/j/k arrays (though these
 c     routines are then exited as soon as those arrays are computed)
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -121,6 +140,9 @@ c
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /reystressmodel/ issglrrw2012,i_sas_rsm
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -630,6 +652,7 @@ c allocate for DES and DDES
        write(bou(nou(1),1),'('' nroom='',i12)') nroom
        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
+!      write(*,*)' JKA calling twoeqn',jdim,kdim,idim,'---',nbl
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
      + wk(iwk5),
@@ -652,7 +675,10 @@ c allocate for DES and DDES
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
-     + wk(iwk82),nummem,iccnum)
+     + wk(iwk82),nummem,iccnum,pglob)
+
+!      write(*,*)' JKA after calling twoeqn'
+
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1
@@ -1015,17 +1041,21 @@ c
          do 201 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
+!         write(*,*)' CALLING   gfluxv',ivisc(1),ivisc(2),ivisc(3),ifullns
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
-     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux)
+     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux,
+     .               pglob)
 c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
+         write(*,*)' CALLING   gfluxv1'
          call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
      .                bcj,bck,bci,volj0,
-     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl),
+     .                pglob)
          end if
   201    continue
       end if
@@ -1068,18 +1098,20 @@ c
          do 211 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
+!         write(*,*)' CALLING   hfluxv'
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .               iadvance(nbl),nummem,ux)
+     .               iadvance(nbl),nummem,ux,pglob)
 c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
+         write(*,*)' CALLING   hfluxv1'
          call hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wk0,vist3d,vk0,
      .                bcj,bck,bci,volk0,
-     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
          end if
   211    continue
       end if
@@ -1126,18 +1158,20 @@ c
             do 277 k=1,kdim1,nplq
             if (k+npl-1.gt.kdim1) npl = kdim1-k+1
             nvtq = npl*jdim*idim
+         write(*,*)' CALLING   ffluxv'
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
      .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem
-     .                  ,ux)
+     .                  ,ux,pglob)
 c
 c-- full viscous terms
 c
             if (ifullns .ne. 0) then
+         write(*,*)' CALLING   ffluxv1'
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,
-     .                   nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
             end if
   277       continue
          end if
@@ -1301,3 +1335,5 @@ c   during restarts, because the PLOT3D output is in conserved form)
       end if
       return 
       end
+
+       END MODULE RESID_M

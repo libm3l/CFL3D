@@ -31,8 +31,18 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Allocate memory and execute flow solver
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     add pglob pointer
+c                                               need to use FLL_MODS_M
+c                                               need to link fll library (https:/github.com/libm3l/fll
 c***********************************************************************
 c
+c
+      USE FLL_MODS_M
+      USE MGBL_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -64,6 +74,8 @@ c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
       integer stats
+
+      common /info/ mseq
 c
       dimension nou(nbuf)
 c
@@ -392,6 +404,9 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /unit5/ iunit5
       common /wrestq/ irest,irest2
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c***********************************************************************
 c     memory allocation
@@ -1039,12 +1054,20 @@ c
             bou(mm,ii) = ' '
          end do
       end do
+
+c
+c***********************************************************************
+c     allocate fll global pointer contaning all additional data
+c***********************************************************************
+c
+       PGLOB => FLL_MK("pglob","DIR",0_LINT, 0_LINT,FPAR)   
 c
 c***********************************************************************
 c     call flow solver
 c***********************************************************************
 c
-      call mgbl(mwork,mworki,nplots,minnode,iitot,intmax,maxxe,
+      call mgbl(PGLOB, mwork,mworki,nplots,minnode,iitot,
+     .          intmax,maxxe,
      .          mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,maxgr,
      .          maxseg,maxcs,ncycmax,intmx,mxxe,mptch,msub1,
      .          ibufdim,nbuf,mxbcfil,istat_size,
@@ -1425,6 +1448,9 @@ c
          if (myid.eq.myhost) then
             write(11,'(/,'' memory for cfl3d has been deallocated'')')
          end if
+
+         CALL FLL_RM(PGLOB,FPAR)
+
       end if
 c   Write input file used to CGNS file
 #if defined CGNS

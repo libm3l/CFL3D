@@ -1116,9 +1116,9 @@ CONTAINS
                 source_items(2,m,j,k,i) = dissip
                 source_items(3,m,j,k,i) = c1term
                 source_items(4,m,j,k,i) = pi_ij
-                source_items(5,m,j,k,i) = alpha_term
-                source_items(6,m,j,k,i) = beta_term
-                source_items(7,m,j,k,i) = gamma_term
+                source_items(5,m,j,k,i) = alpha_hat_use
+                source_items(6,m,j,k,i) = beta_hat_use
+                source_items(7,m,j,k,i) = gamma_hat_use
 #endif
 
              ENDDO
@@ -4957,12 +4957,12 @@ CONTAINS
 !       vx(4)=d2v/dx2, vx(5)=d2v/dy2, vx(6)=d2v/dz2
 !       vx(7)=d2w/dx2, vx(8)=d2w/dy2, vx(9)=d2w/dz2
 !***********************************************************************
-!
+      INTEGER,INTENT(in) :: idim,jdim,kdim
       REAL,INTENT(in) :: vol(jdim,kdim,idim-1),si(jdim,kdim,idim,5), &
         sj(jdim,kdim,idim-1,5),sk(jdim,kdim,idim-1,5),               &
         ux(jdim-1,kdim-1,idim-1,9)
       REAL,INTENT(out) :: vx(jdim-1,kdim-1,idim-1,9)
-      INTEGER,INTENT(in) :: idim,jdim,kdim
+
       INTEGER :: m,i,j,k
       REAL :: fac,xc,yc,zc
       REAL :: uxp,uyp,uzp,uxm,uym,uzm

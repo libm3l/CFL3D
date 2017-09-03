@@ -283,6 +283,7 @@ cleana:
 cleano:
 	@touch temp.o
 	-rm -f *.o
+	-rm -f *.mod
 
 cleane:
 	-rm -f $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \

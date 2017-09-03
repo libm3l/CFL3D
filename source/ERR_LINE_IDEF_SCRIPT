@@ -1,0 +1,70 @@
+#/bin/csh
+#
+#
+#     Copyright (C) 2017 Adam Jirasek
+# 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU Lesser General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+# 
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU Lesser General Public License for more details.
+# 
+#     You should have received a copy of the GNU Lesser General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#     
+#     contact: libm3l@gmail.com
+# 
+#
+#
+# this is a c-shell scritp which loops over fortran files
+# and look for expression "ALLOCATING MEMORY" and "ALLOCATING ARRAYS"
+# and replaces is with expression ALLOCATIN MEMORY ==> name_of_file and line number
+# It is used to standardize error messages after allocate and deallocate
+#
+# written by Adam Jirasek
+#
+
+	set file_list=`find ./ -iname "*.f90" -o -iname "*.F" `
+        echo $file_list
+	
+	foreach file ($file_list)
+		
+		echo $file
+		
+		set LINENUM = `sed -n '/ALLOCATING MEMORY/=' "$file"`
+		echo $LINENUM
+
+		foreach num ($LINENUM)
+
+			set text = `basename $file | sed 's/.f90//' | sed 's/.F//' | awk '{print "ALLOCATING MEMORY  ==> ", $1, "ERR:" '$num'}'  `
+			echo $text
+
+			sed -i ''$num's/ALLOCATING MEMORY.*$/'"$text"' APOStroPHE/' $file
+
+		end
+		sed -i "s/APOStroPHE/\'/g" $file
+		
+	end
+	
+	foreach file ($file_list)
+		
+		echo $file
+		
+		set LINENUM = `sed -n '/ALLOCATING ARRAYS/=' "$file"`
+		echo $LINENUM
+
+		foreach num ($LINENUM)
+
+			set text = `basename $file | sed 's/.f90//' | sed 's/.F' | awk '{print "ALLOCATING MEMORY  ==> ", $1, "ERR:" '$num'}'  `
+			echo $text
+
+			sed -i ''$num's/ALLOCATING ARRAYS.*$/'"$text"' APOStroPHE/' $file
+
+		end
+		sed -i "s/APOStroPHE/\'/g" $file
+		
+	end

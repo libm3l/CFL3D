@@ -55,6 +55,7 @@ c
 #   else
       use module_kwstm, only:kws_init
 #   endif
+      USE FLL_MODS_M
 c
 c     $Id$
 c
