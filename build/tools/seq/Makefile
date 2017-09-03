@@ -53,7 +53,7 @@ EXEC21 = gridswitchijk
 EXEC22 = v6inpswitchijk
 
 include src_dir_path.mk
-include ../../../config.mk
+include ../../config.mk
 
 DEP_FILE=depend.mk
 

@@ -29,7 +29,7 @@
 #
 #
 include src_dir_path.mk
-include ../../config.mk
+include ../config.mk
 
 FMODDIRS  = $(FLLLOC)
 

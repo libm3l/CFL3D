@@ -30,7 +30,7 @@
 #
 
 include src_dir_path.mk
-include ../../../config.mk
+include ../../config.mk
 
 # Use MPI compilation in this file
 FTN          =$(MPI_FTN)
