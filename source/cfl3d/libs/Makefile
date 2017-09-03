@@ -30,7 +30,7 @@
 #
 
 include src_dir_path.mk
-include ../../../config.mk
+include ../../config.mk
 
 DEP_FILE=depend.mk
 
