@@ -75,6 +75,7 @@ tools.all: cfl3d.all
 cfl3d:
 
 clean: $(SUBDIRS_CMP:%=%.clean)
+	find ./  -executable -type f | xargs rm -f
 
 depend: $(SUBDIRS:%=%.depend)
 
