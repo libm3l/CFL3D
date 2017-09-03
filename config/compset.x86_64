@@ -1,0 +1,17 @@
+FTN             = ifort
+FFLAG        = -O2 -msse3 -ip -r8 -std03 -fpp
+FFLAG_SPEC   = -O2 -msse3 -ip -r8 -std03 -fpp
+PREC          =
+PREC_MPI = -DDBLE_PRECSN
+LFLAG        = -O2 -msse3 -ip -r8 -std03 -fpp
+MPI_LFLAG   = -O2 -msse3 -ip -r8 -std03 -fpp
+CPP                = icc
+CPPFLAG      = -P
+CPPOPT        =  $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
+CPPOPT_SP = -DP3D_SINGLE -DLINUX -DINTEL $(PREC_MPI) $(CGNS_INCDIR)
+CPPOPT_CMPLX = -DCMPLX
+MPI_FTN        = mpif90
+CC                   = mpicc
+
+FCMODINCFLAG = -I
+
