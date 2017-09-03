@@ -1,589 +1,573 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 
-i2xsj_d.o : 
-
-af3f.o :  \
-	hfluxv.o \
-	gfluxv.o \
-	ffluxv.o
-
-bc9999.o : 
-
-module_contour.o : 
-
-bc2008.o : 
-
-delintr.o : 
-
-collqc0.o : 
-
-setcorner.o : 
-
-q8sdot.o : 
-
-arc.o : 
-
-i2xsi_d.o : 
-
-trnsurf.o : 
-
-foureqn.o : 
-
-trans.o : 
-
-bc2002.o : 
-
-i2xk_d.o : 
-
-coll2q.o : 
-
-q8smin.o : 
-
-ccomplex.o : 
-
-diagi.o : 
-
-blockk.o : 
-
-swafk.o : 
-
-invert.o : 
-
-blomax.o : 
-
-bc2004.o : 
-
-tfivol.o : 
-
-dfluxpm.o : 
-
-get_bvals.o : 
-
-pre_blockk.o : 
-
-deform.o : 
-
-abckz.o : 
-
-amafk.o : 
-
-diagk.o : 
+u_doubleprime.o : 
 
 chkrotk_d.o : 
 
-i2xi_d.o : 
+trace.o : 
 
-diagnos.o : 
+get_bvals.o : 
 
-fa.o : 
+rechk.o : 
 
-rpatch.o : 
-
-collmod.o : 
-
-rotsurf.o : 
-
-chksym.o : 
-
-cctogp.o : 
-
-cblki_d.o : 
+threeeqn.o : 
 
 intrbc.o : 
 
+gradinfo.o : 
+
+diagj.o : 
+
+ld_qc.o : 
+
+hfluxv1.o : 
+
 global.o : 
 
-cellvol.o : 
-
-rotatmc.o : 
-
-hole.o : 
-
-setdqc0.o : 
-
-wmag.o : 
-
-bc2006.o : 
-
-dsmin.o : 
-
-dlutr.o : 
-
-resid.o :  \
-	hfluxv.o \
-	gfluxv1.o \
-	ffluxv1.o \
-	twoeqn.o \
-	ffluxv.o \
-	module_kwstm.o \
-	gfluxv.o \
-	hfluxv1.o
-
-cblkk_d.o : 
-
-tinvr.o : 
-
-bsubp.o : 
-
-hfluxr.o : 
-
-xe.o : 
-
-blnkfr.o : 
-
-pre_cblki.o : 
-
-bcchk.o : 
-
-readkey.o : 
-
-trace.o : 
-
-ld_datk.o : 
-
-rotatp.o : 
-
-rotateq0.o : 
-
-setqc0.o : 
-
-amafi.o : 
-
-shift.o : 
+fa2xj.o : 
 
 l2norm2.o : 
 
+lamfix.o : 
+
+l2norm.o : 
+
+bcchk.o : 
+
+resnonin.o : 
+
+af3f.o : 
+
+bc_delt.o : 
+
+ld_dati.o : 
+
+hfluxr.o : 
+
+rie1de.o : 
+
+genforce.o : 
+
 gfluxr.o : 
 
-extrae.o : 
+topol2.o : 
 
-spalart.o : 
+collxtb.o : 
 
-bsub.o : 
+pre_blockj.o : 
 
-fhat.o : 
+direct.o : 
 
-ccf.o : 
+delv.o : 
 
-cblkj_d.o : 
+int2.o : 
 
-rotateq.o : 
+hfluxv.o : 
 
-pre_blockbc.o : 
+dlutrp.o : 
 
-lead.o : 
+setqc0.o : 
 
-triv.o : 
+swafk.o : 
 
-u_doubleprime.o : 
-
-topol.o : 
+bc2016.o : 
 
 vlutr.o : 
 
-xe2.o : 
+bc1013.o : 
 
-lamfix.o : 
+rotateq.o : 
 
-csout.o : 
+blockj.o : 
 
-rcfl.o : 
+ae_pred.o : 
 
-csurf.o : 
+bc2005.o :  \
+	module_stm_2005.o
 
-my_flush.o : 
+gfluxv1.o : 
 
-pre_period.o : 
+xtbatb.o : 
 
-project.o : 
+setdqc0.o : 
 
-expand.o : 
+chkroti_d.o : 
 
-prolim.o : 
+cblkj.o : 
 
-fill.o : 
+collmod.o : 
+
+cblki.o : 
+
+blkmax.o : 
+
+q8sdot.o : 
+
+rb_pred.o : 
+
+transmc.o : 
+
+blockk.o : 
 
 module_kwstm.o :  \
 	module_profileout.o
 
-hfluxl.o : 
+barth3d.o : 
 
-rsmooth.o : 
+initnonin.o : 
 
-amafj.o : 
+i2xk_d.o : 
 
-extra.o : 
+i2xi_d.o : 
 
-diagj.o : 
+pltmode.o : 
 
-augmntq.o : 
+bc.o : 
 
-bc2019.o : 
-
-collx.o : 
-
-wkstn.o : 
-
-delv.o : 
-
-rpatch0.o : 
-
-dfhat.o : 
-
-avgint.o : 
-
-blockk_d.o : 
-
-global0.o : 
-
-addx.o : 
-
-genforce.o : 
-
-colldat.o : 
-
-i2x.o : 
-
-fa2xi.o : 
-
-bc2005k_d.o :  \
-	module_stm_2005.o
+i2xsk_d.o : 
 
 chkdef.o : 
 
-rotateqb.o : 
+bc2004.o : 
 
-i2xs.o : 
+ffluxv.o : 
 
-bcnonin.o : 
+blocki.o : 
 
-direct.o : 
+abcjz.o : 
 
-blkmax.o : 
+dabckz.o : 
 
-fluxp.o : 
+delintr.o : 
 
-fa2xk.o : 
-
-q8smax.o : 
-
-ffluxv1.o : 
-
-twoeqn.o :  \
-	delS.o
-
-xupdt.o : 
-
-sijrate2d.o : 
-
-cgnstools.o : 
-
-histout.o : 
-
-fluxm.o : 
-
-fmaps.o : 
-
-outbuf.o : 
-
-moddefl.o : 
-
-parser.o : 
-
-blockj_d.o : 
-
-loadgr.o : 
-
-dabciz.o : 
-
-bc2005j_d.o :  \
-	module_stm_2005.o
-
-rie1d.o : 
-
-rsurf.o : 
-
-cblkj.o : 
-
-rp3d.o : 
-
-chkroti_d.o : 
-
-collapse.o : 
-
-cntsurf.o : 
-
-ctime1.o : 
-
-dthole.o : 
-
-transmc.o : 
-
-rotateq2_d.o : 
-
-init_ae.o : 
-
-chkrot.o : 
-
-prolim2.o : 
-
-avghole.o : 
-
-rechk.o : 
-
-abciz.o : 
-
-pre_blockj.o : 
-
-aesurf.o : 
-
-resadd.o : 
-
-bc2016.o : 
-
-histout_img.o : 
-
-resnonin.o : 
-
-cblkk.o : 
-
-bc1013.o : 
-
-grdmove.o : 
-
-transp.o : 
-
-rb_corr.o : 
-
-getibk0.o : 
-
-tau.o : 
-
-global2.o : 
-
-xtbatb.o : 
-
-pre_cblkj.o : 
-
-xmukin.o : 
-
-gfluxv1.o : 
-
-arclen.o : 
+resid.o :  \
+	module_kwstm.o
 
 force.o : 
 
 tau2x.o : 
 
-ae_pred.o : 
+xyzintr.o : 
 
-int2_d.o : 
+newfit.o : 
 
-rotate.o : 
+pre_period.o : 
 
-bc1000.o : 
-
-metric.o : 
-
-l2norm.o : 
-
-initnonin.o : 
-
-collv.o : 
-
-bc_info.o : 
-
-bc1002.o : 
-
-setblk.o : 
-
-ffluxr.o : 
-
-bc_xmera.o : 
-
-bc.o : 
-
-threeeqn.o : 
-
-init.o : 
-
-fa2xj.o : 
-
-hfluxv1.o : 
-
-module_profileout.o : 
-
-blocki.o : 
+init_trim.o : 
 
 modread.o : 
 
-swafi.o : 
+bcnonin.o : 
 
-gfluxv.o : 
+init.o : 
 
-blockj.o : 
+q8vrev.o : 
 
-unld_qc.o : 
+rie1d.o : 
 
-bc2102.o : 
+triv.o : 
 
-chkrap.o : 
+bc2005k_d.o :  \
+	module_stm_2005.o
 
-getsurf.o : 
+fmaps.o : 
+
+pre_cblki.o : 
+
+bc2010.o : 
+
+init_ae.o : 
+
+pre_blockk.o : 
+
+amafk.o : 
+
+csout.o : 
 
 sijrate3d.o : 
 
-init_mast.o : 
+trans.o : 
 
-bc_delt.o : 
+cellvol.o : 
 
-bc2009.o : 
+fluxm.o : 
 
-setseg.o : 
+lesdiag.o : 
 
-readdat.o : 
+bc2102.o : 
 
-tmetric.o : 
+invert.o : 
 
-getibk.o : 
+rotateq0.o : 
 
-ffluxl.o : 
+ld_datk.o : 
 
-gradinfo.o : 
+rotsurf.o : 
 
-bc1001.o : 
+topol.o : 
 
-chkrotj_d.o : 
+dthole.o : 
+
+bc1012.o : 
 
 vlutrp.o : 
 
-qface.o : 
+init_mast.o : 
 
-cblki.o : 
+tau.o : 
 
-ld_datj.o : 
+histout_img.o : 
 
-shear.o : 
+grdmove.o : 
 
-dfbtrp.o : 
+bc9999.o : 
 
-dird.o : 
+expand.o : 
+
+cblkj_d.o : 
+
+add2x.o : 
+
+dabciz.o : 
+
+q8smax.o : 
+
+blockj_d.o : 
+
+bc2007.o : 
+
+deform.o : 
+
+gfluxl.o : 
 
 bc2003.o : 
 
-pre_cblkk.o : 
+diagi.o : 
 
-ld_dati.o : 
+resadd.o : 
+
+i2xsi_d.o : 
+
+dird.o : 
+
+arclen.o : 
+
+i2x.o : 
+
+pre_embed.o : 
+
+arc.o : 
+
+global0.o : 
+
+bc2026.o : 
+
+bc1003.o : 
+
+i2xj_d.o : 
+
+blomax.o : 
+
+dlutr.o : 
+
+xupdt.o : 
+
+tdq.o : 
+
+blnkfr.o : 
 
 mreal.o : 
 
-pre_blocki.o : 
+dabcjz.o : 
+
+prolim2.o : 
+
+rcfl.o : 
+
+chkrap.o : 
+
+getibk0.o : 
+
+diagnos.o : 
+
+chkrotj_d.o : 
+
+dfbtrp.o : 
+
+my_flush.o : 
+
+bsubp.o : 
+
+parser.o : 
+
+update.o : 
+
+ffluxl.o : 
+
+i2xsj_d.o : 
+
+loadgr.o : 
+
+rotateqb.o : 
+
+collxt.o : 
+
+bc2002.o : 
+
+tfivol.o : 
+
+bc2008.o : 
+
+cntsurf.o : 
+
+fhat.o : 
+
+rotatmc.o : 
+
+metric.o : 
+
+gfluxv.o : 
+
+int2_d.o : 
+
+global2.o : 
+
+fa2xk.o : 
+
+collv.o : 
+
+xlim.o : 
+
+bc1000.o : 
+
+addx.o : 
+
+outbuf.o : 
 
 tfiface.o : 
 
-blocki_d.o : 
+swafi.o : 
 
-rie1de.o : 
+swafj.o : 
+
+cctogp.o : 
+
+cgnstools.o : 
+
+rpatch0.o : 
+
+xe2.o : 
+
+pre_patch.o : 
+
+dfbtr.o : 
+
+cblkk.o : 
+
+bc1001.o : 
+
+dsmin.o : 
+
+rotate.o : 
+
+mvdat.o : 
+
+ffluxr.o : 
+
+avghole.o : 
+
+fill.o : 
+
+tmetric.o : 
+
+dfhat.o : 
+
+rb_corr.o : 
+
+setcorner.o : 
+
+collq.o : 
+
+csurf.o : 
+
+bc2009.o : 
+
+readkey.o : 
+
+i2xs.o : 
+
+fa2xi.o : 
+
+ffluxv1.o : 
+
+ld_datj.o : 
+
+rp3d.o : 
+
+trnsurf.o : 
+
+transp.o : 
+
+xe.o : 
+
+project.o : 
 
 bc2005i_d.o :  \
 	module_stm_2005.o
 
-ld_qc.o : 
+bc2006.o : 
 
-dlutrp.o : 
+bc1002.o : 
 
-dabcjz.o : 
+hfluxl.o : 
+
+rotateq2_d.o : 
+
+bc2005j_d.o :  \
+	module_stm_2005.o
 
 module_stm_2005.o : 
 
-topol2.o : 
+setblk.o : 
 
-bc1012.o : 
+ccf.o : 
 
-xlim.o : 
+sijrate2d.o : 
 
-tfiedge.o : 
+wkstn.o : 
 
-bc2026.o : 
+fa.o : 
 
-add2x.o : 
+dfluxpm.o : 
 
-q8vrev.o : 
+prolim.o : 
 
-delS.o : 
+histout.o : 
 
-bc1011.o : 
+cblkk_d.o : 
 
-bc1003.o : 
+lead.o : 
 
-getdhdr.o : 
-
-lesdiag.o : 
-
-int2.o : 
-
-tdq.o : 
-
-abcjz.o : 
-
-ffluxv.o : 
-
-pltmode.o : 
-
-gfluxl.o : 
-
-update.o :  \
-	af3f.o
-
-hfluxv.o : 
-
-init_trim.o : 
-
-initvist.o : 
-
-swafj.o : 
-
-i2xsk_d.o : 
-
-i2xj_d.o : 
-
-pre_embed.o : 
-
-newfit.o : 
-
-bc2010.o : 
-
-rb_pred.o : 
-
-collq.o : 
-
-bc1008.o : 
-
-barth3d.o : 
-
-dfbtr.o : 
-
-collxt.o : 
-
-getdelt.o : 
-
-bc2005.o :  \
-	module_stm_2005.o
-
-dabckz.o : 
-
-collxtb.o : 
-
-mvdat.o : 
+moddefl.o : 
 
 init_rb.o : 
 
-xyzintr.o : 
+extra.o : 
+
+rsurf.o : 
+
+amafi.o : 
+
+cblki_d.o : 
+
+bc1011.o : 
+
+avgint.o : 
+
+augmntq.o : 
+
+rotatp.o : 
+
+twoeqn.o : 
+
+pre_blockbc.o : 
+
+coll2q.o : 
+
+xmukin.o : 
+
+qface.o : 
+
+setseg.o : 
+
+colldat.o : 
+
+pre_cblkk.o : 
+
+pre_blocki.o : 
+
+blocki_d.o : 
+
+fluxp.o : 
+
+collqc0.o : 
+
+abckz.o : 
+
+tfiedge.o : 
+
+module_contour.o : 
+
+readdat.o : 
+
+q8smin.o : 
+
+tinvr.o : 
+
+spalart.o : 
+
+foureqn.o : 
 
 bc1005.o : 
 
+amafj.o : 
+
+unld_qc.o : 
+
+getdelt.o : 
+
+getsurf.o : 
+
+shear.o : 
+
+hole.o : 
+
+bc_xmera.o : 
+
+bsub.o : 
+
+wmag.o : 
+
+rpatch.o : 
+
+abciz.o : 
+
+chkrot.o : 
+
+ccomplex.o : 
+
+diagk.o : 
+
+rsmooth.o : 
+
+ctime1.o : 
+
+module_profileout.o : 
+
+initvist.o : 
+
+aesurf.o : 
+
+collapse.o : 
+
+pre_cblkj.o : 
+
+bc2019.o : 
+
+chksym.o : 
+
+bc1008.o : 
+
+getibk.o : 
+
+blockk_d.o : 
+
+bc_info.o : 
+
+extrae.o : 
+
+getdhdr.o : 
+
+collx.o : 
+
 mms.o : 
-
-pre_patch.o : 
-
-bc2007.o : 

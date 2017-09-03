@@ -40,11 +40,11 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
-      dimension rms(ncycmax),clw(ncycmax),
+      complex rms(ncycmax),clw(ncycmax),
      .          cdw(ncycmax),cdpw(ncycmax),cdvw(ncycmax),
      .          cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
-     .          chdw(ncycmax),swetw(ncycmax),
+     .          chdw(ncycmax), swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
      .          rmstr(ncycmax,nummem),

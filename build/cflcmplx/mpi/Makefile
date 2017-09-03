@@ -32,27 +32,30 @@
 include src_dir_path.mk
 include ../../../config.mk
 
+# Use MPI compilation in this file
+FTN          =$(MPI_FTN)
+FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+LFLAGS :=$(MPI_LFLAGS)
+
 DEP_FILE=depend.mk
 
 FMODDIRS= $(FLLLOC)
+FMODDIRS+=../libs
 
 FCMODINCFLAG = -I
 
 FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
-FFILES+= $(notdir $(wildcard $(srcdir)/*.c))
-
 
 OFILES1  =$(FFILES:.F=.o)
-OFILES2   =$(OFILES1:.F90=.o)
-OFILES   =$(OFILES2:.c=.o)
+OFILES   =$(OFILES1:.F90=.o)
 
-
+XOFILES+=$(wildcard ../libs/*.o)
 XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
-all:  $(OFILES)
+all: $(OFILES)
 include ../../../rules.mk
 
 clean:
@@ -60,6 +63,8 @@ clean:
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
+	echo $(srcdir)
+	echo $(FFILES)
 	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
 
 

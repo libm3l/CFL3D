@@ -1,24 +1,20 @@
-#    ---------------------------------------------------------------------------
-#    CFL3D is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged
-#    Navier-Stokes (RANS) code. It can be run in parallel on multiple grid zones
-#    with point-matched, patched, overset, or embedded connectivities. Both
-#    multigrid and mesh sequencing are available in time-accurate or
-#    steady-state modes.
 #
-#    Copyright 2001 United States Government as represented by the Administrator
-#    of the National Aeronautics and Space Administration. All Rights Reserved.
+#     Copyright (C) 2016  Adam Jirasek
 # 
-#    The CFL3D platform is licensed under the Apache License, Version 2.0 
-#    (the "License"); you may not use this file except in compliance with the 
-#    License. You may obtain a copy of the License at 
-#    http://www.apache.org/licenses/LICENSE-2.0. 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU Lesser General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
 # 
-#    Unless required by applicable law or agreed to in writing, software 
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-#    License for the specific language governing permissions and limitations 
-#    under the License.
-#    ---------------------------------------------------------------------------
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU Lesser General Public License for more details.
+# 
+#     You should have received a copy of the GNU Lesser General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#     
+#     contact: libm3l@gmail.com
 # 
 #
 #
@@ -33,29 +29,47 @@
 #
 #
 
+EXEC    = cfl3d_seq
+
 include src_dir_path.mk
 include ../../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= ../libs
+FMODDIRS= $(FLLLOC)
+FMODDIRS+=../libs
 
-FFILES= $(notdir $(wildcard $(srcdir)/*.F))
+FCMODINCFLAG = -I
 
+FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
+FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
 
-OFILES=$(FFILES:%.F=%.o)
-XOFILES=$(wildcard ../../data_util/*.o)
+OFILES1  =$(FFILES:.F=.o)
+OFILES   =$(OFILES1:.F90=.o)
+
+XOFILES+=$(wildcard ../libs/*.o)
+XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
+all: $(EXEC)
 
+$(EXEC):  $(OFILES)
 include ../../../rules.mk
+
+clean:
+	rm -f *.x *.o *.mod $(EXEC)
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
-	cd $(srcdir) && $(MAKEDEPEND) -r $(PROJ_ROOT_PATH) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -d $(FMODDIRS) -f $(FFILES)
+	echo $(srcdir)
+	echo $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
 
-	sed -i 's|source/cfl3d|build/cfl|' depend.mk
+
+install: $(EXE).x $(EXE).py
+	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x
+	$(INSTALL) $(EXE).py $(bin_dir)/$(EXE)$(POSTFIX).py
 
 -include $(srcdir)/$(DEP_FILE)
 

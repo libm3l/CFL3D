@@ -29,38 +29,40 @@
 #
 #
 
+EXEC    = cfl3d_seq
+
 include src_dir_path.mk
-include ../../../config.mk
+include ../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= $(FLLLOC)
+FMODDIRS= ../../source/precfl3d ../../source/cfl3d/dist ../../source/cfl3d/libs
+
+
 
 FCMODINCFLAG = -I
 
 FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
-FFILES+= $(notdir $(wildcard $(srcdir)/*.c))
-
 
 OFILES1  =$(FFILES:.F=.o)
-OFILES2   =$(OFILES1:.F90=.o)
-OFILES   =$(OFILES2:.c=.o)
-
-
-XOFILES+=$(wildcard $(FLLLOC)/*.o)
+OFILES   =$(OFILES1:.F90=.o)
 
 ###########################################################################
 
-all:  $(OFILES)
-include ../../../rules.mk
+all: $(EXEC)
+
+$(EXEC):  $(OFILES)
+include ../../rules.mk
 
 clean:
-	rm -f *.x *.o *.mod 
+	rm -f *.x *.o *.mod $(EXEC)
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
-	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
+	echo $(srcdir)
+	echo $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
 
 
 install: $(EXE).x $(EXE).py
