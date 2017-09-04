@@ -1,1 +1,1 @@
-srcdir=$(PROJ_ROOT_PATH)/source/
+srcdir=$(PROJ_ROOT_PATH)

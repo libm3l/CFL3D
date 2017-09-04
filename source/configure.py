@@ -176,7 +176,8 @@ def check_path(path):
 
 def config_init(path):
 
-            
+    fortdeppath = path.replace("source/", "")
+
     confname =  'config.mk'
     
     try:
@@ -190,13 +191,16 @@ def config_init(path):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("MAKEDEPEND="+path+"/python_def/fort_depend.py\n")
+    fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     fconfig.close()
 
 def mkconfigfile(path, cwd,version):
     filename = path+'/config/compset.'+version
+    
+    fortdeppath = path.replace("source/", "")
+
 
     if not(os.path.exists(filename)):
         print ("\033[031mError: \033[039m \033[031m"+version+"\033[039m verion of compiler is not available")
@@ -219,7 +223,7 @@ def mkconfigfile(path, cwd,version):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("MAKEDEPEND="+path+"/python_def/fort_depend.py\n")
+    fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     
