@@ -2,14 +2,14 @@
 
 main.o : 
 
+sizer.o : 
+
 setup.o : 
 
-ronnie.o : 
+usrint.o : 
 
 termn8.o : 
 
-sizer.o : 
-
-usrint.o : 
+ronnie.o : 
 
 main_pre.o : 

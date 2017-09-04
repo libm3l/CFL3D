@@ -1,1 +1,1 @@
-srcdir=$(PROJ_ROOT_PATH)/source/precfl3d
+srcdir=$(PROJ_ROOT_PATH)/precfl3d

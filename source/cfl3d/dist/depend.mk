@@ -2,109 +2,116 @@
 
 pre_bc.o : 
 
-updateg.o : 
-
-setslave.o : 
-
-usrint.o : 
-
-plot3t.o : 
-
-prntcp.o : 
-
-plot3d_coarse.o : 
-
-resetg.o : 
-
-reass.o : 
-
-cputim.o : 
-
-qinter.o : 
-
-bc_embed.o : 
-
-umalloc_r.o : 
-
-compg2n.o : 
-
-qout.o : 
-
-umalloc_c.o : 
-
-umalloc.o : 
-
-sizer.o : 
-
-yplusout.o : 
-
-pointers.o : 
-
-plot3davg.o : 
+dynptch.o : 
 
 addnoneqstr.o : 
 
-mgbl.o :  \
-	addnoneqstr.o \
-	mgblk.o
+bc_embed.o : 
 
-termn8.o : 
+umalloc.o : 
 
-plot3d_2d.o : 
-
-plot3c.o : 
-
-forceout.o : 
+plot3davg.o : 
 
 writ_buf.o : 
 
-dynptch.o : 
+rrest.o : 
 
-setup.o : 
+qoutavg.o : 
 
-ae_corr.o : 
-
-trnsfr_vals.o : 
-
-wrestg.o : 
-
-bc_blkint.o : 
-
-rrestg.o : 
+cputim.o : 
 
 cfl3d.o :  \
 	mgbl.o
 
+termn8.o : 
+
+forceout.o : 
+
+qinter.o : 
+
+compg2n.o : 
+
+bc_blkint.o : 
+
+newalpha.o : 
+
+wrestg.o : 
+
+bc_period.o : 
+
+resetg.o : 
+
+plot3c.o : 
+
+mgblk.o :  \
+	../../cfl3d/libs/resid.o \
+	../../cfl3d/libs/shift.o \
+	../../cfl3d/libs/update.o
+
+usrint.o : 
+
+plot3d.o : 
+
+pointers.o :  \
+	../../cfl3d/libs/module_kwstm.o
+
+development.o : 
+
 updatedg.o : 
+
+qout_2d.o : 
 
 qout_coarse.o : 
 
-main.o : 
+umalloc_c.o : 
+
+yplusout.o : 
+
+setslave.o : 
+
+setup.o :  \
+	../../cfl3d/libs/module_kwstm.o
+
+rrestg.o : 
+
+resp.o : 
+
+mgbl.o :  \
+	mgblk.o \
+	addnoneqstr.o \
+	../../cfl3d/libs/module_kwstm.o
+
+qout.o :  \
+	../../cfl3d/libs/module_contour.o \
+	../../cfl3d/libs/module_kwstm.o \
+	../../cfl3d/libs/module_profileout.o
+
+calyplus.o : 
+
+trnsfr_vals.o : 
+
+reass.o : 
+
+umalloc_r.o : 
+
+plot3d_2d.o : 
+
+plot3t.o : 
+
+updateg.o : 
+
+ae_corr.o : 
+
+sizer.o : 
+
+wrest.o : 
+
+plot3d_coarse.o : 
 
 findmin_new.o : 
 
 patcher.o : 
 
-bc_period.o : 
-
-qoutavg.o : 
-
-plot3d.o : 
-
 bc_patch.o : 
 
-mgblk.o : 
-
-calyplus.o : 
-
-qout_2d.o : 
-
-rrest.o : 
-
-resp.o : 
-
-newalpha.o : 
-
-development.o : 
-
-wrest.o : 
+prntcp.o : 

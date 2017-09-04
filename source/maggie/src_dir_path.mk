@@ -1,1 +1,1 @@
-srcdir=$(PROJ_ROOT_PATH)/source/maggie
+srcdir=$(PROJ_ROOT_PATH)/maggie
