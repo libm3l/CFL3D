@@ -1,0 +1,39 @@
+INSTALLATION INSTRUCTIONS:
+
+    1. in CFL3D main directory, execute python configuration script source/configure.py with input parameters
+        input parameters are: 
+        [-b BUILD] [-c COMPILER] [-f] [-o]
+       
+        -b specifies name of directory where to build executables
+       
+        -c specifies version of compiler
+       
+        -f if directory with executables already exist, add any changes to it
+       
+        -o if directory with executables already exist, remove it and make new one
+       
+        example: source/configure.py -b build -c gfortran -o
+       
+        specifies that CFL3D is going to be compiled in  CFL3D/buid directory, compilation will be using gfortran
+        and if build already exist, delete and make a completely new directory
+       
+       
+     2. enter directory and type make. This will compile entire code. If you intent to compile just part of code go to that directory
+        and execute gmake there
+       
+       
+    3. If cleaning everything, type gmake clean. If you intend to clean only part of project, go to that directory and execute
+        gmake clean from there
+       
+       
+DEVELOPMENT:
+
+       Once you download the project, go to CFL3D directory and type   ./configure.py -i
+       this will create a config.mk file. This  is done only once. If it happens that config.mk file is gone, ./configure.py -i again
+
+       If any new routine is added, encapsulate it in module and use USE statement. You will need to recreate dependency file. To do so
+       execute command "gmake depend" from CFL3D directory. If only part of project was modified, go to that directory and execute
+       gmake clean from there.
+       
+NOTE:
+       Makefiles for cflcmplx and preron  must be completed!!!!

@@ -55,7 +55,8 @@ import shutil
 
 #Definitions
 
-def run(comp,build,fll,force=None, overwrite=None):
+def run(comp,build,fll,force=None, overwrite=None, init=None):
+
 #
 #  definition of parameters
 #
@@ -83,9 +84,23 @@ def run(comp,build,fll,force=None, overwrite=None):
     if not os.path.isdir(path):
       print("  ")
       print("\033[031mERROR:\033[039m specified project source location \033[032m"+path+"\033[039m does not exist, terminating .... ") 
-      sys.exit()
-
+      
     cwd = check_path(path=cwd)
+    
+    if init:
+#
+#   initializing - developer
+#
+        if cwd == path:
+           config_init(path=path,fll=fll)
+        else:
+            print("  ")
+            print("\033[031mDIAG:\033[039m ./configure.py must be invoked from CFL3D/source directory:  \033[032m"+path+" \033[039m")  	
+            print("\033[031mDIAG:\033[039m your current location is          \033[032m"+cwd+"\033[039m")  	
+            print("       terminating .... ") 	
+            
+            
+        sys.exit()
 
     print("  ")
     print("\033[031mDIAG:\033[039m project location is                  \033[032m"+path+"\033[039m")  	
@@ -173,7 +188,30 @@ def check_path(path):
 
     return path
 
+def config_init(path,fll):
+
+            
+    confname =  'config.mk'
+    
+    try:
+        os.remove(confname)
+        print ("\033[031mDIAG: \033[039m config.mk file \033[032m \033[039m already exists, removing ....")
+    except OSError:
+        pass
+    
+    fconfig = open(confname, 'w')
+#
+#  set some global parameters
+#
+    fconfig.write("PROJ_ROOT_PATH="+path+"\n")
+    fconfig.write("FLLLOC="+fll+"\n")
+    fconfig.write("MAKEDEPEND="+path+"/python_def/fort_depend.py\n")
+    fconfig.write("VERBOSE=-vvv\n")
+    fconfig.write("#\n")
+    fconfig.close()
+
 def mkconfigfile(path, cwd,version,fll):
+
     filename = path+'/config/compset.'+version
 
     if not(os.path.exists(filename)):
@@ -255,17 +293,20 @@ if __name__ == "__main__":
     parser.add_argument('-f','--force',action='store_true',help='Force updates to existing installation')
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
     parser.add_argument('-L','--fll',nargs=1,help='Location of FLL library')
-
+    parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
 
     # Parse the command line arguments
     args = parser.parse_args()
 
+    init = args.init if args.init else None
     build = args.build[0] if args.build else ''
     compiler = args.compiler[0] if args.compiler else None
     fll = args.fll[0] if args.fll else ''
 
     
-    if not compiler:
+    if not init:
+    
+      if not compiler:
         print ("\033[031mError: \033[039m missing compiler settings, specify option \033[031m-c \033[032m")
         print ("\033[031m       \033[039m available options are: \033[032m gfortran\033[039m")
         print ("\033[031m       \033[039m                        \033[032m gfortran_debug\033[039m")
@@ -273,7 +314,7 @@ if __name__ == "__main__":
         print ("\033[031m       \033[039m                        \033[032m x86_64_debug\033[039m") 
         sys.exit()
         
-    if not build:
+      if not build:
         print ("\033[031mError: \033[039m missing name of build directory,  specify option \033[031m-b \033[032m")
         sys.exit()
         
@@ -282,6 +323,13 @@ if __name__ == "__main__":
         print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
         sys.exit()
         
-    print(args.force)
+    else:
+        print ("\033[031mError: \033[039m Initializing ...  \033[031m-b \033[032m")
 
-    run(comp=compiler,build=build,fll=fll,force=args.force, overwrite=args.overwrite)
+        if not fll:
+          print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
+          print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
+          sys.exit()       
+        
+
+    run(comp=compiler,build=build,fll=fll,force=args.force, overwrite=args.overwrite, init=args.init)
