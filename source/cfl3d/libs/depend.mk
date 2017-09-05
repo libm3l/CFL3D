@@ -151,6 +151,8 @@ amafi.o :
 
 shift.o : 
 
+find_index.o : 
+
 l2norm2.o : 
 
 gfluxr.o : 
@@ -270,6 +272,7 @@ q8smax.o :
 ffluxv1.o : 
 
 twoeqn.o :  \
+	find_index.o \
 	delS.o
 
 xupdt.o : 
@@ -535,7 +538,8 @@ gfluxl.o :
 update.o :  \
 	af3f.o
 
-hfluxv.o : 
+hfluxv.o :  \
+	find_index.o
 
 init_trim.o : 
 

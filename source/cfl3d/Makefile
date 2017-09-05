@@ -47,6 +47,11 @@ SUBDIRS= \
 	
 EXEC = SEQ
 
+COMPILETIME :=$(shell date || echo Unknown time )
+BUILDSYSTEM :=$(shell echo `uname -s`-`uname -m` || echo Unknown system )
+BUILDHOST   :=$(shell echo `hostname` || echo Unknown host )
+BUILDUSER   :=$(USER)
+
 ###########################################################################
 
 all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
@@ -56,7 +61,12 @@ include ../../rules.mk
 #mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(FTN)|g" \
+	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
@@ -67,7 +77,12 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	rm main.o
 	
 $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(MPI_FC)|g" \
+	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(FLLLOC)/*.o
 	@echo '************************************************'

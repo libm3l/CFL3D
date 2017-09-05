@@ -54,34 +54,38 @@ SUBDIRS_CMP = \
        splitcmplx\
        tools
        
-SUBDIRS_CFL3D = cfl3d	
+SUBDIRS_CFL3D     = cfl3d	
 SUBDIRS_CFL3DCMPX = cfl3dcmplx	
 
-SUBDIRS_MAG = maggie cfl3d/libs   cfl3d/seq
-SUBDIRS_PRECF = precfl3d cfl3d/libs   cfl3d/seq
-SUBDIRS_PRER = preron cfl3d/libs   cfl3d/seq
-SUBDIRS_RON = ronnie cfl3d/libs   cfl3d/seq
-SUBDIRS_SPLITT = splitter cfl3d/libs   cfl3d/seq
-SUBDIRS_SPLIC = splitcmplx cfl3d/libs   cfl3d/seq
-SUBDIRS_TOOLS = tools cfl3d/libs   cfl3d/seq
+SUBDIRS_MAG   = maggie     cfl3d/libs cfl3d/seq
+SUBDIRS_PRECF = precfl3d   cfl3d/libs cfl3d/seq
+SUBDIRS_PRER  = preron     cfl3d/libs cfl3d/seq
+SUBDIRS_RON   = ronnie     cfl3d/libs cfl3d/seq
+SUBDIRS_SPLITT= splitter   cfl3d/libs cfl3d/seq
+SUBDIRS_SPLIC = splitcmplx cfl3d/libs cfl3d/seq
+SUBDIRS_TOOLS = tools      cfl3d/libs cfl3d/seq
 
 ###########################################################################
 
 include ../rules.mk
 
-
+#
+#  compile entire code
+#
 all: $(SUBDIRS_CMP:%=%.all) 
 
-maggie.all: cfl3d.all
+maggie.all:   cfl3d.all
 precfl3d.all: cfl3d.all
 precfl3d.all: cfl3d.all
-preron.all: cfl3d.all
-ronnie.all: cfl3d.all
+preron.all:   cfl3d.all
+ronnie.all:   cfl3d.all
 splitter.all: cfl3d.all
 splitcmplx.all: cfl3d.all
-tools.all: cfl3d.all
+tools.all:    cfl3d.all
 
-
+#
+#  compile just parts of it
+#
 cfl3d: $(SUBDIRS_CFL3D:%=%.all) 
 
 cfl3dcmplx: $(SUBDIRS_CFL3DCMPX:%=%.all) 
@@ -106,7 +110,9 @@ splitcmplx.all: cfl3d/libs.all cfl3d/seq.all
 
 tools: $(SUBDIRS_TOOLS:%=%.all) 
 tools.all:  cfl3d/libs.all cfl3d/seq.all
-
+#
+# clean, depend and install section
+#
 clean: $(SUBDIRS_CMP:%=%.clean)
 
 depend: $(SUBDIRS:%=%.depend)

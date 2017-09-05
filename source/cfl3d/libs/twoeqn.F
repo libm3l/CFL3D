@@ -67,6 +67,7 @@ c
 
       USE FLL_MODS_M
       USE DELS_M
+      USE FIND_INDEX_M
 
 !      IMPLICIT NONE
 
@@ -2882,7 +2883,7 @@ c            or 0.33333 (3D))
 !
 !   save strain rate tensor 
 !
-                IND = FIND(I,J,K,IDIM,JDIM,KDIM)
+                IND = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
                 STR(IND,1) = s11
                 STR(IND,2) = s12
                 STR(IND,3) = s13
@@ -3203,7 +3204,7 @@ c   Get Pk and Dk:
 !
 !      sijtilde = sij * sij~
 !
-                SIJTILDE = STILDETRACE(FIND(I,J,K,idim,JDIM,KDIM)) 
+                SIJTILDE = STILDETRACE(FIND_INDEX(I,J,K,idim,JDIM,KDIM)) 
           
                 NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
@@ -5235,7 +5236,7 @@ c Update VIST3D and save omega and k values
 !  If changed (ie. velocity array in PBLOG not allocated
 !  the only other change needs to be done is in shift.F
 !
-              INDTMP = FIND(I,J,K,IDIM,JDIM,KDIM)
+              INDTMP = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
 
               UUC(INDTMP) = q(j,k,i,2)
@@ -5967,16 +5968,5 @@ c
 
       return
       end
-
-
-      FUNCTION FIND(I,J,K,IM,JM,KM) RESULT(IND)
-       IMPLICIT NONE
-
-       INTEGER :: I,IM,J,JM,K,KM,IND
-
-       IND = I*JM*KM+J*KM+K
-       RETURN
-
-      END 
 
       END MODULE TWOEQN_M
