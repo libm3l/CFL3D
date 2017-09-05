@@ -1,1 +1,1 @@
-srcdir=$(PROJ_ROOT_PATH)/source/cfl3d
+srcdir=$(PROJ_ROOT_PATH)/cfl3d

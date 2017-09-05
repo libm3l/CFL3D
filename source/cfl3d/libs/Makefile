@@ -7,7 +7,6 @@
 #
 # Copyright 2001 United States Government as represented by the Administrator
 # of the National Aeronautics and Space Administration. All Rights Reserved.
-# 
 # The CFL3D platform is licensed under the Apache License, Version 2.0 
 # (the "License"); you may not use this file except in compliance with the 
 # License. You may obtain a copy of the License at 
@@ -42,7 +41,7 @@ FMODDIRS= $(FLLLOC)
 
 FCMODINCFLAG = -I
 
-FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
+FFILES =  $(notdir $(wildcard $(srcdir)/*.F))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.c))
 
@@ -61,6 +60,7 @@ include ../../../rules.mk
 
 clean:
 	rm -f *.x *.o *.mod 
+	find ./ -executable -type f | xargs rm
 
 depend: $(FFILES)
 	@echo "Making dependencies!"

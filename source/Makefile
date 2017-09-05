@@ -7,7 +7,6 @@
 #
 # Copyright 2001 United States Government as represented by the Administrator
 # of the National Aeronautics and Space Administration. All Rights Reserved.
-# 
 # The CFL3D platform is licensed under the Apache License, Version 2.0 
 # (the "License"); you may not use this file except in compliance with the 
 # License. You may obtain a copy of the License at 
@@ -79,7 +78,6 @@ tools.all: cfl3d.all
 cfl3d:
 
 clean: $(SUBDIRS_CMP:%=%.clean)
-	find ./  -executable -type f | xargs rm -f
 
 depend: $(SUBDIRS:%=%.depend)
 

@@ -1,1 +1,0 @@
-../source/src_dir_path.mk

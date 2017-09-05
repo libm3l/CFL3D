@@ -56,7 +56,6 @@ import shutil
 #Definitions
 
 def run(comp,build,fll,force=None, overwrite=None, init=None):
-
 #
 #  definition of parameters
 #
@@ -92,6 +91,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #   initializing - developer
 #
         if cwd == path:
+
            config_init(path=path,fll=fll)
         else:
             print("  ")
@@ -150,7 +150,6 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
              print ("\033[031mError:\033[039m given build location already exist: \033[032m"+os.path.abspath(build)+"\033[039m")  	
              print ("\033[031m      \033[039m choose different location \033[032m"  "\033[039m") 
              sys.exit()
-
 #
 #  got to build directory
 #
@@ -212,7 +211,6 @@ def config_init(path,fll):
     fconfig.close()
 
 def mkconfigfile(path, cwd,version,fll):
-
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -238,7 +236,7 @@ def mkconfigfile(path, cwd,version,fll):
 #
 #  set some global parameters
 #
-    fconfig.write("PROJ_ROOT_PATH="+path+"\n")
+    fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
     fconfig.write("FLLLOC="+fll+"\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
@@ -306,7 +304,6 @@ if __name__ == "__main__":
     build = args.build[0] if args.build else ''
     compiler = args.compiler[0] if args.compiler else None
     fll = args.fll[0] if args.fll else ''
-
     
     if not init:
     
