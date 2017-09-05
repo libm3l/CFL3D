@@ -205,7 +205,7 @@ def config_init(path,fll):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("FLLLOC="+fll+"\n")
+    fconfig.write("FLLLOC="+fll+"/data_util/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
