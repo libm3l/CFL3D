@@ -358,12 +358,26 @@ c
       common/rjbdbgi/lunfio0
       lunfio0=8000
 #   endif
+
+
+      character(80) :: BTIME   = 'Unknown'
+      character(80) :: BSYSTEM = 'Unknown'
+      character(80) :: BHOST   = 'Unknown'
+      character(80) :: BUSER   = 'Unknown'
+      character(80) :: BFC     = 'Unknown'
+      character(80) :: KERNEL  = 'Unknown'
+      character(72) :: ltext
+      CHARACTER(255):: LONGTEXT
+
+      integer :: n, hal
 c
 #if defined DIST_MPI
 c***********************************************************************
 c     MPI initialization
 c***********************************************************************
 c
+      mycomm = 0
+
       call MPI_Init (ierr)
       if (ierr.ne.MPI_SUCCESS) then
          write (11,*)'MPI_Init not successful...stopping'
@@ -377,6 +391,110 @@ c
       myhost     = 0
       istat_size = MPI_STATUS_SIZE
       nnodes = numprocs -1
+
+      if(mycomm == 0)then
+
+        BTIME    ='COMPILETIME'
+        BSYSTEM  ='BUILDSYSTEM'
+        BHOST    ='BUILDHOST'
+        BUSER    ='BUILDUSER'
+        BFC      ='BUILDFC'
+        KERNEL   ='BKERNEL'
+
+      WRITE(*,*)' ######################################################
+     .################'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      LTEXT='CFL3D - V6.0'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='https://cfl3d.larc.nasa.gov'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='https://github.com/nasa/CFL3D'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+
+
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      LTEXT='Build time - '//TRIM(BTIME)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Build platform - '//TRIM(BSYSTEM)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Kernel - '//TRIM(KERNEL)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Host '//TRIM(BHOST	)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='User - '//TRIM(BUSER)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Compiler - '//TRIM(BFC)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' ######################################################
+     .################'
+
+
+      end if
 c
 c     check for inappropriate number of processors
 c
@@ -397,6 +515,104 @@ c
       mycomm     = 0
       istat_size = 1
       nnodes     = 1
+        BTIME    ='COMPILETIME'
+        BSYSTEM  ='BUILDSYSTEM'
+        BHOST    ='BUILDHOST'
+        BUSER    ='BUILDUSER'
+        BFC      ='BUILDFC'
+        KERNEL   ='BKERNEL'
+
+      WRITE(*,*)' ######################################################
+     .################'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      LTEXT='CFL3D - V6.0'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='https://cfl3d.larc.nasa.gov'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='https://github.com/nasa/CFL3D'
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+
+
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      LTEXT='Build time - '//TRIM(BTIME)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Build platform - '//TRIM(BSYSTEM)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Kernel - '//TRIM(KERNEL)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Host '//TRIM(BHOST	)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='User - '//TRIM(BUSER)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Compiler - '//TRIM(BFC)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' #                                                 
+     .               #'
+      WRITE(*,*)' ######################################################
+     .################'
 #endif
 c
       do ii=1,nbuf

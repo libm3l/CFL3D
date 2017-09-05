@@ -1,30 +1,33 @@
+# ---------------------------------------------------------------------------
+# CFL3D is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged
+# Navier-Stokes (RANS) code. It can be run in parallel on multiple grid zones
+# with point-matched, patched, overset, or embedded connectivities. Both
+# multigrid and mesh sequencing are available in time-accurate or
+# steady-state modes.
 #
-#     Copyright (C) 2016  Adam Jirasek
-# 
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
-# 
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU Lesser General Public License for more details.
-# 
-#     You should have received a copy of the GNU Lesser General Public License
-#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#     
-#     contact: libm3l@gmail.com
-# 
+# Copyright 2001 United States Government as represented by the Administrator
+# of the National Aeronautics and Space Administration. All Rights Reserved.
+# The CFL3D platform is licensed under the Apache License, Version 2.0 
+# (the "License"); you may not use this file except in compliance with the 
+# License. You may obtain a copy of the License at 
+# http://www.apache.org/licenses/LICENSE-2.0. 
+#
+# Unless required by applicable law or agreed to in writing, software 
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+# License for the specific language governing permissions and limitations 
+# under the License.
+# ---------------------------------------------------------------------------
+#
 #
 #
 # Description: Makefile 
 #
 # 
 # History:
-# Version   Date       Patch number  CLA     Comment
-# -------   --------   --------      ---     -------
-# 1.1       10/10/16                         Initial implementation
+# Version   Date       Author              Patch number  CLA     Comment
+# -------   --------          --------               ----------------    -----      -------------
+# 1.1       01/09/17     Adam Jirasek                                        Initial implementation
 #
 #
 #
@@ -44,6 +47,12 @@ SUBDIRS= \
 	
 EXEC = SEQ
 
+COMPILETIME :=$(shell date || echo Unknown time )
+BUILDSYSTEM :=$(shell echo `uname -s`-`uname -m` || echo Unknown system )
+BUILDHOST   :=$(shell echo `hostname` || echo Unknown host )
+BUILDUSER   :=$(USER)
+BKERNEL     :=$(shell echo `uname -o`-`uname -r` || echo Unknown kernel )
+
 ###########################################################################
 
 all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
@@ -53,7 +62,13 @@ include ../../rules.mk
 #mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(FTN)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
+	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
@@ -64,7 +79,13 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	rm main.o
 	
 $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(MPI_FC)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
+	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
@@ -76,7 +97,8 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 
 
 clean: $(SUBDIR_COMP:%=%.clean)
-	rm -f *.x *.o *.mod cfl3d_mpi  cfl3d_seq 
+	rm -f *.x *.o *.mod
+	find ./ -executable -type f | xargs rm
 
 depend: $(SUBDIRS:%=%.depend)
 
