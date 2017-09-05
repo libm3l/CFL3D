@@ -278,8 +278,8 @@ c
       REAL(RDOUBLE), POINTER :: GRS11Z(:),GRS12Z(:),GRS13Z(:)
       REAL(RDOUBLE), POINTER :: GRS22Z(:),GRS23Z(:),GRS33Z(:)
                                      
-      REAL(RDOUBLE), POINTER :: AEX11(:),AEX12(:),AEX22(:)
-      REAL(RDOUBLE), POINTER :: AEX13(:),AEX33(:),AEX23(:)
+      REAL(RDOUBLE), POINTER :: STRETRM11(:),STRETRM12(:),STRETRM22(:)
+      REAL(RDOUBLE), POINTER :: STRETRM13(:),STRETRM33(:),STRETRM23(:)
       REAL(RDOUBLE) :: AE11,AE12,AE22,AE13,AE23,AE33
       REAL(RDOUBLE) :: LARGE
 
@@ -622,12 +622,12 @@ c
         PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
 
-      AEX11 => PTMQ%D2(:,1)
-      AEX12 => PTMQ%D2(:,2)
-      AEX13 => PTMQ%D2(:,3)
-      AEX22 => PTMQ%D2(:,4)
-      AEX23 => PTMQ%D2(:,5)
-      AEX33 => PTMQ%D2(:,6)
+      STRETRM11 => PTMQ%D2(:,1)
+      STRETRM12 => PTMQ%D2(:,2)
+      STRETRM13 => PTMQ%D2(:,3)
+      STRETRM22 => PTMQ%D2(:,4)
+      STRETRM23 => PTMQ%D2(:,5)
+      STRETRM33 => PTMQ%D2(:,6)
 
       END IF ! IHDM == 1
 c
@@ -3066,17 +3066,17 @@ c            or 0.33333 (3D))
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
                 MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP
           
-                AEX11(IND)=2*MUT(IND)
+                STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
-                AEX12(IND)=2*MUT(IND)
+                STRETRM12(IND)=2*MUT(IND)
      .            *MIN(S12/SLIMITER,MAX(-S12/SLIMITER,AE12))
-                AEX13(IND)=2*MUT(IND)
+                STRETRM13(IND)=2*MUT(IND)
      .            *MIN(S13/SLIMITER,MAX(-S13/SLIMITER,AE13))
-                AEX22(IND)=2*MUT(IND)
+                STRETRM22(IND)=2*MUT(IND)
      .            *MIN(S22/SLIMITER,MAX(-S22/SLIMITER,AE22))
-                AEX23(IND)=2*MUT(IND)
+                STRETRM23(IND)=2*MUT(IND)
      .            *MIN(S23/SLIMITER,MAX(-S23/SLIMITER,AE23))
-                AEX33(IND)=2*MUT(IND)
+                STRETRM33(IND)=2*MUT(IND)
      .            *MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
 
