@@ -360,11 +360,12 @@ c
 #   endif
 
 
-      character(80) :: BTIME = 'Unknown'
+      character(80) :: BTIME   = 'Unknown'
       character(80) :: BSYSTEM = 'Unknown'
       character(80) :: BHOST   = 'Unknown'
       character(80) :: BUSER   = 'Unknown'
       character(80) :: BFC     = 'Unknown'
+      character(80) :: KERNEL  = 'Unknown'
       character(72) :: ltext
       CHARACTER(255):: LONGTEXT
 
@@ -398,6 +399,7 @@ c
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
         BFC      ='BUILDFC'
+        KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
      .################'
@@ -446,6 +448,14 @@ c
       WRITE(*,*)TRIM(LONGTEXT)
 
       LTEXT='Build platform - '//TRIM(BSYSTEM)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Kernel - '//TRIM(KERNEL)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
@@ -510,6 +520,7 @@ c
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
         BFC      ='BUILDFC'
+        KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
      .################'
@@ -558,6 +569,14 @@ c
       WRITE(*,*)TRIM(LONGTEXT)
 
       LTEXT='Build platform - '//TRIM(BSYSTEM)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='Kernel - '//TRIM(KERNEL)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',

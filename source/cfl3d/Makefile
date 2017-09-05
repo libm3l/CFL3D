@@ -51,6 +51,7 @@ COMPILETIME :=$(shell date || echo Unknown time )
 BUILDSYSTEM :=$(shell echo `uname -s`-`uname -m` || echo Unknown system )
 BUILDHOST   :=$(shell echo `hostname` || echo Unknown host )
 BUILDUSER   :=$(USER)
+BKERNEL     :=$(shell echo `uname -o`-`uname -r` || echo Unknown kernel )
 
 ###########################################################################
 
@@ -66,6 +67,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
 	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
 	    -e "s|BUILDFC|$(FTN)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(FLLLOC)/*.o
@@ -82,6 +84,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
 	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
 	    -e "s|BUILDFC|$(MPI_FC)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
 	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(FLLLOC)/*.o
