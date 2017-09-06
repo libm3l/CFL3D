@@ -222,7 +222,7 @@ def mkconfigfile(path, cwd,version):
 #
 #  set some global parameters
 #
-    fconfig.write("PROJ_ROOT_PATH="+path+"\n")
+    fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")

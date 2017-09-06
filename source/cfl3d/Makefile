@@ -7,7 +7,6 @@
 #
 # Copyright 2001 United States Government as represented by the Administrator
 # of the National Aeronautics and Space Administration. All Rights Reserved.
-# 
 # The CFL3D platform is licensed under the Apache License, Version 2.0 
 # (the "License"); you may not use this file except in compliance with the 
 # License. You may obtain a copy of the License at 
@@ -48,6 +47,12 @@ SUBDIRS= \
 	
 EXEC = SEQ
 
+COMPILETIME :=$(shell date || echo Unknown time )
+BUILDSYSTEM :=$(shell echo `uname -s`-`uname -m` || echo Unknown system )
+BUILDHOST   :=$(shell echo `hostname` || echo Unknown host )
+BUILDUSER   :=$(USER)
+BKERNEL     :=$(shell echo `uname -o`-`uname -r` || echo Unknown kernel )
+
 ###########################################################################
 
 all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
@@ -57,10 +62,15 @@ include ../../rules.mk
 #mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
-	echo Serial version
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(FTN)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
+	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(FTN) $(LFLAGS) -o cfl3d_seq  main.o libs/*.o  seq/*.o $(FLLLOC)/*.o
+	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
 	@echo '* sequential complex version of CFL3D built successfully!'
@@ -69,9 +79,15 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	rm main.o
 	
 $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
-	cp $(srcdir)/main.F  main.F
+	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
+	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
+	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
+	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
+	    -e "s|BUILDFC|$(MPI_FC)|g" \
+	    -e "s|BKERNEL|$(BKERNEL)|g" \
+	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi  main.o libs/*.o  mpi/*.o $(FLLLOC)/*.o
+	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(FLLLOC)/*.o
 	@echo '************************************************'
 	@echo '*'
 	@echo '* MPI complex version of CFL3D built successfully!'
@@ -81,7 +97,8 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 
 
 clean: $(SUBDIR_COMP:%=%.clean)
-	rm -f *.x *.o *.mod cfl3d_mpi  cfl3d_seq 
+	rm -f *.x *.o *.mod
+	find ./ -executable -type f | xargs rm
 
 depend: $(SUBDIRS:%=%.depend)
 

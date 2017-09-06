@@ -7,7 +7,6 @@
 #
 # Copyright 2001 United States Government as represented by the Administrator
 # of the National Aeronautics and Space Administration. All Rights Reserved.
-# 
 # The CFL3D platform is licensed under the Apache License, Version 2.0 
 # (the "License"); you may not use this file except in compliance with the 
 # License. You may obtain a copy of the License at 
@@ -35,8 +34,6 @@
 include src_dir_path.mk
 include config.mk
 
-FMODDIRS  = $(FLLLOC)
-
 SUBDIRS= \
 	cfl3d\
 	maggie\
@@ -57,7 +54,16 @@ SUBDIRS_CMP = \
        splitcmplx\
        tools
        
-	
+SUBDIRS_CFL3D = cfl3d	
+SUBDIRS_CFL3DCMPX = cfl3dcmplx	
+
+SUBDIRS_MAG = maggie cfl3d/libs   cfl3d/seq
+SUBDIRS_PRECF = precfl3d cfl3d/libs   cfl3d/seq
+SUBDIRS_PRER = preron cfl3d/libs   cfl3d/seq
+SUBDIRS_RON = ronnie cfl3d/libs   cfl3d/seq
+SUBDIRS_SPLITT = splitter cfl3d/libs   cfl3d/seq
+SUBDIRS_SPLIC = splitcmplx cfl3d/libs   cfl3d/seq
+SUBDIRS_TOOLS = tools cfl3d/libs   cfl3d/seq
 
 ###########################################################################
 
@@ -76,10 +82,32 @@ splitcmplx.all: cfl3d.all
 tools.all: cfl3d.all
 
 
-cfl3d:
+cfl3d: $(SUBDIRS_CFL3D:%=%.all) 
+
+cfl3dcmplx: $(SUBDIRS_CFL3DCMPX:%=%.all) 
+
+maggie: $(SUBDIRS_MAG:%=%.all) 
+maggie.all: cfl3d/libs.all cfl3d/seq.all
+
+precfl3d: $(SUBDIRS_PRECF:%=%.all) 
+precfl3d.all: cfl3d/libs.all cfl3d/seq.all
+
+preron: $(SUBDIRS_PRER:%=%.all) 
+preron.all: cfl3d/libs.all cfl3d/seq.all
+
+ronnie: $(SUBDIRS_RON:%=%.all) 
+ronnie.all: cfl3d/libs.all cfl3d/seq.all
+
+splitter: $(SUBDIRS_SPLITT:%=%.all) 
+splitter.all: cfl3d/libs.all cfl3d/seq.all
+
+splitcmplx: $(SUBDIRS_SPLITC:%=%.all) 
+splitcmplx.all: cfl3d/libs.all cfl3d/seq.all
+
+tools: $(SUBDIRS_TOOLS:%=%.all) 
+tools.all:  cfl3d/libs.all cfl3d/seq.all
 
 clean: $(SUBDIRS_CMP:%=%.clean)
-	find ./  -executable -type f | xargs rm -f
 
 depend: $(SUBDIRS:%=%.depend)
 
