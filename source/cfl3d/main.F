@@ -465,7 +465,7 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Host '//TRIM(BHOST	)
+      LTEXT='Host - '//TRIM(BHOST	)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
@@ -596,7 +596,7 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Host '//TRIM(BHOST	)
+      LTEXT='Host - '//TRIM(BHOST	)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
