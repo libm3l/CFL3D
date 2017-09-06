@@ -25,9 +25,9 @@
 #
 # 
 # History:
-# Version   Date       Author              Patch number  CLA     Comment
-# -------   --------          --------               ----------------    -----      -------------
-# 1.1       01/09/17     Adam Jirasek                                        Initial implementation
+# Version   Date       Author              Patch number        CLA     Comment
+# -------   --------          --------    ----------------    -----    -------------
+# 1.1       01/09/17     Adam Jirasek                                  Initial implementation
 #
 #
 #
