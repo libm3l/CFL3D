@@ -106,7 +106,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 
 clean: $(SUBDIR_COMP:%=%.clean)
 	rm -f *.x *.o *.mod
-	find ./ -executable -type f | xargs rm
+	find ./ -executable -type f | xargs rm -f
 
 depend: $(SUBDIRS:%=%.depend)
 
