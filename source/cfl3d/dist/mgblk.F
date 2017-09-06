@@ -100,6 +100,7 @@ c
       USE RESID_M
       USE SHIFT_M
       USE UPDATE_M
+      USE COLLQ_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
@@ -1896,7 +1897,7 @@ c
                call collq(w(lq),w(lqc),w(lvol),w(lvolc),jdim,kdim,idim,
      .                    jj2,kk2,ii2,wk(lres),w(lqrc),wk(lwj0),
      .                    w(lvis),w(lvtc),w(lxib),w(lxibc),
-     .                    nbl,nou,bou,nbuf,ibufdim,nummem)
+     .                    nbl,nou,bou,nbuf,ibufdim,nummem,pglob)
 c
 c              restrict qc0 and dqc0 for time-accurate multigrid
 c

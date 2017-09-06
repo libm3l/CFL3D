@@ -53,9 +53,12 @@ bc_blkint.o :
 
 cputim.o : 
 
+resp.o : 
+
 calyplus.o : 
 
-resp.o : 
+pointers.o :  \
+	../../cfl3d/libs/module_kwstm.o
 
 qout_coarse.o : 
 
@@ -101,6 +104,7 @@ umalloc_c.o :
 yplusout.o : 
 
 mgblk.o :  \
+	../../cfl3d/libs/collq.o \
 	../../cfl3d/libs/shift.o \
 	../../cfl3d/libs/resid.o \
 	../../cfl3d/libs/update.o
@@ -112,6 +116,3 @@ qout_2d.o :
 dynptch.o : 
 
 rrestg.o : 
-
-pointers.o :  \
-	../../cfl3d/libs/module_kwstm.o

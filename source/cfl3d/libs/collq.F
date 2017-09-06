@@ -20,9 +20,11 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE COLLQ_M
+      CONTAINS
       subroutine collq(q,qq,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
      .                 res,qr,qw,vistf,vistc,tursavf,tursavc,
-     .                 nbl,nou,bou,nbuf,ibufdim,nummem)
+     .                 nbl,nou,bou,nbuf,ibufdim,nummem,PGLOB)
 c
 c     $Id$
 c
@@ -31,11 +33,21 @@ c     Purpose:  Restrict q (the primative variables) with a volume-
 c     weighted interpolation and residuals to coarser meshes.  Also
 c     restrict turbulent eddy viscosity in the case of turbulent flows
 c     to coarser meshes.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c                                               need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
 c***********************************************************************
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
+
+      USE FLL_MODS_M
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -50,6 +62,9 @@ c
 c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
+
+      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(FUNC_DATA_SET)  :: FPAR
 c
 c      restrict q(volume-weighted) and r to coarser mesh
 c      restrict viscosity to coarser mesh
@@ -182,3 +197,5 @@ c
       end if
       return
       end
+
+      END MODULE COLLQ_M
