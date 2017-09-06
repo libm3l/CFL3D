@@ -241,9 +241,9 @@ c
 c
 c  additional declarations needed by non-equilibrium model
 c
-      TYPE(DNODE), POINTER :: PGRID,PTMP,PTMQ
+      TYPE(DNODE), POINTER :: PGRID,PTMP,PTMQ,PBLOCK
       INTEGER :: ILEV,IND,IHDM,IDIM,JDIM,KDIM
-      INTEGER(LINT) :: IGRID, NGRID
+      INTEGER(LINT) :: IGRID, NGRID,NBLOCK,IBLOCK
       REAL(RDOUBLE), POINTER :: STR(:,:),STRN1(:,:),STRN2(:,:)
       REAL(RDOUBLE), POINTER :: S11D_N(:),S12D_N(:),S13D_N(:)
       REAL(RDOUBLE), POINTER :: S22D_N(:),S23D_N(:),S33D_N(:)
@@ -322,18 +322,25 @@ c
       ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310 '
 
-      NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
-      DO IGRID=1,NGRID
-         PGRID => FLL_LOCATE(PGLOB,'grid','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-         ILEV = FLL_GETNDATA_I0(PGRID,'level',1_LINT,FPAR)
+
+      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
+
+      DO IBLOCK = 1, NBLOCK  
+
+         PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                       IBLOCK,.FALSE.,FPAR)
+
+         ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
          IF(ILEV == nbl)THEN
+           NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+           PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
            IHDM = 1
            EXIT
          END IF
-         IHDM = 0
-      END DO
+         IHDM = 0 
 
+      END DO
       END IF
 !
 !  if non-equilibrium model

@@ -141,9 +141,9 @@ c
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /reystressmodel/ issglrrw2012,i_sas_rsm
 
-      TYPE(DNODE), POINTER :: PGLOB, PGRID
+      TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
-      INTEGER(LINT) :: IGRID, NGRID
+      INTEGER(LINT) :: IGRID, NGRID, NBLOCK,IBLOCK
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -1035,18 +1035,25 @@ c     look for non-equilibrium model extra data
 c
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
       PGRID => NULL()
-      IF(IHDM == 1)THEN      
-        NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
-        DO IGRID=1,NGRID
-           PGRID => FLL_LOCATE(PGLOB,'grid','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-           ILEV = FLL_GETNDATA_I0(PGRID,'level',1_LINT,FPAR)
-           IF(ILEV == nbl)THEN
-             IHDM = 1
-             EXIT
-           END IF
-           IHDM = 0
-        END DO
+      IF(IHDM == 1)THEN     
+      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
+
+      DO IBLOCK = 1, NBLOCK  
+
+         PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                       IBLOCK,.FALSE.,FPAR)
+
+         ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
+         IF(ILEV == nbl)THEN
+           NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+           PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+           IHDM = 1
+           EXIT
+         END IF
+         IHDM = 0 
+
+      END DO
       END IF
 c
 c     residuals   J direction - viscous terms
@@ -1069,7 +1076,6 @@ c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
-!         write(*,*)' CALLING   gfluxv1'
          call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
      .                bcj,bck,bci,volj0,

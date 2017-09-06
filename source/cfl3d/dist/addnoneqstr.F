@@ -37,10 +37,10 @@ c
       USE FLL_MODS_M
       IMPLICIT NONE
 c
-      TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID
+      TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID,PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
 
-      INTEGER :: IHDM,MSEQ,NGRID,NBLOCK,I,J
+      INTEGER :: IHDM,MSEQ,NGRID,NBLOCK,I,J,K
       INTEGER(LINT) :: DIMS, NDIMS
       INTEGER :: IDIMG(*),JDIMG(*),KDIMG(*)
 !
@@ -58,7 +58,6 @@ c
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
        IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
-       write(*,*)' value of ihdm is ', IHDM
 
        IF(IHDM /= 1)THEN
 !
@@ -73,9 +72,8 @@ c
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
 
-       DO J = 1,MSEQ
+       DO J = 1,1   !MSEQ
 
-         DIMS = IDIMG(J)*JDIMG(J)*KDIMG(J)
          IF(IDIMG(J) == 2)THEN
            NDIMS = 2*2
          ELSE
@@ -84,40 +82,49 @@ c
        
          WRITE(*,*)'======================= ',  MSEQ,NGRID, NBLOCK
 
-         DO I=1,NBLOCK
+         DO K=1,NBLOCK
 
-           WRITE(*,*)' DIMS', idimg(j),jdimg(j),kdimg(j) 
 
-         END DO
+           PBLOCK => FLL_MK("block","DIR",0_LINT, 0_LINT,FPAR)
+           IF(.NOT.FLL_MV(PBLOCK, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+           PTMP => FLL_MK('cfl3d-level','I',1_LINT,1_LINT, FPAR)
+           PTMP%I0 = NBLOCK - K + 1
+           IF(.NOT.FLL_MV(PTMP, PBLOCK, FPAR))STOP'ERROR MOVING NODE'
+           PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
+           PTMP%I0 = K
+           IF(.NOT.FLL_MV(PTMP, PBLOCK, FPAR))STOP'ERROR MOVING NODE'
 
-         DO I = 1,NGRID  ! NBLOCK
+           DO I = 1,NGRID  ! NBLOCK
 
-           PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
-           IF(.NOT.FLL_MV(PGRID, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
+             PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
+             IF(.NOT.FLL_MV(PGRID,PBLOCK,FPAR))STOP'ERROR MOVING NODE'
 
              PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
              PTMP%I0 = J
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
 
              PTMP => FLL_MK('dimensions','L',3_LINT,1_LINT, FPAR)
-             PTMP%L1(1) = idimg(j)
-             PTMP%L1(2) = jdimg(j)
-             PTMP%L1(3) = kdimg(j)
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+             PTMP%L1(1) = idimg(k)
+             PTMP%L1(2) = jdimg(k)
+             PTMP%L1(3) = kdimg(k)
+             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+
+             DIMS = IDIMG(K)*JDIMG(K)*KDIMG(K)
+
+             IF(K == 1)THEN
 !
 !  save velocity in three time levels, shift in shift.F
 !  value of velcoity calculated in twoeqn.F
 !
-             PTMP => FLL_MK('velocity','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
-             PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
-             PTMP%D2 = 0.
-             IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP' ERROR MOVING NODE'
+               PTMP => FLL_MK('velocity','D',dims,3_LINT, FPAR)
+               PTMP%D2 = 0.
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('velocity_nn','D',dims,3_LINT, FPAR)
+               PTMP%D2 = 0.
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('velocity_nn1','D',dims,3_LINT, FPAR)
+               PTMP%D2 = 0.
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
              
 !
 !  save DS/Dt and D2S/Dt2, value calculated
@@ -147,9 +154,10 @@ c
 !  these is a temproray term, value calculated
 !  in twoeqn.F
 !
-              PTMP => FLL_MK('DSDT_N','D',dims,13_LINT, FPAR)
-              PTMP%D2 = 0.
-              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+               PTMP => FLL_MK('DSDT_N','D',dims,13_LINT, FPAR)
+               PTMP%D2 = 0.
+               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
+              END IF
 !
 !  extra term in strain rate, needed in viscous fluces, value calculated
 !  in twoeqn.F
@@ -157,12 +165,11 @@ c
               PTMP => FLL_MK('Extra_Strain','D',dims,6_LINT, FPAR)
               PTMP%D2 = 0.
               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
-
+           END DO
          END DO
        END DO
 
        CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
-
 
       END SUBROUTINE ADDNONEQSTR
 

@@ -38,45 +38,54 @@ c
       USE FLL_MODS_M
       IMPLICIT NONE
 c
-      TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID,PTMP1,PTMP2
+      TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID,PTMP1,PTMP2,PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
 
-      INTEGER(LINT) :: IGRID,NGRID
+      INTEGER(LINT) :: IGRID,NGRID,IBLOCK,NBLOCK
       INTEGER :: IHDM
 
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
       IF(IHDM /= 1)RETURN
 
-      NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
-      DO IGRID=1,NGRID
-         PGRID => FLL_LOCATE(PGLOB,'grid','DIR',-1_LINT,
+      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)
+      DO IBLOCK=1,NBLOCK
+         PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                       IBLOCK,.FALSE.,FPAR)
+
+         NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+         DO IGRID=1,NGRID
+            PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       IGRID,.FALSE.,FPAR)
 !
 !  strain rate
 !
-         PTMP => FLL_LOCATE(PGRID,'ST','D',-1_LINT,
+            PTMP => FLL_LOCATE(PGRID,'ST','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
-         PTMP1 => FLL_LOCATE(PGRID,'STN1','D',-1_LINT,
+            IF(ASSOCIATED(PTMP))THEN
+              PTMP1 => FLL_LOCATE(PGRID,'STN1','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
-         PTMP2 => FLL_LOCATE(PGRID,'STN2','D',-1_LINT,
+              PTMP2 => FLL_LOCATE(PGRID,'STN2','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
 
-         PTMP2%D2 = PTMP1%D2
-         PTMP1%D2 = PTMP%D2
+              PTMP2%D2 = PTMP1%D2
+              PTMP1%D2 = PTMP%D2
+            END IF
 !
 !  velocities
 !
-         PTMP => FLL_LOCATE(PGRID,'velocity','D',-1_LINT,
+            PTMP => FLL_LOCATE(PGRID,'velocity','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
-         PTMP1 => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
+            IF(ASSOCIATED(PTMP))THEN
+              PTMP1 => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
-         PTMP2 => FLL_LOCATE(PGRID,'velocity_nn1','D',-1_LINT,
+              PTMP2 => FLL_LOCATE(PGRID,'velocity_nn1','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR) 
 
-         PTMP2%D2 = PTMP1%D2
-         PTMP1%D2 = PTMP%D2
-      END DO
-
+              PTMP2%D2 = PTMP1%D2
+              PTMP1%D2 = PTMP%D2
+            END IF
+         END DO
+       END DO
 
       END SUBROUTINE SHIFT
 
