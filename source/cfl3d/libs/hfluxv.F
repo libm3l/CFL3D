@@ -88,7 +88,8 @@ c
 
       INTEGER :: IHDM,ISTAT
 
-      write(*,*)' In HFLUXV ',i,npl,idim,jdim,kdim
+      !write(*,*)' In HFLUXV ',i,npl,idim,jdim,kdim
+      !write(*,*)' Levels     ', level, lglobal
 
       kdim1 = kdim-1
       jdim1 = jdim-1
@@ -142,7 +143,7 @@ c
       coef_eddy = 1.0
       if(ivisc(3)>=70) coef_eddy=0.
 
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 1'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 1'
 c
       kdim1 = kdim-1
       jdim1 = jdim-1
@@ -194,7 +195,7 @@ c  t(19)   : v
 c  t(20)   : w
 c  t(22)   : density
 c
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 2'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 2'
       l1 = jdim*kdim-1
       do 10 ipl=1,npl
       ii = i+ipl-1
@@ -229,7 +230,7 @@ c
       jmin = 1
       jmax = jdim-1
 
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 3'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 3'
 c
       do 6120 ii=imin,imax
       jc         = (ii-i)*jdim1 + jmin-1
@@ -277,7 +278,7 @@ c t(7) : laminar viscosity at cell centers (via sutherland relation)
 c
       c2b  = cbar/tinf
       c2bp = c2b+1.e0
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 4'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 4'
 c
 cdir$ ivdep
       do 1006 izz=1,n
@@ -312,7 +313,7 @@ cdir$ ivdep
  1008 continue
 
 
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 5'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 5'
 c
 c******************************************************************************
 c
@@ -385,7 +386,7 @@ cdir$ ivdep
  1016 continue
  1000 continue
 
-       write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 6'
+       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 6'
 c
 c******************************************************************************
 c
@@ -423,7 +424,7 @@ c     laminar
  1018 continue
       end if
 
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 7'
+      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 7'
 c
 cdir$ ivdep
       do 1022 izz=1,l0
@@ -465,7 +466,7 @@ cdir$ ivdep
      .                          +t(izz,27)*t(izz,10))
  1023 continue
 
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 8'
+      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 8'
 c
 c******************************************************************************
 c
@@ -519,7 +520,7 @@ c    .                +t(izz,4)*(ab*wk0(izz,10)+bb*t(izz,20)))
  1025 continue
 
 
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 9'
+      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 9'
 c
       if (idf.gt.0) go to 3333
 c
@@ -559,7 +560,7 @@ cdir$ ivdep
       t(izz,5) = -t(izz+js-1,16)+t(izz,16)
  1029 continue
 
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 10'
+      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 10'
 c
 c******************************************************************************
 c
@@ -1374,9 +1375,6 @@ c   to get mulam, need mulam=t14*t15/xmre-t24
  1285     continue
  1286   continue
       else if(i_nonlin .ne. 0 .and. level .ge. lglobal) then
-
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 12'
-
         re=reue/xmach
 c   Add nonlinear terms to RHS
         do 1296 ipl=1,npl
@@ -1422,8 +1420,6 @@ c            Find tauij values:
               w=0.5*(q(j,k,ii,4)+qk0(j,ii,4,1))*(1.-wk0(j+jkv2,5))+
      +            qk0(j,ii,4,1)*wk0(j+jkv2,5)
               zk_sa=0.
-
-              write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr'
               if (ivisc(3).eq.6 .or. ivisc(3).eq.7 .or. 
      +            ivisc(3).eq.10.or. ivisc(3).eq.15) then
                 zk_sa=0.5*(zksav(j,k,ii,2)+tk0(j,ii,2,1))
@@ -1658,7 +1654,7 @@ c   sign (this term is going into -d/dxj(Hv) term)
 c
  3333 continue
 
-      write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 14'
+      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 14'
 c
 c******************************************************************************
 c

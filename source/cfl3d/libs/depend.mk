@@ -559,7 +559,8 @@ bc2010.o :
 
 rb_pred.o : 
 
-collq.o : 
+collq.o :  \
+	find_index.o
 
 bc1008.o : 
 
