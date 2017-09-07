@@ -6,10 +6,10 @@ ronnie.o :
 
 main_pre.o : 
 
-termn8.o : 
-
 main.o : 
 
 setup.o : 
 
 sizer.o : 
+
+termn8.o : 

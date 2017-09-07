@@ -48,7 +48,7 @@ ifneq (,$(findstring mpi,$(DIR)))
 	LFLAGS :=$(MPI_LFLAGS)
 endif 
 
-FMODDIRS= 
+FMODDIRS=  $(EFMODDIRS)
 FMODDIRS+=../libs
 
 FCMODINCFLAG = -I

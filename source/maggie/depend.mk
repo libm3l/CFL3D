@@ -2,6 +2,6 @@
 
 cputim.o : 
 
-maggie.o : 
-
 wkstn.o : 
+
+maggie.o : 

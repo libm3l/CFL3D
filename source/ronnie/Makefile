@@ -40,7 +40,7 @@ include ../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= ../../source/precfl3d ../../source/cfl3d/dist ../../source/cfl3d/libs
+FMODDIRS= ../../source/precfl3d ../../source/cfl3d/dist ../../source/cfl3d/libs  $(EFMODDIRS)
 
 
 

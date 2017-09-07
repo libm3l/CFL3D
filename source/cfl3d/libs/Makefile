@@ -37,7 +37,7 @@ include ../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= 
+FMODDIRS=  $(EFMODDIRS)
 
 FCMODINCFLAG = -I
 
