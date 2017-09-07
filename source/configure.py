@@ -119,7 +119,8 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
     if not os.path.isdir(fll_abspath):
       print("  ")
-      print("\033[031mERROR:\033[039m specified location of FLL libary \033[032m"+fll_abspath+"\033[039m does not exist, terminating .... ") 
+      print("\033[031mERROR:\033[039m specified location of FLL libary \033[032m"+fll_abspath+"\033[039m does not exist, terminating .... ")
+      print("       terminating .... ") 
       sys.exit()
 #
 #  creating config file
@@ -147,7 +148,9 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
              clean = True
            else:
              print ("\033[031mError:\033[039m given build location already exist: \033[032m"+os.path.abspath(build)+"\033[039m")  	
-             print ("\033[031m      \033[039m choose different location \033[032m"  "\033[039m") 
+             print ("\033[031m      \033[039m choose different build location or\033[032m"  "\033[039m")
+             print ("\033[031m      \033[039m use options \033[032m '-f' '--force' \033[039m or \033[032m '-o' '--overwrite' \033[039m")
+             print("       terminating .... ")
              sys.exit()
 #
 #  got to build directory
