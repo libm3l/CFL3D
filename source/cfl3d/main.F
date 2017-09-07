@@ -365,6 +365,7 @@ c
       character(80) :: BHOST   = 'Unknown'
       character(80) :: BUSER   = 'Unknown'
       character(80) :: BFC     = 'Unknown'
+      character(80) :: BC     = 'Unknown'
       character(80) :: KERNEL  = 'Unknown'
       character(72) :: ltext
       CHARACTER(255):: LONGTEXT
@@ -399,6 +400,7 @@ c
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
         BFC      ='BUILDFC'
+        BC       ='BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
@@ -463,7 +465,7 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Host '//TRIM(BHOST	)
+      LTEXT='Host - '//TRIM(BHOST	)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
@@ -479,13 +481,22 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Compiler - '//TRIM(BFC)
+      LTEXT='Fortran - '//TRIM(BFC)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
      . '                                        #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='C - '//TRIM(BC)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
       WRITE(*,*)' #                                                 
      .               #'
       WRITE(*,*)' #                                                 
@@ -520,6 +531,7 @@ c
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
         BFC      ='BUILDFC'
+        BC       ='BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
@@ -584,7 +596,7 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Host '//TRIM(BHOST	)
+      LTEXT='Host - '//TRIM(BHOST	)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
@@ -600,13 +612,23 @@ c
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
-      LTEXT='Compiler - '//TRIM(BFC)
+      LTEXT='Fortran - '//TRIM(BFC)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
      . '                                        #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
+
+      LTEXT='C - '//TRIM(BC)
+      N = LEN_TRIM(LTEXT)
+      HAL = (75-N)/2
+      WRITE(LONGTEXT,*)'#                            ',
+     . '                                        #'
+      LONGTEXT(HAL:HAL+N) = LTEXT
+      WRITE(*,*)TRIM(LONGTEXT)
+
+
       WRITE(*,*)' #                                                 
      .               #'
       WRITE(*,*)' #                                                 

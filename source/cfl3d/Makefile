@@ -52,6 +52,12 @@ BUILDSYSTEM :=$(shell echo `uname -s`-`uname -m` || echo Unknown system )
 BUILDHOST   :=$(shell echo `hostname` || echo Unknown host )
 BUILDUSER   :=$(USER)
 BKERNEL     :=$(shell echo `uname -o`-`uname -r` || echo Unknown kernel )
+BFORT       :=$(shell echo `$(FTN) --version | head -n 1  `|| echo Unknown fortran )
+BC          :=$(shell echo `$(CC)  --version | head -n 1  `|| echo Unknown fortran )
+BFORTMPI    :=$(shell echo `$(MPI_FTN) --version | head -n 1  `|| echo Unknown fortran )
+BCMPI       :=$(shell echo `$(CC)  --version | head -n 1  `|| echo Unknown fortran )
+
+
 
 ###########################################################################
 
@@ -66,7 +72,8 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
 	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
 	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
-	    -e "s|BUILDFC|$(FTN)|g" \
+	    -e "s|BUILDFC|$(BFORT)|g" \
+	    -e "s|BUILDCC|$(BC)|g" \
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
@@ -83,7 +90,8 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	    -e "s|BUILDHOST|$(BUILDHOST)|g" \
 	    -e "s|BUILDSYSTEM|$(BUILDSYSTEM)|g" \
 	    -e "s|BUILDUSER|$(BUILDUSER)|g" \
-	    -e "s|BUILDFC|$(MPI_FC)|g" \
+	    -e "s|BUILDFC|$(BFORTMPI)|g" \
+	    -e "s|BUILDCC|$(BCMPI)|g" \
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
@@ -98,7 +106,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 
 clean: $(SUBDIR_COMP:%=%.clean)
 	rm -f *.x *.o *.mod
-	find ./ -executable -type f | xargs rm
+	find ./ -executable -type f | xargs rm -f
 
 depend: $(SUBDIRS:%=%.depend)
 
