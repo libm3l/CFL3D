@@ -33,14 +33,22 @@
 #
 #
 
-EXEC    = cfl3d_seq
-
 include src_dir_path.mk
 include ../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= $(FLLLOC)
+# Use MPI compilation in this file
+
+DIR = $(PWD)
+
+ifneq (,$(findstring mpi,$(DIR)))
+	FTN          =$(MPI_FTN)
+	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+	LFLAGS :=$(MPI_LFLAGS)
+endif 
+
+FMODDIRS= 
 FMODDIRS+=../libs
 
 FCMODINCFLAG = -I
@@ -52,17 +60,15 @@ OFILES1  =$(FFILES:.F=.o)
 OFILES   =$(OFILES1:.F90=.o)
 
 XOFILES+=$(wildcard ../libs/*.o)
-XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
-all: $(EXEC)
-
-$(EXEC):  $(OFILES)
+all: $(OFILES)
 include ../../../rules.mk
 
 clean:
-	rm -f *.x *.o *.mod $(EXEC)
+	rm -f *.x *.o *.mod
+	find ./ -executable -type f | xargs rm -f 
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
