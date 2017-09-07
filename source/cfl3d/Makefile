@@ -64,7 +64,7 @@ BCMPI       :=$(shell echo `$(CC)  --version | head -n 1  `|| echo Unknown fortr
 
 ###########################################################################
 
-all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
+all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x ) 
 include ../../rules.mk
 
 #seq.all: libs.all
