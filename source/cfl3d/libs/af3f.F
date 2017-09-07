@@ -84,6 +84,9 @@ c
 
       TYPE(DNODE), POINTER :: PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: IHDM
+
+      IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -231,7 +234,7 @@ c        Call viscous LHS.
      .               res,q,qk0,sk,vol,wk(iwkd),nvtq,wk0,vist3d,vmuk,
      .               vk0,bck,tursav,tk0,cmuv,
      .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux
-     .               ,pglob)
+     .               ,pglob,IHDM)
       end if
 c
       if (iover.eq.1) call abckz(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),

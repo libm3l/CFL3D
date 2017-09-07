@@ -25,7 +25,7 @@ c
       subroutine gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                  sj,sk,si,vol,t,nvtq,wj0,vist3d,vj0,
      .                  bcj,bck,bci,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB)
+     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB,IHDM)
 c
 c     $Id$
 c
@@ -79,6 +79,7 @@ c
 
       TYPE(DNODE), POINTER :: PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: IHDM
 c
 c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey

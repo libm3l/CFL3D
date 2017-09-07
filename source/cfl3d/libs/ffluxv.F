@@ -24,7 +24,8 @@ c
       CONTAINS 
       subroutine ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,t,nvtq,
      .                  wi0,vist3d,vmui,vi0,bci,zksav,ti0,cmuv,voli0,
-     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,PGLOB)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,
+     .                  PGLOB,IHDM)
 c
 c     $Id$
 c
@@ -76,6 +77,7 @@ c
 
       TYPE(DNODE), POINTER :: PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: IHDM
 c
 c     coefficient used to turn off eddy-viscosity based
 c     turbulent stress calculation for ivmx==70 (full

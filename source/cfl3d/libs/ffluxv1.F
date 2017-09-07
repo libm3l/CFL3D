@@ -25,7 +25,7 @@ c
       subroutine ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                  sj,sk,si,vol,t,nvtq,wi0,vist3d,vi0,
      .                  bcj,bck,bci,voli0,
-     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB)
+     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB,IHDM)
 c
 c     $Id$
 c
@@ -78,6 +78,7 @@ c
 
       TYPE(DNODE), POINTER :: PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: IHDM
 
       coef_eddy = 1.0
       if(ivisc(1)>=70) coef_eddy=0.

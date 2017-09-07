@@ -25,7 +25,7 @@ c
       subroutine hfluxv(i,npl,jdim,kdim,idim,idf,ak,bk,ck,res,q,qk0,sk,
      .                  vol,t,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .                  zksav,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .                  iadv,nummem,ux,PGRID)
+     .                  iadv,nummem,ux,PGRID,IHDM)
 c
 c     $Id$
 c
@@ -88,14 +88,13 @@ c
 
       INTEGER :: IHDM,ISTAT
 
-      !write(*,*)' In HFLUXV ',i,npl,idim,jdim,kdim
-      !write(*,*)' Levels     ', level, lglobal
-
       kdim1 = kdim-1
       jdim1 = jdim-1
 
-      IF(ASSOCIATED(PGRID))THEN
-	IHDM = 1
+      IF(IHDM == 1)THEN
+!
+!  if IHDM == 1 : non-equilibirum k-w model
+!
         PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
 
@@ -109,7 +108,6 @@ c
 	ALLOCATE(S11E(SIZE(T,1), 6), STAT = ISTAT)
           IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
 
-
         do ipl=1,npl
         ii = i+ipl-1
         do k=1,kdim1
@@ -117,12 +115,12 @@ c
 cdir$ ivdep
         do izz=1,jdim1
 
-!          S11E(izz+jkv-1,1) = STRETRM11(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-!          S11E(izz+jkv-1,2) = STRETRM12(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-!          S11E(izz+jkv-1,3) = STRETRM13(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-!          S11E(izz+jkv-1,4) = STRETRM22(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-!          S11E(izz+jkv-1,5) = STRETRM23(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-!          S11E(izz+jkv-1,6) = STRETRM33(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,1) = STRETRM11(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,2) = STRETRM12(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,3) = STRETRM13(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,4) = STRETRM22(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,5) = STRETRM23(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
+ !         S11E(izz+jkv-1,6) = STRETRM33(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
 
         end do
         end do
@@ -482,13 +480,6 @@ cdir$ ivdep
  1922 continue
  1923 continue
 c
-      if (iadv .lt. 0)THEN
-        IF(ASSOCIATED(PGRID))THEN
-	  DEALLOCATE(S11E, STAT = ISTAT)
-            IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
-        END IF
-        return
-      END IF
 c
 c******************************************************************************
 c
@@ -579,7 +570,7 @@ cdir$ ivdep
 c
 c  Add tau_ij's for RSMs:
 c
-      if (ivisc(3) .ge. 70) then
+      IF70: if (ivisc(3) .ge. 70) then
         re=reue/xmach
         do 8296 ipl=1,npl
           ii=i+ipl-1
@@ -686,7 +677,13 @@ c   sign (this term is going into -d/dxj(Hv) term)
                 res(izz,k,ii,l)=res(izz,k,ii,l)+t(izz+jkv-1,l)
  8267         continue
  8268   continue
-      end if
+      end if IF70
+
+      IFIHDM: if(ivisc(3) == 6 .AND. IHDM == 1)then
+
+           WRITE(*,*)' blabla'
+      end if IFIHDM
+
       if((ivisc(3) .eq. 11 .or. ivisc(3) .eq. 12) .and. 
      .    level .ge. lglobal) then
 c f7=factor for determining whether it's a k-omega or k-epsilon formulation
@@ -1793,11 +1790,7 @@ cdir$ ivdep
       ak(izz,2,5,k)  = ak(izz,2,5,k)+t(izz+js-1,11+k)
  1063 continue
  5980 continue
-     
-      IF(ASSOCIATED(PGRID))THEN
-        DEALLOCATE(S11E, STAT = ISTAT)
-          IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
-      END IF
+
       return
       end
 
