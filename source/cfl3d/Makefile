@@ -67,8 +67,8 @@ BCMPI       :=$(shell echo `$(CC)  --version | head -n 1  `|| echo Unknown fortr
 all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x ) 
 include ../../rules.mk
 
-#seq.all: libs.all
-#mpi.all: libs.all
+seq.all: libs.all
+mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
