@@ -204,7 +204,7 @@ c
       if (ivisc(1) == 6 .and. ihdm == 1) then
 
         XSTRAIN => FLL_GETNDATA_D2(PGRID,'Extra_Strain',1_LINT,FPAR)
-        XSTRAINL => FLL_GETNDATA_D2(PGRID,'Extra_Strain',1_LINT,FPAR)
+        XSTRAINL => FLL_GETNDATA_D2(PGRIDL,'Extra_Strain',1_LINT,FPAR)
 
          if (idim.gt.2) then
           kk = 0
@@ -218,8 +218,8 @@ c
               ii = ii+1
                 XSTRAINL(FIND_INDEX(II,JJ,KK,II2,JJ2,KK2),:) =
      .          .125_RDOUBLE*(
-     .          XSTRAIN(FIND_INDEX(j,k,i,IDIM,JDIM,KDIM),:)+
-     .          XSTRAIN(FIND_INDEX(j,k,i+1,IDIM,JDIM,KDIM),:)
+     .           XSTRAIN(FIND_INDEX(j,k,i,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(j,k,i+1,IDIM,JDIM,KDIM),:)
      .          +XSTRAIN(FIND_INDEX(j+1,k,i,IDIM,JDIM,KDIM),:)   
      .          +XSTRAIN(FIND_INDEX(j+1,k,i+1,IDIM,JDIM,KDIM),:)
      .          +XSTRAIN(FIND_INDEX(j,k+1,i,IDIM,JDIM,KDIM),:) 
