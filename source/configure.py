@@ -179,7 +179,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath)
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath,fll_lib=fll)
 
 
 
@@ -201,7 +201,7 @@ def config_init(path,fll):
     except OSError:
         pass
     
-    fconfig = open(confname, 'w')
+    fconfig = open(confname, 'w')    
 #
 #  set some global parameters
 #
@@ -212,7 +212,7 @@ def config_init(path,fll):
     fconfig.write("#\n")
     fconfig.close()
 
-def mkconfigfile(path, cwd,version,fll):
+def mkconfigfile(path, cwd,version,fll,fll_lib):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -233,6 +233,13 @@ def mkconfigfile(path, cwd,version,fll):
         print ("\033[031mDIAG: \033[039m config.mk file \033[032m \033[039m already exists, removing ....")
     except OSError:
         pass
+#
+#  find FLL library location
+#
+    for root, dirnames, filenames in os.walk(fll_lib):
+        if 'fll.a' in filenames:
+            lpath = os.path.join(root, 'fll.a')
+            break
     
     fconfig = open(confname, 'w')
 #
@@ -260,10 +267,13 @@ def mkconfigfile(path, cwd,version,fll):
            if ( not(line.startswith('#')) or not line.strip()): 
                 print(line)
                 fconfig.write(line)
-
     fconfig.write("#\n")  
     fconfig.write("#\n")
-    fconfig.write("#  MACHINE identifies the host machine type")
+    fconfig.write("#  Libraries\n")
+    fconfig.write("#\n")
+    fconfig.write("LIBS="+lpath+"\n")  
+    fconfig.write("#\n")
+    fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
     fconfig.write("MACHINE="+platform.machine()+"\n")
     fconfig.write("#\n")
@@ -296,7 +306,7 @@ if __name__ == "__main__":
     parser.add_argument('-c','--compiler',nargs=1,help='Compiler configuration')
     parser.add_argument('-f','--force',action='store_true',help='Force updates to existing installation')
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
-    parser.add_argument('-L','--fll',nargs=1,help='Location of FLL library')
+    parser.add_argument('-L','--fll',nargs=1,help='Location of FLL utility')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
 
     # Parse the command line arguments
