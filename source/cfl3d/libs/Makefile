@@ -60,7 +60,7 @@ include ../../../rules.mk
 
 clean:
 	rm -f *.x *.o *.mod 
-	find ./ -executable -type f | xargs rm
+	find ./ -executable -type f | xargs rm -f
 
 depend: $(FFILES)
 	@echo "Making dependencies!"

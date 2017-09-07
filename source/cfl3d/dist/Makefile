@@ -40,6 +40,16 @@ include ../../config.mk
 
 DEP_FILE=depend.mk
 
+# Use MPI compilation in this file
+
+DIR = $(PWD)
+
+ifneq (,$(findstring mpi,$(DIR)))
+	FTN          =$(MPI_FTN)
+	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+	LFLAGS :=$(MPI_LFLAGS)
+endif 
+
 FMODDIRS= $(FLLLOC)
 FMODDIRS+=../libs
 
@@ -62,7 +72,8 @@ $(EXEC):  $(OFILES)
 include ../../../rules.mk
 
 clean:
-	rm -f *.x *.o *.mod $(EXEC)
+	rm -f *.x *.o *.mod 
+	find ./ -executable -type f | xargs rm -f
 
 depend: $(FFILES)
 	@echo "Making dependencies!"

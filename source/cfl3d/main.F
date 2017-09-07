@@ -399,21 +399,23 @@ c
         BSYSTEM  ='BUILDSYSTEM'
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
-        BFC      ='BUILDFC'
-        BC       ='BUILDCC'
+        BFC      =
+     .'BUILDFC'
+        BC       =
+     .'BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
-     .################'
+     .##################'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       LTEXT='CFL3D - V6.0'
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -421,7 +423,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -429,23 +431,23 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
 
 
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       LTEXT='Build time - '//TRIM(BTIME)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -453,7 +455,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -461,7 +463,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -469,7 +471,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -477,7 +479,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -485,7 +487,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -493,16 +495,17 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
+
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' ######################################################
-     .################'
+     .##################'
 
 
       end if
@@ -530,21 +533,23 @@ c
         BSYSTEM  ='BUILDSYSTEM'
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
-        BFC      ='BUILDFC'
-        BC       ='BUILDCC'
+        BFC      =
+     .'BUILDFC'
+        BC       =
+     .'BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
-     .################'
+     .##################'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       LTEXT='CFL3D - V6.0'
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -552,7 +557,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -560,23 +565,23 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
 
 
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       LTEXT='Build time - '//TRIM(BTIME)
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -584,7 +589,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -592,7 +597,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -600,7 +605,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -608,7 +613,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -616,7 +621,7 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
@@ -624,17 +629,17 @@ c
       N = LEN_TRIM(LTEXT)
       HAL = (75-N)/2
       WRITE(LONGTEXT,*)'#                            ',
-     . '                                        #'
+     . '                                          #'
       LONGTEXT(HAL:HAL+N) = LTEXT
       WRITE(*,*)TRIM(LONGTEXT)
 
 
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' #                                                 
-     .               #'
+     .                 #'
       WRITE(*,*)' ######################################################
-     .################'
+     .##################'
 #endif
 c
       do ii=1,nbuf
