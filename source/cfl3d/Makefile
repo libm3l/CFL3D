@@ -38,8 +38,11 @@ FMODDIRS  = $(FLLLOC)
 
 SUBDIR_COMP = \
 	libs\
-	seq \
-	mpi
+	seq\
+
+ifneq ($(strip $(MPI_FTN)),)
+  SUBDIR_COMP+= mpi
+endif
 
 SUBDIRS= \
 	libs\
