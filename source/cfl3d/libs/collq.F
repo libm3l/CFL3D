@@ -201,8 +201,8 @@ c
 c
 c   extra terms for non-equilibrium model
 c
-      if (ivisc(1) == 6 .and. ihdm == 1) then
-
+!      if (ivisc(1) == 6 .and. ihdm == 1) then
+      if (ihdm == 1) then
         XSTRAIN => FLL_GETNDATA_D2(PGRID,'Extra_Strain',1_LINT,FPAR)
         XSTRAINL => FLL_GETNDATA_D2(PGRIDL,'Extra_Strain',1_LINT,FPAR)
 
@@ -218,14 +218,14 @@ c
               ii = ii+1
                 XSTRAINL(FIND_INDEX(II,JJ,KK,II2,JJ2,KK2),:) =
      .          .125_RDOUBLE*(
-     .           XSTRAIN(FIND_INDEX(j,k,i,IDIM,JDIM,KDIM),:)
-     .          +XSTRAIN(FIND_INDEX(j,k,i+1,IDIM,JDIM,KDIM),:)
-     .          +XSTRAIN(FIND_INDEX(j+1,k,i,IDIM,JDIM,KDIM),:)   
-     .          +XSTRAIN(FIND_INDEX(j+1,k,i+1,IDIM,JDIM,KDIM),:)
-     .          +XSTRAIN(FIND_INDEX(j,k+1,i,IDIM,JDIM,KDIM),:) 
-     .          +XSTRAIN(FIND_INDEX(j,k+1,i+1,IDIM,JDIM,KDIM),:)
-     .          +XSTRAIN(FIND_INDEX(j+1,k+1,i,IDIM,JDIM,KDIM),:) 
-     .          +XSTRAIN(FIND_INDEX(j+1,k+1,i+1,IDIM,JDIM,KDIM),:))
+     .           XSTRAIN(FIND_INDEX(i,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i+1,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k,IDIM,JDIM,KDIM),:)   
+     .          +XSTRAIN(FIND_INDEX(i+1,j+1,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j,k+1,IDIM,JDIM,KDIM),:) 
+     .          +XSTRAIN(FIND_INDEX(i+1,j,k+1,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k+1,IDIM,JDIM,KDIM),:) 
+     .          +XSTRAIN(FIND_INDEX(i+1,j+1,k+1,IDIM,JDIM,KDIM),:))
 
               end do
             end do
@@ -244,18 +244,15 @@ c
 
                 XSTRAINL(FIND_INDEX(II,JJ,KK,II2,JJ2,KK2),:) =
      .          .25_RDOUBLE*(
-     .           XSTRAIN(FIND_INDEX(j,k,i,IDIM,JDIM,KDIM),:)
-     .          +XSTRAIN(FIND_INDEX(j+1,k,i,IDIM,JDIM,KDIM),:)   
-     .          +XSTRAIN(FIND_INDEX(j,k+1,i,IDIM,JDIM,KDIM),:)  
-     .          +XSTRAIN(FIND_INDEX(j+1,k+1,i,IDIM,JDIM,KDIM),:))
+     .           XSTRAIN(FIND_INDEX(i,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k,IDIM,JDIM,KDIM),:)   
+     .          +XSTRAIN(FIND_INDEX(i,j,k+1,IDIM,JDIM,KDIM),:)  
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k+1,IDIM,JDIM,KDIM),:))
              end do
            end do
 
          end if
       end if
-
-
-
 
       return
       end
