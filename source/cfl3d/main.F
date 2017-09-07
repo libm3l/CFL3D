@@ -399,8 +399,10 @@ c
         BSYSTEM  ='BUILDSYSTEM'
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
-        BFC      ='BUILDFC'
-        BC       ='BUILDCC'
+        BFC      =
+     .'BUILDFC'
+        BC       =
+     .'BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
@@ -530,8 +532,10 @@ c
         BSYSTEM  ='BUILDSYSTEM'
         BHOST    ='BUILDHOST'
         BUSER    ='BUILDUSER'
-        BFC      ='BUILDFC'
-        BC       ='BUILDCC'
+        BFC      =
+     .'BUILDFC'
+        BC       =
+     .'BUILDCC'
         KERNEL   ='BKERNEL'
 
       WRITE(*,*)' ######################################################
