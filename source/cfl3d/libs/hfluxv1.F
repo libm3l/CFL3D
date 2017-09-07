@@ -25,7 +25,7 @@ c
       subroutine hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                  sj,sk,si,vol,t,nvtq,wk0,vist3d,vk0,
      .                  bcj,bck,bci,volk0,
-     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB,IHDM)
+     .                  nou,bou,nbuf,ibufdim,iadv,PGRID,IHDM)
 c
 c     $Id$
 c
@@ -44,6 +44,7 @@ c                                               and FLL_MODS_M
 c***********************************************************************
 c
       USE FLL_MODS_M
+      USE FIND_INDEX_M
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -77,19 +78,69 @@ c
       common /twod/ i2d
       REAL :: coef_eddy
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGRID,PTMQ
       TYPE(FUNC_DATA_SET)  :: FPAR
-      INTEGER :: IHDM
+      REAL(RDOUBLE), ALLOCATABLE :: S11E(:,:)
+      INTEGER :: IHDM,ISTAT
+
+      REAL(RDOUBLE), POINTER :: STRETRM11(:),STRETRM12(:),STRETRM22(:)
+      REAL(RDOUBLE), POINTER :: STRETRM13(:),STRETRM33(:),STRETRM23(:)
 c
 c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey
 c******************************************************************************
 c
-      coef_eddy = 1.0
-      if(ivisc(3)>=70) coef_eddy = 0.0
       kdim1 = kdim-1
       jdim1 = jdim-1
       idim1 = idim-1
+
+
+      IF(IHDM == 1 .and .iadv .GE. 0)THEN
+!
+!  if IHDM == 1 : non-equilibirum k-w model
+!
+        PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
+     .                       1_LINT,.FALSE.,FPAR)
+
+        STRETRM11 => PTMQ%D2(:,1)
+        STRETRM12 => PTMQ%D2(:,2)
+        STRETRM13 => PTMQ%D2(:,3)
+        STRETRM22 => PTMQ%D2(:,4)
+        STRETRM23 => PTMQ%D2(:,5)
+        STRETRM33 => PTMQ%D2(:,6)
+
+!                write(*,*)minval(STRETRM11), maxval(STRETRM11)
+!                write(*,*)minval(STRETRM12), maxval(STRETRM12)
+!                write(*,*)minval(STRETRM13), maxval(STRETRM13)
+!                write(*,*)minval(STRETRM22), maxval(STRETRM22)
+!                write(*,*)minval(STRETRM23), maxval(STRETRM23)
+!                write(*,*)minval(STRETRM33), maxval(STRETRM33)
+
+	ALLOCATE(S11E(SIZE(T,1), 6), STAT = ISTAT)
+          IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
+
+        do ipl=1,npl
+        ii = i+ipl-1
+        do k=1,kdim1
+        jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1 + 1
+cdir$ ivdep
+        do izz=1,jdim1
+          ISTAT = FIND_INDEX(II,IZZ,K,idim,jdim,kdim)
+          S11E(izz+jkv-1,1) = STRETRM11(ISTAT)
+          S11E(izz+jkv-1,2) = STRETRM12(ISTAT)
+          S11E(izz+jkv-1,3) = STRETRM13(ISTAT)
+          S11E(izz+jkv-1,4) = STRETRM22(ISTAT)
+          S11E(izz+jkv-1,5) = STRETRM23(ISTAT)
+          S11E(izz+jkv-1,6) = STRETRM33(ISTAT)
+        end do
+        end do
+        end do
+
+      ENDIF
+
+
+      coef_eddy = 1.0
+      if(ivisc(3)>=70) coef_eddy = 0.0
 c
 c n  : number of cell centers for npl planes
 c l0 : number of cell interfaces for npl planes
@@ -1286,20 +1337,27 @@ c
        tx = t(izz,3)*t(izz,28) + t(izz,7)*t(izz,31)
        ty = t(izz,3)*t(izz,29) + t(izz,7)*t(izz,32)
        tz = t(izz,3)*t(izz,30) + t(izz,7)*t(izz,2)
+
+
+c
+c  non-equilibrium model (IHDM == 1), substract extra part of strain tensor due
+c  to non-equilibrium part from fluxes
+c
+      IF(IHDM /= 1) THEN
 c
 c-- Note lambda = -2/3 mu, lambda + 2 mu = 4/3 mu 
 c--  u-momentum flux
 c 
       t(izz,16)      = t(izz,14)*(  t(izz,25)*(4./3.*ux-2./3.*(vy + wz))
      .                            + t(izz,26)*(uy + vx) 
-     .                            + t(izz,27)*(uz + wx)) 
+     .                            + t(izz,27)*(uz + wx))
 
 c
 c--  v-momentum flux
 c 
       t(izz,17)      = t(izz,14)*(  t(izz,25)*(vx + uy)
      .                            + t(izz,26)*(4./3.*vy-2./3.*(ux + wz))
-     .                            + t(izz,27)*(vz + wy)) 
+     .                            + t(izz,27)*(vz + wy))
 
 c
 c--  w-momentum flux
@@ -1318,6 +1376,48 @@ c
      .              t(izz,27)*((wx+uz)*t(izz,11) + (wy+vz)*t(izz,12) +
      .                         (4./3.*wz - 2./3*(ux+vy))*t(izz,13))  +
      .          t(izz,23)*(t(izz,25)*tx + t(izz,26)*ty + t(izz,27)*tz))
+
+      else
+!
+!  non-equilibrium model
+!
+      t(izz,16)      = t(izz,14)*(  t(izz,25)*(4./3.*ux-2./3.*(vy + wz))
+     .                            + t(izz,26)*(uy + vx) 
+     .                            + t(izz,27)*(uz + wx)
+     . +t(izz,25)*S11E(izz,1)+t(izz,26)*S11E(izz,2)+t(izz,27)*
+     .  S11E(izz,3)) 
+
+c
+c--  v-momentum flux
+c 
+      t(izz,17)      = t(izz,14)*(  t(izz,25)*(vx + uy)
+     .                            + t(izz,26)*(4./3.*vy-2./3.*(ux + wz))
+     .                            + t(izz,27)*(vz + wy)
+
+     . +t(izz,25)*S11E(izz,2)+t(izz,26)*S11E(izz,4)+t(izz,27)*
+     . S11E(izz,5)) 
+c
+c--  w-momentum flux
+c 
+      t(izz,18)      = t(izz,14)*(  t(izz,25)*(wx+uz)
+     .                            + t(izz,26)*(wy+vz)
+     .                            + t(izz,27)*(4./3.*wz-2./3.*(vy+ux))
+     . +t(izz,25)*S11E(izz,3)+t(izz,26)*S11E(izz,4)+t(izz,27)*
+     .  S11E(izz,6)) 
+c
+c--  energy flux
+c 
+      t(izz,19) = t(izz,14)*( 
+     .              t(izz,25)*((4./3.*ux - 2./3*(vy+wz))*t(izz,11) +
+     .                         (uy+vx)*t(izz,12) + (uz+wx)*t(izz,13)) +
+     .              t(izz,26)*((vx+uy)*t(izz,11) + (vz+wy)*t(izz,13) +
+     .                         (4./3.*vy - 2./3*(ux+wz))*t(izz,12)) +
+     .              t(izz,27)*((wx+uz)*t(izz,11) + (wy+vz)*t(izz,12) +
+     .                         (4./3.*wz - 2./3*(ux+vy))*t(izz,13))  +
+     .          t(izz,23)*(t(izz,25)*tx + t(izz,26)*ty + t(izz,27)*tz))
+
+
+      end if
 c   
  1026 continue
 c  (-)viscous flux =  Gv(k-1/2)-Gv(k+1/2) (momentum eqs.)
@@ -1349,6 +1449,12 @@ cdir$ ivdep
       res(izz,k,ii,l) = res(izz,k,ii,l)+t(izz+jkv-1,l)
  1030 continue
   400 continue
+
+      IF(ALLOCATED(S11E))THEN
+	DEALLOCATE(S11E, STAT = ISTAT)
+         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
+      END IF
+
       return
       end
 

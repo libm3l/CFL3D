@@ -2885,8 +2885,6 @@ c            or 0.33333 (3D))
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
                 s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
                 s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-
-                !write(*,*)' IHDMMMMMMMMMMMMMM   1'
 !
 !   save strain rate tensor 
 !
@@ -3047,6 +3045,7 @@ c            or 0.33333 (3D))
                 AE22 = (-LAMBDA*S22DT+LAMBDA*LAMBDA*S22DT2)
                 AE23 = (-LAMBDA*S23DT+LAMBDA*LAMBDA*S23DT2)
                 AE33 = (-LAMBDA*S33DT+LAMBDA*LAMBDA*S33DT2)
+
           
                 SIJTILDE = MAX(EPS,S11*(S11+AE11)+2*S12*(S12+AE12)
      .         + 2*S13*(S13+AE13)
@@ -3202,8 +3201,6 @@ c   Get Pk and Dk:
 
 
               elseif(IHDM == 1)THEN
-
-                               !write(*,*)' IHDMMMMMMMMMMMMMM   3'
 !
 !  non-equilibrium model
 !
@@ -3226,13 +3223,11 @@ c   Get Pk and Dk:
           
                 pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
-
-!                write(*,*)q(j,k,i,1),re, CMUTILDE, cmu,turre(j,k,i,2),
-!     .    turre(j,k,i,1),SIJTILDE
  
               else
-                !write(*,*)' NO------------------------IHDM 14'
+
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+
               end if
               pk=pk*fr1
               if (ides .ne. 0) then
@@ -3245,11 +3240,7 @@ c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               else
-                !write(*,*)' NO------------------------IHDM 15'
-!                write(*,*)q(j,k,i,1),re, CMUTILDE, cmu,turre(j,k,i,2),
-!     .    turre(j,k,i,1),SIJTILDE
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
-!                write(*,*)'Productions ', pk,pw
               end if
               dw=f5*f4*re*betax*turre(j,k,i,1)**2
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*pw-dw
@@ -4246,7 +4237,6 @@ c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
               if (ivmx .eq. 6) then
-                !write(*,*)' NO------------------------IHDM 19'
                 cyadd= 2.*re*beta1*turre(j,k,i,1)
                 cy2add=re*cmuc1*turre(j,k,i,1)
               else if (ivmx .eq. 7) then
@@ -5235,7 +5225,6 @@ c Update VIST3D and save omega and k values
         do k=1,kdim-1
           do j=1,jdim-1
             if (IHDM == 1) then
-                !write(*,*)' IHDMMMMMMMMMMMMMM   5'
 !
 !  save viscosity already calculated by non-eq model
 !  and velocity. It is a duplicate allocation of memory 
@@ -5249,7 +5238,6 @@ c Update VIST3D and save omega and k values
               UUC(INDTMP) = q(j,k,i,2)
               VVC(INDTMP) = q(j,k,i,3)
               WWC(INDTMP) = q(j,k,i,4)
-!                !write(*,*)' IHDMMMMMMMMMMMMMM   6'
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
@@ -5269,21 +5257,16 @@ c            Determine Sij values:
               denom=ccmax(turre(j,k,i,1),xxx*0.875/(re*sqrt(cmuc2)))
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/denom
             else
-                !write(*,*)' NO------------------------IHDM 32'
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
             end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)
 
-!              write(*,*)'VISC   ',vist3d(j,k,i)
-
-
           enddo
         enddo
         enddo
 
-!         write(*,*)'   NEW ====================== '
       else if (ivmx .eq. 7) then
         do i=1,idim-1
         do k=1,kdim-1
@@ -5664,7 +5647,7 @@ c
 c   for wall functions, force k & omega (or epsilon) in 1st cell off solid wall
 c     wall function in k-direction
       if(iwf(3) .eq. 1) then
-                !write(*,*)' NO------------------------IHDM wall fce 35'
+
       do 9181 kk=1,2
       if(kk .eq. 1) then
         k=1

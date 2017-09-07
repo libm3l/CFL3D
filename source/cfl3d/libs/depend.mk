@@ -412,7 +412,8 @@ init.o :
 
 fa2xj.o : 
 
-hfluxv1.o : 
+hfluxv1.o :  \
+	find_index.o
 
 module_profileout.o : 
 
@@ -538,8 +539,7 @@ gfluxl.o :
 update.o :  \
 	af3f.o
 
-hfluxv.o :  \
-	find_index.o
+hfluxv.o : 
 
 init_trim.o : 
 

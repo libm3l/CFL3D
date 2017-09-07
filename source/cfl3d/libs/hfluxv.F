@@ -44,7 +44,6 @@ c                                               and FLL_MODS_M
 c***********************************************************************
 c
       USE FLL_MODS_M
-      USE FIND_INDEX_M
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
