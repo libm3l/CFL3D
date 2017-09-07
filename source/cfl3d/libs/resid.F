@@ -292,7 +292,7 @@ c
 c
   130 continue
 c
-c      turbulent viscosity - finest grids only
+c      turbulent viscosity (gradients of velocity) - finest grids only
 c
       if (iadvance(nbl) .ge. 0) then
 c
@@ -653,7 +653,9 @@ c allocate for DES and DDES
        write(bou(nou(1),1),'('' nroom='',i12)') nroom
        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
-!      write(*,*)' JKA calling twoeqn',jdim,kdim,idim,'---',nbl
+c
+c  get turbulence stuff - production etc.
+c
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
      + wk(iwk5),
@@ -677,8 +679,6 @@ c allocate for DES and DDES
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
      + wk(iwk82),nummem,iccnum,pglob)
-
-!      write(*,*)' JKA after calling twoeqn'
 
       else if (ivmx .eq. 30) then
 c   three-equation turb model
@@ -1196,7 +1196,7 @@ c
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,
-     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),PGRID,IHDM)
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob,ihdm)
             end if
   277       continue
          end if

@@ -1895,8 +1895,6 @@ c
                   write(bou(nou(1),1),2070)
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
-
-               write(*,*)' INTO COLLOWQ ', level
 !
 !   if non-equilibirium model, find the two grids
 !

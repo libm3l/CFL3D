@@ -79,54 +79,11 @@ c
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       real :: coef_eddy
 
-      TYPE(DNODE), POINTER :: PGRID,PTMQ
+      TYPE(DNODE), POINTER :: PGRID
       TYPE(FUNC_DATA_SET)  :: FPAR
-      REAL(RDOUBLE), POINTER :: STRETRM11(:),STRETRM12(:),STRETRM22(:)
-      REAL(RDOUBLE), POINTER :: STRETRM13(:),STRETRM33(:),STRETRM23(:)
-
-      REAL(RDOUBLE), ALLOCATABLE :: S11E(:,:)
-
-      INTEGER :: IHDM,ISTAT
 
       kdim1 = kdim-1
       jdim1 = jdim-1
-
-      IF(IHDM == 1)THEN
-!
-!  if IHDM == 1 : non-equilibirum k-w model
-!
-        PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
-     .                       1_LINT,.FALSE.,FPAR)
-
-        STRETRM11 => PTMQ%D2(:,1)
-        STRETRM12 => PTMQ%D2(:,2)
-        STRETRM13 => PTMQ%D2(:,3)
-        STRETRM22 => PTMQ%D2(:,4)
-        STRETRM23 => PTMQ%D2(:,5)
-        STRETRM33 => PTMQ%D2(:,6)
-
-	ALLOCATE(S11E(SIZE(T,1), 6), STAT = ISTAT)
-          IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
-
-        do ipl=1,npl
-        ii = i+ipl-1
-        do k=1,kdim1
-        jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1 + 1
-cdir$ ivdep
-        do izz=1,jdim1
-
- !         S11E(izz+jkv-1,1) = STRETRM11(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
- !         S11E(izz+jkv-1,2) = STRETRM12(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
- !         S11E(izz+jkv-1,3) = STRETRM13(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
- !         S11E(izz+jkv-1,4) = STRETRM22(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
- !         S11E(izz+jkv-1,5) = STRETRM23(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
- !         S11E(izz+jkv-1,6) = STRETRM33(FIND_INDEX(II,IZZ,K,idim,jdim,kdim))
-
-        end do
-        end do
-        end do
-
-      ENDIF
 c
 c******************************************************************************
 c     right-hand-side residual contribution in K-direction (viscous terms)
@@ -140,8 +97,6 @@ c     Reynolds stress model)  - xxiao
 c
       coef_eddy = 1.0
       if(ivisc(3)>=70) coef_eddy=0.
-
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 1'
 c
       kdim1 = kdim-1
       jdim1 = jdim-1
@@ -193,7 +148,6 @@ c  t(19)   : v
 c  t(20)   : w
 c  t(22)   : density
 c
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 2'
       l1 = jdim*kdim-1
       do 10 ipl=1,npl
       ii = i+ipl-1
@@ -227,8 +181,6 @@ c
       imax = i+npl-1
       jmin = 1
       jmax = jdim-1
-
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 3'
 c
       do 6120 ii=imin,imax
       jc         = (ii-i)*jdim1 + jmin-1
@@ -276,7 +228,6 @@ c t(7) : laminar viscosity at cell centers (via sutherland relation)
 c
       c2b  = cbar/tinf
       c2bp = c2b+1.e0
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 4'
 c
 cdir$ ivdep
       do 1006 izz=1,n
@@ -310,8 +261,6 @@ cdir$ ivdep
       t(izz+n,14) = c2bp*wk05*wk06/(c2b+wk05) 
  1008 continue
 
-
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 5'
 c
 c******************************************************************************
 c
@@ -383,8 +332,6 @@ cdir$ ivdep
       t(izz+n,k1) = z2*(wk0(izz,k2) - t(izz+n-jv,k2))
  1016 continue
  1000 continue
-
-       !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  - 6'
 c
 c******************************************************************************
 c
@@ -421,8 +368,6 @@ c     laminar
         t(izz,24)=0.
  1018 continue
       end if
-
-      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 7'
 c
 cdir$ ivdep
       do 1022 izz=1,l0
@@ -463,8 +408,6 @@ cdir$ ivdep
      .                          +t(izz,26)*t(izz,9)
      .                          +t(izz,27)*t(izz,10))
  1023 continue
-
-      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 8'
 c
 c******************************************************************************
 c
@@ -509,9 +452,6 @@ c    .                +t(izz,4)*(ab*wk0(izz,10)+bb*t(izz,20)))
      .                +t(izz,26)*(ab*wk0(izz,9) +bb*t(izz,19))
      .                +t(izz,27)*(ab*wk0(izz,10)+bb*t(izz,20)))
  1025 continue
-
-
-      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 9'
 c
       if (idf.gt.0) go to 3333
 c
@@ -526,7 +466,7 @@ c
 cdir$ ivdep
       do 1026 izz=1,l0
       t(izz,16) = t(izz,5)*t(izz,l+6)+t(izz,l+23)*t(izz,11)
- 1026 continue
+ 1026 continue 
 c
 c  (-)viscous flux =  Hv(k-1/2)-Hv(k+1/2) (momentum eqs.) 
 c
@@ -550,8 +490,6 @@ cdir$ ivdep
       do 1029 izz=1,n
       t(izz,5) = -t(izz+js-1,16)+t(izz,16)
  1029 continue
-
-      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 10'
 c
 c******************************************************************************
 c
@@ -678,11 +616,6 @@ c   sign (this term is going into -d/dxj(Hv) term)
  8267         continue
  8268   continue
       end if IF70
-
-      IFIHDM: if(ivisc(3) == 6 .AND. IHDM == 1)then
-
-           WRITE(*,*)' blabla'
-      end if IFIHDM
 
       if((ivisc(3) .eq. 11 .or. ivisc(3) .eq. 12) .and. 
      .    level .ge. lglobal) then
@@ -1642,16 +1575,9 @@ c   sign (this term is going into -d/dxj(Hv) term)
  1267         continue
  1268   continue
       end if
-      
-      IF(ASSOCIATED(PGRID))THEN
-	DEALLOCATE(S11E, STAT = ISTAT)
-         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
-      END IF
       return
 c
  3333 continue
-
-      !write(*,*)' HEREErrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr - 14'
 c
 c******************************************************************************
 c
