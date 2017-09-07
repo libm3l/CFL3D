@@ -54,7 +54,7 @@ import shutil
 
 #Definitions
 
-def run(comp,build,fll,force=None, overwrite=None, init=None):
+def run(comp,build,force=None, overwrite=None, init=None):
 #
 #  definition of parameters
 #
@@ -71,11 +71,6 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
     cwd = os.getcwd()
 #
-#  check if FLL exist
-#
-    fll_abspath = check_path(path=fll)
-    fll_abspath = fll_abspath + 'data_util/'
-#
 #   if path for source does not exit, terminate
 #
     path = check_path(path=path)
@@ -91,7 +86,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
         if cwd == path:
 
-           config_init(path=path,fll=fll)
+           config_init(path=path)
         else:
             print("  ")
             print("\033[031mDIAG:\033[039m ./configure.py must be invoked from CFL3D/source directory:  \033[032m"+path+" \033[039m")  	
@@ -114,14 +109,6 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
         print ("\033[031m      \033[039m choose different location \033[032m"  "\033[039m")
         print("       terminating .... ") 	
         sys.exit()
-#
-#  cchek if FLL exist
-#
-    if not os.path.isdir(fll_abspath):
-      print("  ")
-      print("\033[031mERROR:\033[039m specified location of FLL libary \033[032m"+fll_abspath+"\033[039m does not exist, terminating .... ")
-      print("       terminating .... ") 
-      sys.exit()
 #
 #  creating config file
 #
@@ -179,7 +166,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath)
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp)
 
 
 
@@ -189,7 +176,7 @@ def check_path(path):
 
     return path
 
-def config_init(path,fll):
+def config_init(path):
 
     fortdeppath = path.replace("source/", "")
 
@@ -201,18 +188,17 @@ def config_init(path,fll):
     except OSError:
         pass
     
-    fconfig = open(confname, 'w')
+    fconfig = open(confname, 'w')    
 #
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("FLLLOC="+fll+"/data_util/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     fconfig.close()
 
-def mkconfigfile(path, cwd,version,fll):
+def mkconfigfile(path, cwd,version):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -239,7 +225,6 @@ def mkconfigfile(path, cwd,version,fll):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
-    fconfig.write("FLLLOC="+fll+"\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
@@ -260,10 +245,13 @@ def mkconfigfile(path, cwd,version,fll):
            if ( not(line.startswith('#')) or not line.strip()): 
                 print(line)
                 fconfig.write(line)
-
     fconfig.write("#\n")  
     fconfig.write("#\n")
-    fconfig.write("#  MACHINE identifies the host machine type")
+    fconfig.write("#  Libraries\n")
+    fconfig.write("#\n")
+    fconfig.write("LIBS=\n")  
+    fconfig.write("#\n")
+    fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
     fconfig.write("MACHINE="+platform.machine()+"\n")
     fconfig.write("#\n")
@@ -296,7 +284,6 @@ if __name__ == "__main__":
     parser.add_argument('-c','--compiler',nargs=1,help='Compiler configuration')
     parser.add_argument('-f','--force',action='store_true',help='Force updates to existing installation')
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
-    parser.add_argument('-L','--fll',nargs=1,help='Location of FLL library')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
 
     # Parse the command line arguments
@@ -305,7 +292,6 @@ if __name__ == "__main__":
     init = args.init if args.init else None
     build = args.build[0] if args.build else ''
     compiler = args.compiler[0] if args.compiler else None
-    fll = args.fll[0] if args.fll else ''
     
     if not init:
     
@@ -321,18 +307,5 @@ if __name__ == "__main__":
         print ("\033[031mError: \033[039m missing name of build directory,  specify option \033[031m-b \033[032m")
         sys.exit()
         
-    if not fll:
-        print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
-        print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
-        sys.exit()
-        
-    else:
-        print ("\033[031mError: \033[039m Initializing ...  \033[031m-b \033[032m")
 
-        if not fll:
-          print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
-          print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
-          sys.exit()       
-        
-
-    run(comp=compiler,build=build,fll=fll,force=args.force, overwrite=args.overwrite, init=args.init)
+    run(comp=compiler,build=build,force=args.force, overwrite=args.overwrite, init=args.init)

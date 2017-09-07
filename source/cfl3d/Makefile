@@ -34,12 +34,15 @@
 include src_dir_path.mk
 include ../config.mk
 
-FMODDIRS  =  
+FMODDIRS  = 
 
 SUBDIR_COMP = \
 	libs\
-	seq \
-	mpi
+	seq\
+
+ifneq ($(strip $(MPI_FTN)),)
+  SUBDIR_COMP+= mpi
+endif
 
 SUBDIRS= \
 	libs\
@@ -61,11 +64,11 @@ BCMPI       :=$(shell echo `$(CC)  --version | head -n 1  `|| echo Unknown fortr
 
 ###########################################################################
 
-all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x  $(MPIEXE)) 
+all: $(SUBDIR_COMP:%=%.all) $(EXEC).x  $(if $(strip $(MPI_FTN)), $(MPIEXE).x ) 
 include ../../rules.mk
 
-#seq.all: libs.all
-#mpi.all: libs.all
+seq.all: libs.all
+mpi.all: libs.all
 
 $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	sed -e "s|COMPILETIME|$(COMPILETIME)|g" \
@@ -77,7 +80,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o 
+	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'
 	@echo '* sequential complex version of CFL3D built successfully!'
@@ -95,7 +98,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
-	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o 
+	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'
 	@echo '* MPI complex version of CFL3D built successfully!'
