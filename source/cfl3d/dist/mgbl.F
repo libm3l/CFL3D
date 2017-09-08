@@ -95,7 +95,7 @@ c     (thin layer form) equations
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     add pblog and allocation routine
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     add pblog and allocation routine
 c                                               for non-equilibrium model
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M

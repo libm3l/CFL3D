@@ -41,7 +41,7 @@ c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     wrap routine in module
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap routine in module
 c
 c***********************************************************************
 c

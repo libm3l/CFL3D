@@ -41,7 +41,7 @@ c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGRID pointer
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap up in module, add PGRID pointer
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
 c                                               add/substract extra flux due to non-equilibrium model
