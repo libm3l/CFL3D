@@ -206,7 +206,7 @@ def config_init(path,fll):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("FLLLOC="+fll+"/data_util/\n")
+    fconfig.write("EFMODDIRS="+fll+"/data_util/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
@@ -246,7 +246,6 @@ def mkconfigfile(path, cwd,version,fll,fll_lib):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
-    fconfig.write("FLLLOC="+fll+"\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
@@ -267,7 +266,10 @@ def mkconfigfile(path, cwd,version,fll,fll_lib):
            if ( not(line.startswith('#')) or not line.strip()): 
                 print(line)
                 fconfig.write(line)
-    fconfig.write("#\n")  
+    fconfig.write("#\n")
+    fconfig.write("#  External modules\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS="+fll+"\n")
     fconfig.write("#\n")
     fconfig.write("#  Libraries\n")
     fconfig.write("#\n")
