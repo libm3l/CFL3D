@@ -31,7 +31,7 @@ c
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance,qavg,nummem,pglob)
+     .           idefrm,iadvance,qavg,nummem,pglob,icall)
 #   ifdef CMPLX
 #   else
       use module_kwstm, only: kws_main,kws_dump_movie
@@ -144,6 +144,7 @@ c
       TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
       INTEGER(LINT) :: IGRID, NGRID, NBLOCK,IBLOCK
+      INTEGER :: ICALL
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -326,7 +327,10 @@ c
       end if
       if (icall.gt.0) then
 c
-c      vorticity magnitude
+c   icall > 1 tells calculate things like turbulence only at highest grids
+c
+c
+c      vorticity magnitude,
 c
       if (isklton.eq.1) then
          nou(1) = min(nou(1)+1,ibufdim)

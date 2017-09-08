@@ -26,16 +26,28 @@ c
      .                  vist3d,blank,x,y,z,res,wk0,vmuk,vmuj,vmui,wk,
      .                  nwork,nbl,iover,vk0,bcj,bck,bci,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,volk0,tursav,
-     .                  tk0,cmuv,iadvance,nummem,ux,PGLOB)
+     .                  tk0,cmuv,iadvance,nummem,ux,PGLOB,ICALL)
 c
 c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Update the solution in time.
+c
+c     CHANGELOG
+
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
+c                                               wrap routine in module
+c                                               store velocity on the highest level grid
+c                                               for non-equilibrium models
 c***********************************************************************
 c
       USE FLL_MODS_M
       USE AF3F_M
+      USE FIND_INDEX_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -69,8 +81,12 @@ c
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /iupdate/ iupdatemean
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGRID,PBLOCK,PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: ILEV,IHDM
+      INTEGER(LINT) :: NGRID,NBLOCK,IBLOCK
+      INTEGER :: ICALL
+      REAL(RDOUBLE), POINTER :: VEL(:,:)
 c
       if (iupdatemean .eq. 0) return
       jdim1 = jdim-1
@@ -157,6 +173,59 @@ c
  4200    continue
       end if
  1500 format(1x,32h *neg. (or large) d/p*(j,k,i,q)=,3i5,5e12.5)
+
+
+c
+c   store velocity
+c 
+      if (icall > 0)then
+c
+c    update velcoity on the finest level only
+c
+        IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+!
+!   do only for non-equilibrium model
+!
+        IF(IHDM == 1)THEN
+
+         NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)
+
+         DO IBLOCK = 1, NBLOCK  
+
+            PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                       IBLOCK,.FALSE.,FPAR)
+
+            ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
+            IF(ILEV == nbl)THEN
+              NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,
+     .            .false.,FPAR)
+              PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+              VEL => FLL_GETNDATA_D2(PGRID,'velocity',1_LINT,FPAR)
+c
+	      do i=1,idim
+	        do j=1,jdim
+	          do k=1,kdim
+
+                    ihdm = find_index(i,j,k,idim,jdim,kdim)
+                    VEL(ihdm,1) = q(j,k,i,2)
+                    VEL(ihdm,2) = q(j,k,i,3)
+                    VEL(ihdm,3) = q(j,k,i,4)
+                  end do
+                end do
+              end do
+
+              IHDM = 1
+              EXIT
+            END IF
+            IHDM = 0 
+
+          END DO
+        END IF
+
+      end if
+
+
       return
       end
       END MODULE UPDATE_M

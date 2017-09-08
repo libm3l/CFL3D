@@ -356,6 +356,8 @@ c
         ELSE
          LIHDT = .FALSE.
         END IF
+
+!       CALL FLL_CAT(PGRID, 6, .FALSE.,FPAR)
 !
 !  get velocities at three time levels  , t, t-1 and t-2
 !
@@ -5235,10 +5237,6 @@ c Update VIST3D and save omega and k values
 !
               INDTMP = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
-
-              UUC(INDTMP) = q(j,k,i,2)
-              VVC(INDTMP) = q(j,k,i,3)
-              WWC(INDTMP) = q(j,k,i,4)
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:

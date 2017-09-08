@@ -332,6 +332,7 @@ c
       TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID,PGRIDL,PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
       INTEGER(LINT) :: IGRID,PNGRID,IBLOCK,PNBLOCK
+      INTEGER :: ICALL
 c
 c      time step cycle:
 c
@@ -1563,7 +1564,7 @@ c
      .              nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,maxseg,
      .              nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .              jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,idefrm,
-     .              iadvance,w(lqavg),nummem,pglob)
+     .              iadvance,w(lqavg),nummem,pglob,icall)
 c
 c        add 2nd order time terms and subiteration terms
 c
@@ -1740,7 +1741,7 @@ c
      .                  nbl,iovrlp(nbl),w(lvk0),w(lbcj),w(lbck),w(lbci),
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  w(lvolk0),w(lxib),w(ltk0),w(lcmuv),
-     .                  iadvance,nummem,w(lux),PGLOB)
+     .                  iadvance,nummem,w(lux),PGLOB,ICALL)
 c 
 c           update the overlapped values if chimera scheme is used
 c
