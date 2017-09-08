@@ -51,7 +51,9 @@ import copy
 import platform
 import tarfile
 import shutil
-
+import getpass
+import time
+from time import gmtime, strftime
 #Definitions
 
 def run(comp,build,force=None, overwrite=None, init=None):
@@ -202,6 +204,17 @@ def config_init(path, overwrite):
     
     fconfig = open(confname, 'w')    
 #
+#  header 
+#
+    username = getpass.getuser()
+    fconfig.write("#\n")  
+    fconfig.write("#  This file is created autimatically\n")
+    fconfig.write("#\n")
+    fconfig.write("#  Created by: "+username+"\n")
+#    fconfig.write("#  Date: "+time.strftime("%d/%m/%Y")+"  "+time.strftime("%I:%M:%S")+"\n")
+    fconfig.write("#  Date: "+strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\n")
+    fconfig.write("#\n")
+#
 #  set some global parameters
 #
     fconfig.write("#\n")  
@@ -245,6 +258,20 @@ def mkconfigfile(path, cwd,version):
         pass
     
     fconfig = open(confname, 'w')
+#
+#  header 
+#
+#
+#  header 
+#
+    username = getpass.getuser()
+    fconfig.write("#\n")  
+    fconfig.write("#  This file is created autimatically\n")
+    fconfig.write("#\n")
+    fconfig.write("#  Created by: "+username+"\n")
+#    fconfig.write("#  Date: "+time.strftime("%d/%m/%Y")+"  "+time.strftime("%I:%M:%S")+"\n")
+    fconfig.write("#  Date: "+strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\n")
+    fconfig.write("#\n")
 #
 #  set some global parameters
 #
