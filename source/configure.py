@@ -90,8 +90,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #   initializing - developer
 #
         if cwd == path:
-
-           config_init(path=path,fll=fll)
+           config_init(path=path, fll=fll, overwrite=overwrite)
         else:
             print("  ")
             print("\033[031mDIAG:\033[039m ./configure.py must be invoked from CFL3D/source directory:  \033[032m"+path+" \033[039m")  	
@@ -189,7 +188,7 @@ def check_path(path):
 
     return path
 
-def config_init(path,fll):
+def config_init(path,fll, overwrite):
 
     fortdeppath = path.replace("source/", "")
 
@@ -197,7 +196,19 @@ def config_init(path,fll):
     
     try:
         os.remove(confname)
-        print ("\033[031mDIAG: \033[039m config.mk file \033[032m \033[039m already exists, removing ....")
+        if(overwrite):
+          print("  ")
+          print ("\033[031mDIAG: \033[032m config.mk file \033[039m already exists")
+          print ("\033[039m       removing and replacing by new config file ....")
+          print("  ")
+        else:
+          print("  ")
+          print ("\033[031mDIAG: \033[032m config.mk file \033[039m already exists")
+          print ("\033[039m       do not create new config file, remove it or ")
+          print ("\033[039m       specify option \033[032m-o  --overwrite \033[039m to overwrite by new config file")
+          print ("\033[039m       terminating ....")
+          print("  ")
+
     except OSError:
         pass
     
@@ -205,11 +216,23 @@ def config_init(path,fll):
 #
 #  set some global parameters
 #
+    fconfig.write("#\n")  
+    fconfig.write("#  CFL3D root directory\n")
+    fconfig.write("#\n")
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("EFMODDIRS="+fll+"/data_util/\n")
+    fconfig.write("#\n")  
+    fconfig.write("#  Python fortran dependency scritp location\n")
+    fconfig.write("#\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
+    fconfig.write("#\n")  
+    fconfig.write("#  Python dependency verbosity\n")
+    fconfig.write("#\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
+    fconfig.write("#  External modules\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS="+fll+"/data_util/\n")
+
     fconfig.close()
 
 def mkconfigfile(path, cwd,version,fll,fll_lib):
@@ -245,8 +268,17 @@ def mkconfigfile(path, cwd,version,fll,fll_lib):
 #
 #  set some global parameters
 #
+    fconfig.write("#\n")  
+    fconfig.write("#  CFL3D root directory\n")
+    fconfig.write("#\n")
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
+    fconfig.write("#\n")  
+    fconfig.write("#  Python fortran dependency scritp location\n")
+    fconfig.write("#\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
+    fconfig.write("#\n")  
+    fconfig.write("#  Python dependency verbosity\n")
+    fconfig.write("#\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     
@@ -335,7 +367,7 @@ if __name__ == "__main__":
         
     if not fll:
         print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
-        print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
+        print ("\033[031m       \033[039m FLL library is available for download at \033[032m https://gthub.com/libm3l/fll \033[039m")
         sys.exit()
         
     else:
@@ -343,7 +375,7 @@ if __name__ == "__main__":
 
         if not fll:
           print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
-          print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
+          print ("\033[031m       \033[039m FLL library is available for download at \033[032m https://gthub.com/libm3l/fll \033[039m")
           sys.exit()       
         
 
