@@ -34,7 +34,7 @@
 include src_dir_path.mk
 include ../config.mk
 
-FMODDIRS  = $(FLLLOC)
+FMODDIRS  = $(EFMODDIRS)
 
 SUBDIR_COMP = \
 	libs\

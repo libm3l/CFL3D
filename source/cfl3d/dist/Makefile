@@ -50,7 +50,7 @@ ifneq (,$(findstring mpi,$(DIR)))
 	LFLAGS :=$(MPI_LFLAGS)
 endif 
 
-FMODDIRS= $(FLLLOC)
+FMODDIRS= $(EFMODDIRS)
 FMODDIRS+=../libs
 
 FCMODINCFLAG = -I
@@ -62,7 +62,6 @@ OFILES1  =$(FFILES:.F=.o)
 OFILES   =$(OFILES1:.F90=.o)
 
 XOFILES+=$(wildcard ../libs/*.o)
-XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 

@@ -45,14 +45,14 @@ SUBDIRS= \
 
 SUBDIRS_CMP = \
        cfl3d\
-       cflcmplx\
        maggie\
        precfl3d\
        preron\
        ronnie\
        splitter\
        splitcmplx\
-       tools
+       tools\
+#      cflcmplx
        
 SUBDIRS_CFL3D     = cfl3d	
 SUBDIRS_CFL3DCMPX = cfl3dcmplx	
