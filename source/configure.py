@@ -272,19 +272,19 @@ def mkconfigfile(path, cwd,version,fll,fll_lib):
     fconfig.write("#  CFL3D root directory\n")
     fconfig.write("#\n")
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
+
     fconfig.write("#\n")  
     fconfig.write("#  Python fortran dependency scritp location\n")
     fconfig.write("#\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
+
     fconfig.write("#\n")  
     fconfig.write("#  Python dependency verbosity\n")
     fconfig.write("#\n")
     fconfig.write("VERBOSE=-vvv\n")
-    fconfig.write("#\n")
-    
-    fconfig.write("#\n")
-    fconfig.write("SHELL              = /bin/bash\n")
-    fconfig.write("#\n")
+
+    fconfig.write("#\n")    
+    fconfig.write("SHELL  = /bin/bash\n")
 
     fconfig.write("#\n")
     fconfig.write("# Compiler settings\n")
