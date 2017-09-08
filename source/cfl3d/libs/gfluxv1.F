@@ -25,7 +25,7 @@ c
       subroutine gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                  sj,sk,si,vol,t,nvtq,wj0,vist3d,vj0,
      .                  bcj,bck,bci,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv,PGLOB,IHDM)
+     .                  nou,bou,nbuf,ibufdim,iadv,PGRID,IHDM)
 c
 c     $Id$
 c
@@ -33,17 +33,27 @@ c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     J-direction due to the viscous terms missing in the thin-layer 
 c     formulation.
+c******************************************************************************
+c     written mid-2005   V. Venkatakrishnan & C. Rumsey
+c******************************************************************************
 c
 c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGRID pointer
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
+c                                               add/substract extra flux due to non-equilibrium model
+c                                               by Hamlington et al. 
+c        ref: Peter E. Hamlington and Werner J.A. Dahm: Computational Validation of New Reynolds Stress
+c                               Closure for Nonequilibrium Effects in Turbulent Flows, AIAA-2009-1323
+c                               47th AIAA Aerospace Sciences Meeting Including The New Horizons Forum and 
+c                               Aerospace Exposition, January 2009
 c***********************************************************************
 c
       USE FLL_MODS_M
+      USE FIND_INDEX_M
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -77,12 +87,14 @@ c
       common /twod/ i2d
       REAL :: coef_eddy
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGRID,PTMQ
       TYPE(FUNC_DATA_SET)  :: FPAR
-      INTEGER :: IHDM
+      REAL(RDOUBLE), ALLOCATABLE :: S11E(:,:)
+      INTEGER :: IHDM,ISTAT
+
+      REAL(RDOUBLE), POINTER :: STRETRM11(:),STRETRM12(:),STRETRM22(:)
+      REAL(RDOUBLE), POINTER :: STRETRM13(:),STRETRM33(:),STRETRM23(:)
 c
-c******************************************************************************
-c     written mid-2005   V. Venkatakrishnan & C. Rumsey
 c******************************************************************************
 c
       coef_eddy = 1.0
@@ -90,6 +102,44 @@ c
       kdim1 = kdim-1
       jdim1 = jdim-1
       idim1 = idim-1
+
+      IF(IHDM == 1 .and .iadv >= 0)THEN
+!
+!  if IHDM == 1 : non-equilibirum k-w model
+!
+        PTMQ => FLL_LOCATE(PGRID,'Extra_Strain','*',-1_LINT,
+     .                       1_LINT,.FALSE.,FPAR)
+        STRETRM11 => PTMQ%D2(:,1)
+        STRETRM12 => PTMQ%D2(:,2)
+        STRETRM13 => PTMQ%D2(:,3)
+        STRETRM22 => PTMQ%D2(:,4)
+        STRETRM23 => PTMQ%D2(:,5)
+        STRETRM33 => PTMQ%D2(:,6)
+
+	ALLOCATE(S11E(SIZE(T,1), 6), STAT = ISTAT)
+          IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
+
+        do ipl=1,npl
+          ii  = i+ipl-1
+          do j=1,jdim1
+            jkv = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
+cdir$ ivdep
+            do k=1,kdim1
+              ISTAT = FIND_INDEX(II,J,K,idim,jdim,kdim)
+              S11E(k+jkv,1) = STRETRM11(ISTAT)
+              S11E(k+jkv,2) = STRETRM12(ISTAT)
+              S11E(k+jkv,3) = STRETRM13(ISTAT)
+              S11E(k+jkv,4) = STRETRM22(ISTAT)
+              S11E(k+jkv,5) = STRETRM23(ISTAT)
+              S11E(k+jkv,6) = STRETRM33(ISTAT)
+            end do
+	  end do
+	end do
+
+      ENDIF
+
+      coef_eddy = 1.0
+      if(ivisc(3)>=70) coef_eddy = 0.0
 c
 c n  : number of cell centers for npl planes
 c l0 : number of cell interfaces for npl planes
@@ -151,6 +201,7 @@ c
         mm=3
         mb=2
       end if
+c
       imin = i
       imax = i+npl-1
       kmin = 1
@@ -1264,6 +1315,7 @@ c
 c  calculate fluxes
 c
 c  viscous terms at interfaces
+      IF(IHDM /= 1) THEN
 cdir$ ivdep
       do 1026 izz=1,l0
 c
@@ -1328,6 +1380,85 @@ cdir$ ivdep
       t(izz,4)       = -t(izz+ks-1,18)+t(izz,18)
       t(izz,5)       = -t(izz+ks-1,19)+t(izz,19)
  1027 continue
+
+      else
+c
+c   non-equilibrium model
+c
+cdir$ ivdep
+        do izz=1,l0
+c
+c-- form ux, uy, uz, vx, vy, vz, wx, wy, wz, tx,ty and tz 
+c   excluding contributions in k/zeta direction (already accounted for in 
+c   thin-layer approximation. Note that t = c*c/(gm1*pr)
+c
+       ux = t(izz,4)*t(izz,28) + t(izz,8)*t(izz,31)
+       uy = t(izz,4)*t(izz,29) + t(izz,8)*t(izz,32)
+       uz = t(izz,4)*t(izz,30) + t(izz,8)*t(izz,2)
+
+       vx = t(izz,5)*t(izz,28) + t(izz,9)*t(izz,31)
+       vy = t(izz,5)*t(izz,29) + t(izz,9)*t(izz,32)
+       vz = t(izz,5)*t(izz,30) + t(izz,9)*t(izz,2)
+
+       wx = t(izz,6)*t(izz,28) + t(izz,10)*t(izz,31)
+       wy = t(izz,6)*t(izz,29) + t(izz,10)*t(izz,32)
+       wz = t(izz,6)*t(izz,30) + t(izz,10)*t(izz,2)
+
+       tx = t(izz,3)*t(izz,28) + t(izz,7)*t(izz,31)
+       ty = t(izz,3)*t(izz,29) + t(izz,7)*t(izz,32)
+       tz = t(izz,3)*t(izz,30) + t(izz,7)*t(izz,2)
+c
+c--  Note lambda = -2/3 mu, lambda + 2 mu = 4/3 mu 
+c--  u-momentum flux 
+c 
+
+      t(izz,16)      = t(izz,14)*(  t(izz,25)*(4./3.*ux-2./3.*(vy + wz))
+     .                            + t(izz,26)*(uy + vx) 
+     .                            + t(izz,27)*(uz + wx)
+     . +t(izz,25)*S11E(izz,1)+t(izz,26)*S11E(izz,2)+t(izz,27)*
+     .  S11E(izz,3))
+
+c
+c--  v-momentum flux 
+c
+      t(izz,17)      = t(izz,14)*(  t(izz,25)*(vx + uy)
+     .                            + t(izz,26)*(4./3.*vy-2./3.*(ux + wz))
+     .                            + t(izz,27)*(vz + wy)
+     . +t(izz,25)*S11E(izz,2)+t(izz,26)*S11E(izz,4)+t(izz,27)*
+     . S11E(izz,5))
+
+c
+c--  w-momentum flux 
+c 
+      t(izz,18)      = t(izz,14)*(  t(izz,25)*(wx+uz)
+     .                            + t(izz,26)*(wy+vz)
+     .                            + t(izz,27)*(4./3.*wz-2./3.*(vy+ux))
+     . +t(izz,25)*S11E(izz,3)+t(izz,26)*S11E(izz,4)+t(izz,27)*
+     .  S11E(izz,6))
+c
+c--  energy flux
+c 
+      t(izz,19) = t(izz,14)*( 
+     .              t(izz,25)*((4./3.*ux - 2./3*(vy+wz))*t(izz,11) +
+     .                         (uy+vx)*t(izz,12) + (uz+wx)*t(izz,13)) +
+     .              t(izz,26)*((vx+uy)*t(izz,11) + (vz+wy)*t(izz,13) +
+     .                         (4./3.*vy - 2./3*(ux+wz))*t(izz,12)) +
+     .              t(izz,27)*((wx+uz)*t(izz,11) + (wy+vz)*t(izz,12) +
+     .                         (4./3.*wz - 2./3*(ux+vy))*t(izz,13))  +
+     .          t(izz,23)*(t(izz,25)*tx + t(izz,26)*ty + t(izz,27)*tz))
+c   
+        end do
+c  (-)viscous flux =  Gv(k-1/2)-Gv(k+1/2) (momentum eqs.)
+cdir$ ivdep
+
+        do izz=1,n
+          t(izz,2)  = -t(izz+ks-1,16)+t(izz,16)
+          t(izz,3)  = -t(izz+ks-1,17)+t(izz,17)
+          t(izz,4)  = -t(izz+ks-1,18)+t(izz,18)
+          t(izz,5)  = -t(izz+ks-1,19)+t(izz,19)
+        end do
+
+      end if   ! end of IHDM =/ 1
 c
 c******************************************************************************
 c
@@ -1349,6 +1480,12 @@ cdir$ ivdep
       res(j,k,ii,l) = res(j,k,ii,l)+t(k+jkv,l)
  1030 continue
   400 continue
+
+      IF(ALLOCATED(S11E))THEN
+	DEALLOCATE(S11E, STAT = ISTAT)
+         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
+      END IF
+
       return
       end 
 

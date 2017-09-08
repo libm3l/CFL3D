@@ -34,13 +34,23 @@ c     Purpose:  Calculate right-hand residual contributions in the
 c     K-direction due to the viscous terms missing in the thin-layer
 c     formulation.
 c
+c******************************************************************************
+c     written mid-2005   V. Venkatakrishnan & C. Rumsey
+c******************************************************************************
+c
 c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGLOB pointer
+c     6.0       08/17    Adam Jirasek/USAFA     wrap up in module, add PGRID pointer
 c                                               need to use fll library (https:/github.com/libm3l/fll
 c                                               and FLL_MODS_M
+c                                               add/substract extra flux due to non-equilibrium model
+c                                               by Hamlington et al. 
+c        ref: Peter E. Hamlington and Werner J.A. Dahm: Computational Validation of New Reynolds Stress
+c                               Closure for Nonequilibrium Effects in Turbulent Flows, AIAA-2009-1323
+c                               47th AIAA Aerospace Sciences Meeting Including The New Horizons Forum and 
+c                               Aerospace Exposition, January 2009
 c***********************************************************************
 c
       USE FLL_MODS_M
@@ -87,15 +97,12 @@ c
       REAL(RDOUBLE), POINTER :: STRETRM13(:),STRETRM33(:),STRETRM23(:)
 c
 c******************************************************************************
-c     written mid-2005   V. Venkatakrishnan & C. Rumsey
-c******************************************************************************
 c
       kdim1 = kdim-1
       jdim1 = jdim-1
       idim1 = idim-1
 
-
-      IF(IHDM == 1 .and .iadv .GE. 0)THEN
+      IF(IHDM == 1 .and .iadv >= 0)THEN
 !
 !  if IHDM == 1 : non-equilibirum k-w model
 !
@@ -112,20 +119,21 @@ c
           IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY'
 
         do ipl=1,npl
-        ii = i+ipl-1
-        do k=1,kdim1
-        jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1 + 1
+          ii = i+ipl-1
+          do k=1,kdim1
+            jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1 + 1
 cdir$ ivdep
-        do izz=1,jdim1
-          ISTAT = FIND_INDEX(II,IZZ,K,idim,jdim,kdim)
-          S11E(izz+jkv-1,1) = STRETRM11(ISTAT)
-          S11E(izz+jkv-1,2) = STRETRM12(ISTAT)
-          S11E(izz+jkv-1,3) = STRETRM13(ISTAT)
-          S11E(izz+jkv-1,4) = STRETRM22(ISTAT)
-          S11E(izz+jkv-1,5) = STRETRM23(ISTAT)
-          S11E(izz+jkv-1,6) = STRETRM33(ISTAT)
-        end do
-        end do
+              do izz=1,jdim1
+
+                ISTAT = FIND_INDEX(II,IZZ,K,idim,jdim,kdim)
+                S11E(izz+jkv-1,1) = STRETRM11(ISTAT)
+                S11E(izz+jkv-1,2) = STRETRM12(ISTAT)
+                S11E(izz+jkv-1,3) = STRETRM13(ISTAT)
+                S11E(izz+jkv-1,4) = STRETRM22(ISTAT)
+                S11E(izz+jkv-1,5) = STRETRM23(ISTAT)
+                S11E(izz+jkv-1,6) = STRETRM33(ISTAT)
+            end do
+          end do
         end do
 
       ENDIF
@@ -1415,7 +1423,6 @@ c
           t(izz,17) = t(izz,14)*(  t(izz,25)*(vx + uy)
      .                            + t(izz,26)*(4./3.*vy-2./3.*(ux + wz))
      .                            + t(izz,27)*(vz + wy)
-
      . +t(izz,25)*S11E(izz,2)+t(izz,26)*S11E(izz,4)+t(izz,27)*
      . S11E(izz,5)) 
 c

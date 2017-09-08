@@ -56,7 +56,7 @@ c                                               and FLL_MODS_M
 c                                               wrap routine in module
 c                                               non-equilibirum k-w model
 c        ref: Peter E. Hamlington and Werner J.A. Dahm: Computational Validation of New Reynolds Stress
-c                               Closure for Nonequilibrium Effects in Turbulent Flows
+c                               Closure for Nonequilibrium Effects in Turbulent Flows, AIAA-2009-1323
 c                               47th AIAA Aerospace Sciences Meeting Including The New Horizons Forum and 
 c                               Aerospace Exposition, January 2009
 c***********************************************************************

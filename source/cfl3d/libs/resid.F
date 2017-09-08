@@ -1196,7 +1196,7 @@ c
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,
-     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob,ihdm)
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),PGRID,ihdm)
             end if
   277       continue
          end if
