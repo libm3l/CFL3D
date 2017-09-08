@@ -507,8 +507,14 @@ c
          do iii = 1,iwk5
             iwork(iii) = 0
          end do
-
-       CALL ADDNONEQSTR(PGLOB,MSEQ,NGRID,NBLOCK,IDIMG,JDIMG,KDIMG)
+c
+c  add additional data for non-equlibrium model
+c  all data is in PGLOB pointer (fll type of data set)
+c  this pointer was allocated in cfl3d.f
+c  and passed as an argument to this subroutine
+c  In addnoneqstr additional data are added to pglob
+c
+         CALL ADDNONEQSTR(PGLOB,MSEQ,NGRID,NBLOCK,IDIMG,JDIMG,KDIMG)
 c
 #if defined DIST_MPI
 c

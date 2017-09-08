@@ -1057,7 +1057,29 @@ c
 
 c
 c***********************************************************************
-c     allocate fll global pointer contaning all additional data
+c
+c     Allocate fll global pointer containg all additional data
+c     PGLOB is a DIR type of node
+c     
+c     The data is in fll type container (declared as TYPE(DNODE), POINTER :: PGLOB)
+c     the data prototype is defined in fll library (https://github.com/libm3l/fll)
+c     and whenever used, the routine must contain statement USE FLL_MODS_M
+c     and fll library fll.a must be linked to the source code
+c
+c     Whenever needed, a new data set can be added or an existing data
+c     set can be deleted
+c
+c     To see what is in pglob pointer, use function fll_cat 
+c     for example 
+c
+c     CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
+c
+c     which will print content of PGLOB on screen 
+c     FPAR is declared as  TYPE(FUNC_DATA_SET) :: FPAR
+c
+c     whenever PGLOB is passed to a subroutine the subroutine must contain either
+c     interface or, better, should be encapsulated in module
+c     
 c***********************************************************************
 c
        PGLOB => FLL_MK("pglob","DIR",0_LINT, 0_LINT,FPAR)   
