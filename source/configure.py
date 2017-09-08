@@ -119,7 +119,8 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
     if not os.path.isdir(fll_abspath):
       print("  ")
-      print("\033[031mERROR:\033[039m specified location of FLL libary \033[032m"+fll_abspath+"\033[039m does not exist, terminating .... ") 
+      print("\033[031mERROR:\033[039m specified location of FLL libary \033[032m"+fll_abspath+"\033[039m does not exist, terminating .... ")
+      print("       terminating .... ") 
       sys.exit()
 #
 #  creating config file
@@ -178,7 +179,7 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath)
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath,fll_lib=fll)
 
 
 
@@ -205,15 +206,13 @@ def config_init(path,fll):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
+    fconfig.write("FLLLOC="+fll+"/data_util/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
-    fconfig.write("#  External modules location\n")
-    fconfig.write("#\n")
-    fconfig.write("EFMODDIRS="+fll+"/data_util/\n")  
     fconfig.close()
 
-def mkconfigfile(path, cwd,version,fll):
+def mkconfigfile(path, cwd,version,fll,fll_lib):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -234,18 +233,26 @@ def mkconfigfile(path, cwd,version,fll):
         print ("\033[031mDIAG: \033[039m config.mk file \033[032m \033[039m already exists, removing ....")
     except OSError:
         pass
+#
+#  find FLL library location
+#
+    for root, dirnames, filenames in os.walk(fll_lib):
+        if 'fll.a' in filenames:
+            lpath = os.path.join(root, 'fll.a')
+            break
     
     fconfig = open(confname, 'w')
 #
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
+    fconfig.write("FLLLOC="+fll+"\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     
     fconfig.write("#\n")
-    fconfig.write("SHELL  = /bin/bash\n")
+    fconfig.write("SHELL              = /bin/bash\n")
     fconfig.write("#\n")
 
     fconfig.write("#\n")
@@ -261,17 +268,10 @@ def mkconfigfile(path, cwd,version,fll):
                 print(line)
                 fconfig.write(line)
     fconfig.write("#\n")  
-    fconfig.write("#  Fortran preprocessor options\n")
-    fconfig.write("#\n")
-    fconfig.write("DOPTS=\n")  
-    fconfig.write("#\n")  
-    fconfig.write("#  External modules location\n")
-    fconfig.write("#\n")
-    fconfig.write("EFMODDIRS="+fll+"\n")  
     fconfig.write("#\n")
     fconfig.write("#  Libraries\n")
     fconfig.write("#\n")
-    fconfig.write("LIBS=\n")  
+    fconfig.write("LIBS="+lpath+"\n")  
     fconfig.write("#\n")
     fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
@@ -306,7 +306,7 @@ if __name__ == "__main__":
     parser.add_argument('-c','--compiler',nargs=1,help='Compiler configuration')
     parser.add_argument('-f','--force',action='store_true',help='Force updates to existing installation')
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
-    parser.add_argument('-L','--fll',nargs=1,help='Location of FLL library')
+    parser.add_argument('-L','--fll',nargs=1,help='Location of FLL utility')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
 
     # Parse the command line arguments
@@ -343,5 +343,6 @@ if __name__ == "__main__":
           print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
           print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
           sys.exit()       
+        
 
     run(comp=compiler,build=build,fll=fll,force=args.force, overwrite=args.overwrite, init=args.init)

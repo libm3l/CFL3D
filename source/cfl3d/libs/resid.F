@@ -141,9 +141,9 @@ c
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /reystressmodel/ issglrrw2012,i_sas_rsm
 
-      TYPE(DNODE), POINTER :: PGLOB, PGRID
+      TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
-      INTEGER(LINT) :: IGRID, NGRID
+      INTEGER(LINT) :: IGRID, NGRID, NBLOCK,IBLOCK
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -292,7 +292,7 @@ c
 c
   130 continue
 c
-c      turbulent viscosity - finest grids only
+c      turbulent viscosity (gradients of velocity) - finest grids only
 c
       if (iadvance(nbl) .ge. 0) then
 c
@@ -653,7 +653,9 @@ c allocate for DES and DDES
        write(bou(nou(1),1),'('' nroom='',i12)') nroom
        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
-!      write(*,*)' JKA calling twoeqn',jdim,kdim,idim,'---',nbl
+c
+c  get turbulence stuff - production etc.
+c
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
      + wk(iwk5),
@@ -677,8 +679,6 @@ c allocate for DES and DDES
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
      + wk(iwk82),nummem,iccnum,pglob)
-
-!      write(*,*)' JKA after calling twoeqn'
 
       else if (ivmx .eq. 30) then
 c   three-equation turb model
@@ -1035,18 +1035,25 @@ c     look for non-equilibrium model extra data
 c
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
       PGRID => NULL()
-      IF(IHDM == 1)THEN      
-        NGRID =  FLL_NNODES(PGLOB,'grid','DIR',-1_lint,.false.,FPAR)
-        DO IGRID=1,NGRID
-           PGRID => FLL_LOCATE(PGLOB,'grid','DIR',-1_LINT,
-     .                       IGRID,.FALSE.,FPAR)
-           ILEV = FLL_GETNDATA_I0(PGRID,'level',1_LINT,FPAR)
-           IF(ILEV == nbl)THEN
-             IHDM = 1
-             EXIT
-           END IF
-           IHDM = 0
-        END DO
+      IF(IHDM == 1)THEN     
+      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
+
+      DO IBLOCK = 1, NBLOCK  
+
+         PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                       IBLOCK,.FALSE.,FPAR)
+
+         ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
+         IF(ILEV == nbl)THEN
+           NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+           PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+           IHDM = 1
+           EXIT
+         END IF
+         IHDM = 0 
+
+      END DO
       END IF
 c
 c     residuals   J direction - viscous terms
@@ -1060,21 +1067,20 @@ c
          do 201 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
-         write(*,*)' CALLING   gfluxv'
+!         write(*,*)' CALLING   gfluxv'
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
      .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux,
-     .               PGRID)
+     .               PGRID,IHDM)
 c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
-!         write(*,*)' CALLING   gfluxv1'
          call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
      .                bcj,bck,bci,volj0,
      .                nou,bou,nbuf,ibufdim,iadvance(nbl),
-     .                PGRID)
+     .                PGRID,IHDM)
          end if
   201    continue
       end if
@@ -1117,20 +1123,20 @@ c
          do 211 i=1,idim1,nplq
          if (i+npl-1.gt.idim1) npl = idim1-i+1
          nvtq = npl*jdim*kdim
-         write(*,*)' CALLING   hfluxv', nbl
+!         write(*,*)' CALLING   hfluxv', nbl
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .               iadvance(nbl),nummem,ux,PGRID)
+     .               iadvance(nbl),nummem,ux,PGRID,IHDM)
 c
 c-- full viscous terms
 c
          if (ifullns .ne. 0) then
-         write(*,*)' CALLING   hfluxv1'
+!         write(*,*)' CALLING   hfluxv1'
          call hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                sj,sk,si,vol,wk,nvtq,wk0,vist3d,vk0,
      .                bcj,bck,bci,volk0,
-     .                nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl),PGRID,IHDM)
          end if
   211    continue
       end if
@@ -1177,20 +1183,20 @@ c
             do 277 k=1,kdim1,nplq
             if (k+npl-1.gt.kdim1) npl = kdim1-k+1
             nvtq = npl*jdim*idim
-         write(*,*)' CALLING   ffluxv'
+!         write(*,*)' CALLING   ffluxv'
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
      .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem
-     .                  ,ux,PGRID)
+     .                  ,ux,PGRID,IHDM)
 c
 c-- full viscous terms
 c
             if (ifullns .ne. 0) then
-         write(*,*)' CALLING   ffluxv1'
+!         write(*,*)' CALLING   ffluxv1'
             call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
      .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
      .                   bcj,bck,bci,voli0,
-     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob)
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl),pglob,ihdm)
             end if
   277       continue
          end if

@@ -24,7 +24,8 @@ c
       CONTAINS
       subroutine collq(q,qq,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
      .                 res,qr,qw,vistf,vistc,tursavf,tursavc,
-     .                 nbl,nou,bou,nbuf,ibufdim,nummem,PGLOB)
+     .                 nbl,nou,bou,nbuf,ibufdim,nummem,pgrid,pgridl,
+     .                 ihdm)
 c
 c     $Id$
 c
@@ -48,6 +49,7 @@ c
 #   endif
 
       USE FLL_MODS_M
+      USE FIND_INDEX_M
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -63,8 +65,9 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
 
-      TYPE(DNODE), POINTER :: PGLOB
+      TYPE(DNODE), POINTER :: PGRID,PGRIDL
       TYPE(FUNC_DATA_SET)  :: FPAR
+      REAL(RDOUBLE), pointer ::  XSTRAIN(:,:), XSTRAINL(:,:)
 c
 c      restrict q(volume-weighted) and r to coarser mesh
 c      restrict viscosity to coarser mesh
@@ -195,6 +198,62 @@ c
       end if
   600 continue
       end if
+c
+c   extra terms for non-equilibrium model
+c
+!      if (ivisc(1) == 6 .and. ihdm == 1) then
+      if (ihdm == 1) then
+        XSTRAIN => FLL_GETNDATA_D2(PGRID,'Extra_Strain',1_LINT,FPAR)
+        XSTRAINL => FLL_GETNDATA_D2(PGRIDL,'Extra_Strain',1_LINT,FPAR)
+
+         if (idim.gt.2) then
+          kk = 0
+          do k=1,kdim1,2
+            kk = kk+1
+            jj = 0
+            do j=1,jdim1,2
+              jj = jj+1
+              ii = 0
+              do i=1,idim1,2
+              ii = ii+1
+                XSTRAINL(FIND_INDEX(II,JJ,KK,II2,JJ2,KK2),:) =
+     .          .125_RDOUBLE*(
+     .           XSTRAIN(FIND_INDEX(i,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i+1,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k,IDIM,JDIM,KDIM),:)   
+     .          +XSTRAIN(FIND_INDEX(i+1,j+1,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j,k+1,IDIM,JDIM,KDIM),:) 
+     .          +XSTRAIN(FIND_INDEX(i+1,j,k+1,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k+1,IDIM,JDIM,KDIM),:) 
+     .          +XSTRAIN(FIND_INDEX(i+1,j+1,k+1,IDIM,JDIM,KDIM),:))
+
+              end do
+            end do
+          end do
+c
+         else
+c
+           ii = 1
+           i  = 1
+           kk = 0
+           do k=1,kdim1,2
+             kk = kk+1
+             jj = 0
+             do j=1,jdim1,2
+              jj = jj+1
+
+                XSTRAINL(FIND_INDEX(II,JJ,KK,II2,JJ2,KK2),:) =
+     .          .25_RDOUBLE*(
+     .           XSTRAIN(FIND_INDEX(i,j,k,IDIM,JDIM,KDIM),:)
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k,IDIM,JDIM,KDIM),:)   
+     .          +XSTRAIN(FIND_INDEX(i,j,k+1,IDIM,JDIM,KDIM),:)  
+     .          +XSTRAIN(FIND_INDEX(i,j+1,k+1,IDIM,JDIM,KDIM),:))
+             end do
+           end do
+
+         end if
+      end if
+
       return
       end
 

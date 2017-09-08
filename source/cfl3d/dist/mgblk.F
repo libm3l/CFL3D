@@ -327,8 +327,9 @@ c
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
 
-      TYPE(DNODE), POINTER :: PGLOB,PTMP
+      TYPE(DNODE), POINTER :: PGLOB,PTMP,PGRID,PGRIDL,PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER(LINT) :: IGRID,PNGRID,IBLOCK,PNBLOCK
 c
 c      time step cycle:
 c
@@ -1894,10 +1895,52 @@ c
                   write(bou(nou(1),1),2070)
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
+!
+!   if non-equilibirium model, find the two grids
+!
+               IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+!
+!   do only for non-equilibrium model
+!
+               IF(IHDM == 1)THEN
+
+                  PNBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,
+     .              .false.,FPAR)  
+
+                DO IBLOCK = 1, PNBLOCK  
+!
+!  find "level" block
+!
+                  PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                 IBLOCK,.FALSE.,FPAR)
+
+                  ILEV = FLL_GETNDATA_I0(PBLOCK,'cfl3d-level',
+     .               1_LINT,FPAR)
+                  IF(ILEV == level)THEN
+                    PNGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,
+     .                 .false.,FPAR)
+                    PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                  1_lint,.FALSE.,FPAR)
+!
+!  found lower level block
+!
+                     PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
+     .                 IBLOCK+1,.FALSE.,FPAR)
+                     PGRIDL => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+     .                  1_lint,.FALSE.,FPAR)
+
+
+                    EXIT
+                  END IF
+
+                END DO
+               END IF
+
                call collq(w(lq),w(lqc),w(lvol),w(lvolc),jdim,kdim,idim,
      .                    jj2,kk2,ii2,wk(lres),w(lqrc),wk(lwj0),
      .                    w(lvis),w(lvtc),w(lxib),w(lxibc),
-     .                    nbl,nou,bou,nbuf,ibufdim,nummem,pglob)
+     .                    nbl,nou,bou,nbuf,ibufdim,nummem,pgrid,pgridl,
+     .                    IHDM)
 c
 c              restrict qc0 and dqc0 for time-accurate multigrid
 c

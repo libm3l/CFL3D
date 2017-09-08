@@ -25,7 +25,8 @@ c
 
       subroutine gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,t,nvtq,
      .                  wj0,vist3d,vmuj,vj0,bcj,zksav,tj0,cmuv,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,PGLOB)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux,
+     .                  PGLOB,IHDM)
 c
 c     $Id$
 c
@@ -77,6 +78,7 @@ c
 
       TYPE(DNODE), POINTER :: PGLOB
       TYPE(FUNC_DATA_SET)  :: FPAR
+      INTEGER :: IHDM
 c
 c******************************************************************************
 c     right-hand-side residual contribution in J-direction (viscous terms)
