@@ -45,7 +45,8 @@ wrestg.o :
 
 pre_bc.o : 
 
-ae_corr.o : 
+ae_corr.o :  \
+	../../cfl3d/libs/genforce.o
 
 umalloc.o : 
 
@@ -95,7 +96,9 @@ umalloc_c.o :
 
 yplusout.o : 
 
-mgblk.o : 
+mgblk.o :  \
+	../../cfl3d/libs/rb_corr.o \
+	ae_corr.o
 
 plot3d.o : 
 

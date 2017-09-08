@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE GENFORCE_M
+      CONTAINS
       subroutine genforce(jdim,kdim,idim,sk,sj,si,cz,cy,cx,bcj,bck,bci,
      .                    blank,nbl,qj0,qk0,qi0,maxbl,maxseg,n2,xmdj,
      .                    xmdk,xmdi,aesrfdat,nmds,maxaes,maxsegdg,
@@ -34,6 +36,13 @@ c               aeroelastic analysis. Only pressure forces are
 c               included. The computations of the generalized 
 c               forces are consistant with current methodolgy used
 c               calculating "regular" forces in subroutine force. 
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap routine in module
+c
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -311,3 +320,4 @@ c
 c
       return
       end 
+      END MODULE GENFORCE_M

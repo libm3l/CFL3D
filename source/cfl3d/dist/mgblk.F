@@ -81,6 +81,8 @@ c     At each level in the multigrid procedure, all the blocks are
 c     advanced before moving to the next level.
 c***********************************************************************
 c
+      USE AE_CORR_M
+      USE RB_CORR_M
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
