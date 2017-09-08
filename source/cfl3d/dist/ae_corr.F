@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE AE_CORR_M
+      CONTAINS
       subroutine ae_corr(stm,stmi,xs,xxn,gforcn,gforcs,gforcnm,
      .                   gf0,lw,lw2,w,mgwk,maxbl,maxseg,
      .                   aesrfdat,nmds,maxaes,nt,mblk2nd,iseqr,
@@ -39,8 +41,18 @@ c                  "Modern Wing Flutter Analysis by Computational Fluid
 c                   Dynamics Methods," J. Aircraft, Vol. 25, No. 10,
 c                   October 1988, pp. 962-968.
 c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap routine in module
+c
 c***********************************************************************
 c
+c***********************************************************************
+c
+      USE GENFORCE_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -222,3 +234,4 @@ c
 c
       return
       end
+      END MODULE AE_CORR_M

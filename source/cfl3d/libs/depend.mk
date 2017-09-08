@@ -269,7 +269,8 @@ fa2xk.o :
 
 q8smax.o : 
 
-ffluxv1.o : 
+ffluxv1.o :  \
+	find_index.o
 
 twoeqn.o :  \
 	find_index.o \
@@ -370,7 +371,8 @@ pre_cblkj.o :
 
 xmukin.o : 
 
-gfluxv1.o : 
+gfluxv1.o :  \
+	find_index.o
 
 arclen.o : 
 

@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE RB_CORR_M
+      CONTAINS
       subroutine rb_corr(aesrfdat,cnt,cmt,maxaes)
 c
 c     $Id$
@@ -32,6 +34,12 @@ c
 c        Reference: Vinh, Lam-Son, Edwards, J.W., Seidel, D. A., Batina,
 c                   J. T., "Transonic Stability and Control of Aircraft
 c                   Using CFD Methods," AIAA Paper 88-4374.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA     wrap routine in module
 c
 c***********************************************************************
 c
@@ -76,3 +84,4 @@ c
 c
       return
       end
+      END MODULE RB_CORR_M

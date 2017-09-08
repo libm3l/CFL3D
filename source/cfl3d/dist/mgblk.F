@@ -92,6 +92,8 @@ c                                               and FLL_MODS_M
 c                                               wrap routine in module
 c***********************************************************************
 c
+      USE AE_CORR_M
+      USE RB_CORR_M
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
