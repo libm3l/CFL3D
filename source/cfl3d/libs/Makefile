@@ -37,11 +37,16 @@ include ../../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= $(FLLLOC)
+FMODDIRS=  $(EFMODDIRS)
+
+ifneq ($(strip $(FMODDIRS)),)
+  PYDEPDYRS = -d $(FMODDIRS) 
+endif
+
 
 FCMODINCFLAG = -I
 
-FFILES =  $(notdir $(wildcard $(srcdir)/*.F))
+FFILES  =  $(notdir $(wildcard $(srcdir)/*.F))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.F90))
 FFILES+= $(notdir $(wildcard $(srcdir)/*.c))
 
@@ -50,8 +55,25 @@ OFILES1  =$(FFILES:.F=.o)
 OFILES2   =$(OFILES1:.F90=.o)
 OFILES   =$(OFILES2:.c=.o)
 
+#
+# Use MPI compilation if required
+#
+DIR = $(PWD)
 
-XOFILES+=$(wildcard $(FLLLOC)/*.o)
+ifneq (,$(findstring mpi,$(DIR)))
+	FTN          =$(MPI_FTN)
+	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+	LFLAGS :=$(MPI_LFLAGS)
+	DOPTS   +=  DIST_MPI
+endif 
+#
+# Use complex version  compilation if required
+#
+ifneq (,$(findstring cmplx,$(DIR)))
+	DOPTS   +=  CMPLX
+	DEP_FILE=depend_cmplx.mk
+endif 
+
 
 ###########################################################################
 
@@ -60,16 +82,16 @@ include ../../../rules.mk
 
 clean:
 	rm -f *.x *.o *.mod 
-	find ./ -executable -type f | xargs rm
+	find ./ -executable -type f | xargs rm -f
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
-	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) $(PYDEPDYRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES) && cp depend.mk depend_cmplx.mk && sed -i 's|cfl3d/|cflcmplx/|g' depend_cmplx.mk
 
 
 install: $(EXE).x $(EXE).py
 	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x
 	$(INSTALL) $(EXE).py $(bin_dir)/$(EXE)$(POSTFIX).py
 
--include $(srcdir)/$(DEP_FILE)
 
+-include $(srcdir)/$(DEP_FILE)

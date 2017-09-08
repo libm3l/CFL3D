@@ -1,43 +1,42 @@
 #!/usr/bin/python
-# ---------------------------------------------------------------------------
-# CFL3D is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged
-# Navier-Stokes (RANS) code. It can be run in parallel on multiple grid zones
-# with point-matched, patched, overset, or embedded connectivities. Both
-# multigrid and mesh sequencing are available in time-accurate or
-# steady-state modes.
-#
-# Copyright 2001 United States Government as represented by the Administrator
-# of the National Aeronautics and Space Administration. All Rights Reserved.
+#The MIT License (MIT)
+
+#Copyright (c) 2014 David Dickinson, Peter Hill
+
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 # 
-# The CFL3D platform is licensed under the Apache License, Version 2.0 
-# (the "License"); you may not use this file except in compliance with the 
-# License. You may obtain a copy of the License at 
-# http://www.apache.org/licenses/LICENSE-2.0. 
 #
-# Unless required by applicable law or agreed to in writing, software 
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-# License for the specific language governing permissions and limitations 
-# under the License.
-# ---------------------------------------------------------------------------
+#  this is a modification of the original script of D Dickinson and Peter Hill
+#  @https://github.com/ZedThree/fort_depend.py
 #
+#  The modification was done by Adam Jirasek 
+#  the modified version can be found @https://github.com/libm3l/fort_depend.py
 #
+#  the major update is that the dependency script can make dependenies 
+#  from files located in different directories, so it is more suitable 
+#  for bigger project 
 #
-# Description: Python script preparing CFL3D build directory 
-#
-# 
 # History:
-# Version   Date       Author              Patch number  CLA     Comment
-# -------   --------          --------               ----------------    -----      -------------
-# 1.1       01/09/17     Adam Jirasek                                        Initial implementation
+# Version   Date       Author        Patch number  CLA  Comment
+# -------   --------   --------      ------------  ---  -------
+# 1.1       01/09/17   Adam Jirasek                     Rewrite original version
 #
-#
-#
-# 
-# History:
-# Version   Date       Patch number  CLA     Comment
-# -------   --------   --------      ---     -------
-# 1.1       10/10/16                         Initial implementation
 #
 #
 #
@@ -148,7 +147,9 @@ def run(comp,build,fll,force=None, overwrite=None, init=None):
              clean = True
            else:
              print ("\033[031mError:\033[039m given build location already exist: \033[032m"+os.path.abspath(build)+"\033[039m")  	
-             print ("\033[031m      \033[039m choose different location \033[032m"  "\033[039m") 
+             print ("\033[031m      \033[039m choose different build location or\033[032m"  "\033[039m")
+             print ("\033[031m      \033[039m use options \033[032m '-f' '--force' \033[039m or \033[032m '-o' '--overwrite' \033[039m")
+             print("       terminating .... ")
              sys.exit()
 #
 #  got to build directory
@@ -199,15 +200,17 @@ def config_init(path,fll):
     except OSError:
         pass
     
-    fconfig = open(confname, 'w')
+    fconfig = open(confname, 'w')    
 #
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"\n")
-    fconfig.write("FLLLOC="+fll+"/data_util/\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
+    fconfig.write("#  External modules location\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS="+fll+"/data_util/\n")  
     fconfig.close()
 
 def mkconfigfile(path, cwd,version,fll):
@@ -237,13 +240,12 @@ def mkconfigfile(path, cwd,version,fll):
 #  set some global parameters
 #
     fconfig.write("PROJ_ROOT_PATH="+path+"/source/\n")
-    fconfig.write("FLLLOC="+fll+"\n")
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_de/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
     
     fconfig.write("#\n")
-    fconfig.write("SHELL              = /bin/bash\n")
+    fconfig.write("SHELL  = /bin/bash\n")
     fconfig.write("#\n")
 
     fconfig.write("#\n")
@@ -258,10 +260,20 @@ def mkconfigfile(path, cwd,version,fll):
            if ( not(line.startswith('#')) or not line.strip()): 
                 print(line)
                 fconfig.write(line)
-
     fconfig.write("#\n")  
+    fconfig.write("#  Fortran preprocessor options\n")
     fconfig.write("#\n")
-    fconfig.write("#  MACHINE identifies the host machine type")
+    fconfig.write("DOPTS=\n")  
+    fconfig.write("#\n")  
+    fconfig.write("#  External modules location\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS="+fll+"\n")  
+    fconfig.write("#\n")
+    fconfig.write("#  Libraries\n")
+    fconfig.write("#\n")
+    fconfig.write("LIBS=\n")  
+    fconfig.write("#\n")
+    fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
     fconfig.write("MACHINE="+platform.machine()+"\n")
     fconfig.write("#\n")
@@ -331,6 +343,5 @@ if __name__ == "__main__":
           print ("\033[031mError: \033[039m missing location of FLL library,  specify option \033[031m-L \033[032m")
           print ("\033[031m       \033[039m FLL library is avaialble at \033[032m https://gthub.com/libm3l/fll \033[039m")
           sys.exit()       
-        
 
     run(comp=compiler,build=build,fll=fll,force=args.force, overwrite=args.overwrite, init=args.init)

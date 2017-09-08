@@ -33,14 +33,30 @@
 #
 #
 
-EXEC    = cfl3d_seq
-
 include src_dir_path.mk
 include ../../config.mk
 
 DEP_FILE=depend.mk
+#
+# Use MPI compilation if required
+#
+DIR = $(PWD)
 
-FMODDIRS= $(FLLLOC)
+ifneq (,$(findstring mpi,$(DIR)))
+	FTN          =$(MPI_FTN)
+	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+	LFLAGS :=$(MPI_LFLAGS)
+	DOPTS   +=  DIST_MPI
+endif 
+#
+# Use complex version  compilation if required
+#
+ifneq (,$(findstring cmplx,$(DIR)))
+	DOPTS   +=  CMPLX
+	DEP_FILE=depend_cmplx.mk
+endif 
+
+FMODDIRS=  $(EFMODDIRS)
 FMODDIRS+=../libs
 
 FCMODINCFLAG = -I
@@ -52,24 +68,21 @@ OFILES1  =$(FFILES:.F=.o)
 OFILES   =$(OFILES1:.F90=.o)
 
 XOFILES+=$(wildcard ../libs/*.o)
-XOFILES+=$(wildcard $(FLLLOC)/*.o)
 
 ###########################################################################
 
-all: $(EXEC)
-
-$(EXEC):  $(OFILES)
+all: $(OFILES)
 include ../../../rules.mk
 
 clean:
-	rm -f *.x *.o *.mod $(EXEC)
+	rm -f *.x *.o *.mod
+	find ./ -executable -type f | xargs rm -f 
 
 depend: $(FFILES)
 	@echo "Making dependencies!"
 	echo $(srcdir)
 	echo $(FFILES)
-	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
-
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)  && cp depend.mk depend_cmplx.mk && sed -i 's|cfl3d/|cflcmplx/|g' depend_cmplx.mk
 
 install: $(EXE).x $(EXE).py
 	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x

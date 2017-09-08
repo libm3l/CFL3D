@@ -12,19 +12,19 @@ HANDLE_UPPER_CASE_MOD_NAMES = ! [ "$(UPPER_MODFILE_NAME)" ] || ! [[ $* = *_m ]] 
 
 # Rule for building free-form fortran from srcdir directory
 %.o %.mod: $(srcdir)/%.f90
-	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $<
+	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) $<
 	-@$(HANDLE_UPPER_CASE_MOD_NAMES)
 	
 %.o %.mod: $(srcdir)/%.F90
-	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $<
+	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) $<
 	-@$(HANDLE_UPPER_CASE_MOD_NAMES)
 
 %.o %.mod: $(srcdir)/%.f
-	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $<
+	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) $<
 	-@$(HANDLE_UPPER_CASE_MOD_NAMES)
 	
 %.o %.mod: $(srcdir)/%.F
-	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $<
+	$(FTN) -c $(FFLAG) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) $<
 	-@$(HANDLE_UPPER_CASE_MOD_NAMES)
 
 # Rule for building C from srcdir directory

@@ -41,14 +41,14 @@ qoutavg.o :
 bc_period.o : 
 
 qout.o :  \
-	../../cfl3d/libs/module_contour.o \
-	../../cfl3d/libs/module_kwstm.o \
-	../../cfl3d/libs/module_profileout.o
+	../../cflcmplx/libs/module_contour.o \
+	../../cflcmplx/libs/module_kwstm.o \
+	../../cflcmplx/libs/module_profileout.o
 
 yplusout.o : 
 
 setup.o :  \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 plot3c.o : 
 
@@ -73,7 +73,7 @@ qout_coarse.o :
 mgbl.o :  \
 	mgblk.o \
 	addnoneqstr.o \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 patcher.o : 
 
@@ -91,7 +91,7 @@ cfl3d.o :  \
 	mgbl.o
 
 pointers.o :  \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 rrestg.o : 
 
@@ -110,9 +110,9 @@ dynptch.o :
 development.o : 
 
 mgblk.o :  \
-	../../cfl3d/libs/shift.o \
-	../../cfl3d/libs/update.o \
-	../../cfl3d/libs/collq.o \
-	../../cfl3d/libs/resid.o
+	../../cflcmplx/libs/shift.o \
+	../../cflcmplx/libs/update.o \
+	../../cflcmplx/libs/collq.o \
+	../../cflcmplx/libs/resid.o
 
 umalloc_c.o : 

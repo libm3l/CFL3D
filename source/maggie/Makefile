@@ -40,7 +40,7 @@ include ../config.mk
 
 DEP_FILE=depend.mk
 
-FMODDIRS= ../../header
+FMODDIRS= ../../header  $(EFMODDIRS)
 
 
 FCMODINCFLAG = -I
@@ -65,7 +65,8 @@ depend: $(FFILES)
 	@echo "Making dependencies!"
 	echo $(srcdir)
 	echo $(FFILES)
-	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS) $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)  && cp depend.mk depend_cmplx.mk && sed -i 's|cfl3d/|cflcmplx/|g' depend_cmplx.mk
+
 
 
 install: $(EXE).x $(EXE).py

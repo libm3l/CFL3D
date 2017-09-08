@@ -58,11 +58,11 @@ c       wt(1-3)       : cross-flow temporaries
 c
 c**********************************************************************
 c
+      USE FLL_MODS_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
-
-      USE FLL_MODS_M
 c
       dimension q(jdim,kdim,idim),ux(jdim-1,kdim-1,idim-1,3)
       dimension sj(jdim,kdim,idim-1,5),sk(jdim,kdim,idim-1,5),

@@ -61,13 +61,14 @@ c                               47th AIAA Aerospace Sciences Meeting Including T
 c                               Aerospace Exposition, January 2009
 c***********************************************************************
 c
-#   ifdef CMPLX
-      implicit complex(a-h,o-z)
-#   endif
 
       USE FLL_MODS_M
       USE DELS_M
       USE FIND_INDEX_M
+      
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
 
 !      IMPLICIT NONE
 
