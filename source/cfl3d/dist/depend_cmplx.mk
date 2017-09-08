@@ -11,7 +11,7 @@ findmin_new.o :
 newalpha.o : 
 
 mgbl.o :  \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 plot3d.o : 
 
@@ -34,7 +34,7 @@ sizer.o :
 forceout.o : 
 
 pointers.o :  \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 setslave.o : 
 
@@ -77,7 +77,7 @@ bc_period.o :
 plot3c.o : 
 
 setup.o :  \
-	../../cfl3d/libs/module_kwstm.o
+	../../cflcmplx/libs/module_kwstm.o
 
 qinter.o : 
 
@@ -92,9 +92,9 @@ pre_bc.o :
 bc_patch.o : 
 
 qout.o :  \
-	../../cfl3d/libs/module_contour.o \
-	../../cfl3d/libs/module_kwstm.o \
-	../../cfl3d/libs/module_profileout.o
+	../../cflcmplx/libs/module_contour.o \
+	../../cflcmplx/libs/module_kwstm.o \
+	../../cflcmplx/libs/module_profileout.o
 
 qout_coarse.o : 
 

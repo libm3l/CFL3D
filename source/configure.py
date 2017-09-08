@@ -196,6 +196,9 @@ def config_init(path):
     fconfig.write("MAKEDEPEND="+fortdeppath+"python_dep/fort_depend.py\n")
     fconfig.write("VERBOSE=-vvv\n")
     fconfig.write("#\n")
+    fconfig.write("#  External modules location\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS=\n")  
     fconfig.close()
 
 def mkconfigfile(path, cwd,version):
@@ -230,7 +233,7 @@ def mkconfigfile(path, cwd,version):
     fconfig.write("#\n")
     
     fconfig.write("#\n")
-    fconfig.write("SHELL              = /bin/bash\n")
+    fconfig.write("SHELL  = /bin/bash\n")
     fconfig.write("#\n")
 
     fconfig.write("#\n")
@@ -246,6 +249,13 @@ def mkconfigfile(path, cwd,version):
                 print(line)
                 fconfig.write(line)
     fconfig.write("#\n")  
+    fconfig.write("#  Fortran preprocessor options\n")
+    fconfig.write("#\n")
+    fconfig.write("DOPTS=\n")  
+    fconfig.write("#\n")  
+    fconfig.write("#  External modules location\n")
+    fconfig.write("#\n")
+    fconfig.write("EFMODDIRS=\n")  
     fconfig.write("#\n")
     fconfig.write("#  Libraries\n")
     fconfig.write("#\n")

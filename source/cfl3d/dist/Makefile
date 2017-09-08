@@ -37,15 +37,23 @@ include src_dir_path.mk
 include ../../config.mk
 
 DEP_FILE=depend.mk
-
-# Use MPI compilation in this file
-
+#
+# Use MPI compilation if required
+#
 DIR = $(PWD)
 
 ifneq (,$(findstring mpi,$(DIR)))
 	FTN          =$(MPI_FTN)
 	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
 	LFLAGS :=$(MPI_LFLAGS)
+	DOPTS   +=  DIST_MPI
+endif 
+#
+# Use complex version  compilation if required
+#
+ifneq (,$(findstring cmplx,$(DIR)))
+	DOPTS   +=  CMPLX
+	DEP_FILE=depend_cmplx.mk
 endif 
 
 FMODDIRS=  $(EFMODDIRS)
@@ -74,8 +82,7 @@ depend: $(FFILES)
 	@echo "Making dependencies!"
 	echo $(srcdir)
 	echo $(FFILES)
-	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)
-
+	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)  && cp depend.mk depend_cmplx.mk && sed -i 's|cfl3d/|cflcmplx/|g' depend_cmplx.mk
 
 install: $(EXE).x $(EXE).py
 	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x

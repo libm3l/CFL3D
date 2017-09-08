@@ -34,19 +34,38 @@
 include src_dir_path.mk
 include ../config.mk
 
-FMODDIRS  =  $(EFMODDIRS)
-
 SUBDIR_COMP = \
 	libs\
 	seq\
+
+SUBDIRS= \
+	libs\
+	dist
 
 ifneq ($(strip $(MPI_FTN)),)
   SUBDIR_COMP+= mpi
 endif
 
-SUBDIRS= \
-	libs\
-	dist
+#
+# Use MPI compilation if required
+#
+DIR = $(PWD)
+
+ifneq (,$(findstring mpi,$(DIR)))
+	FTN          =$(MPI_FTN)
+	FFLAGS :=$(MPI_FFLAGS) $(FINCFLAGS)
+	LFLAGS :=$(MPI_LFLAGS)
+	DOPTS   +=  DIST_MPI
+endif 
+#
+# Use complex version  compilation if required
+#
+ifneq (,$(findstring cmplx,$(DIR)))
+	DOPTS   +=  CMPLX
+endif
+
+FMODDIRS  =  $(EFMODDIRS)
+
 	
 EXEC = SEQ
 
@@ -79,7 +98,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	    -e "s|BUILDCC|$(BC)|g" \
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
-	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
+	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) main.F 
 	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'
@@ -97,7 +116,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	    -e "s|BUILDCC|$(BCMPI)|g" \
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
-	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) main.F 
+	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) -DDIST_MPI main.F 
 	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'

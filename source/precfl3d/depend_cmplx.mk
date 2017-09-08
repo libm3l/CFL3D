@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 
-maggie.o : 
+usrint.o : 
 
-wkstn.o : 
+get_cmd_args.o : 
 
-cputim.o : 
+main.o : 
