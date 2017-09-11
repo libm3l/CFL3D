@@ -30,6 +30,7 @@ c     Purpose:  Interpolate the solution or the correction from a
 c     coarser mesh to a finer mesh.
 c***********************************************************************
 c
+      USE RSMOOTH_M 
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif

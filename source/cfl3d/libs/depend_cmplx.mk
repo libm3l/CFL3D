@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-11 21:03:50
+#  Date: 2017-09-11 21:17:05
 #
 
 i2xsj_d.o : 
@@ -242,7 +242,8 @@ blockk_d.o :
 
 global0.o : 
 
-addx.o : 
+addx.o :  \
+	rsmooth.o
 
 genforce.o : 
 

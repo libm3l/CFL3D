@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE RSMOOTH_M
+      CONTAINS
       subroutine rsmooth(eps,idim,jdim,kdim,icall,dq,d,nou,bou,nbuf,
      .                   ibufdim)
 c
@@ -164,3 +166,4 @@ cdir$ ivdep
 c
       return
       end
+      END MODULE RSMOOTH_M

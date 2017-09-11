@@ -94,10 +94,6 @@ c***********************************************************************
 c
       USE AE_CORR_M
       USE RB_CORR_M
-#   ifdef CMPLX
-      implicit complex(a-h,o-z)
-#   endif
-
       USE FLL_MODS_M
       USE RESID_M
       USE RESADD_M
@@ -105,6 +101,11 @@ c
       USE UPDATE_M
       USE COLLQ_M
       USE BCCHK_M
+      USE RSMOOTH_M
+
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
 c
 #if defined DIST_MPI
 #     include "mpif.h"
