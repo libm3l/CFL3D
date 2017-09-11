@@ -3074,7 +3074,7 @@ c            or 0.33333 (3D))
                 CMUTILDE = MIN(CMU, CMUTILDE)        
         
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP
+                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP*mulamref
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
