@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-08 19:48:28
+#  Date: 2017-09-11 19:23:01
 #
 
 i2xsj_d.o : 
@@ -410,7 +410,8 @@ ffluxr.o :
 
 bc_xmera.o : 
 
-bc.o : 
+bc.o :  \
+	bcchk.o
 
 threeeqn.o : 
 
@@ -543,7 +544,8 @@ pltmode.o :
 gfluxl.o : 
 
 update.o :  \
-	af3f.o
+	af3f.o \
+	find_index.o
 
 hfluxv.o : 
 

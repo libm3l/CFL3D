@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE BCCHK_M
+      CONTAINS
       subroutine bcchk(idim,jdim,kdim,q,qi0,qj0,qk0,blank,ibcflg,nbl,
      .                 nou,bou,nbuf,ibufdim,myid,istop,igridg,maxbl)
 c
@@ -310,3 +312,5 @@ c
 c
       return
       end
+
+      END MODULE BCCHK_M

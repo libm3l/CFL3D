@@ -43,6 +43,8 @@ c              coordinate data used in interpolations
 c     nsub1  - maximum number of blocks a single patch face may be
 c                interpolated from
 c
+       USE BCCHK_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif

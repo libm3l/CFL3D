@@ -103,6 +103,7 @@ c
       USE SHIFT_M
       USE UPDATE_M
       USE COLLQ_M
+      USE BCCHK_M
 c
 #if defined DIST_MPI
 #     include "mpif.h"
