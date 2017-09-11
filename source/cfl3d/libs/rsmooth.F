@@ -29,6 +29,16 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Implicit residual smoothing (constant coefficient).
+c
+c     CHANGELOG
+
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     need to use fll library (https:/github.com/libm3l/fll
+c                                               and FLL_MODS_M
+c                                               wrap routine in module
+c                                               store velocity on the highest level grid
+c                                               for non-equilibrium models
 c***********************************************************************
 c
 #   ifdef CMPLX

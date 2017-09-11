@@ -176,7 +176,7 @@ c
 
 
 c
-c   store velocity
+c   store velocity for non-eq model
 c 
       if (icall > 0)then
 c
