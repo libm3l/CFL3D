@@ -100,6 +100,7 @@ c
 
       USE FLL_MODS_M
       USE RESID_M
+      USE RESADD_M
       USE SHIFT_M
       USE UPDATE_M
       USE COLLQ_M

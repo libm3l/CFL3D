@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE RESADD_M
+      CONTAINS
       subroutine resadd(jdim,kdim,idim,q,qc0,dqc0,res,vol,iover,blank)
 c
 c     $Id$
@@ -142,3 +144,4 @@ c
 c
       return
       end
+      END MODULE RESADD_M
