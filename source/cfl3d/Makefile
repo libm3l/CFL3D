@@ -52,6 +52,9 @@ SUBDIRS= \
 EXE_SEQ = cfl3d_seq
 EXE_MPI = cfl3d_mpi
 
+MESSG = '*' sequential version of CFL3D built successfully!
+MESSG_MPI = '*' mpi version of CFL3D built successfully!
+
 #
 # Use MPI compilation if required
 #
@@ -70,6 +73,8 @@ ifneq (,$(findstring cmplx,$(DIR)))
 	DOPTS   +=  CMPLX
 	EXE_SEQ = cfl3d_cmplx_seq
 	EXE_MPI = cfl3d_cmplx_mpi
+	MESSG = '*' sequential complex version of CFL3D built successfully!
+	MESSG_MPI = '*' mpi complex version of CFL3D built successfully!
 endif
 
 FMODDIRS  =  $(EFMODDIRS)
@@ -111,7 +116,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 
 	@echo '************************************************'
 	@echo '*'
-	@echo '* sequential complex version of CFL3D built successfully!'
+	@echo $(MESSG)
 	@echo '*'
 	@echo '************************************************'
 	rm main.o
@@ -131,7 +136,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 
 	@echo '************************************************'
 	@echo '*'
-	@echo '* MPI complex version of CFL3D built successfully!'
+	@echo $(MESSG_MPI)
 	@echo '*'
 	@echo '************************************************'
 	rm main.o
