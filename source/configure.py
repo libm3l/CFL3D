@@ -56,7 +56,7 @@ import time
 from time import gmtime, strftime
 #Definitions
 
-def run(comp,build,execd,fll,force=None, overwrite=None, init=None):
+def run(comp,build,execd,fll,cgns_dir,force=None, overwrite=None, init=None):
 #
 #  definition of parameters
 #
@@ -193,8 +193,7 @@ def run(comp,build,execd,fll,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath,fll_lib=fll,exec_dir=exec_dir)
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,fll=fll_abspath,fll_lib=fll,exec_dir=exec_dir,cgns_dir=cgns_dir)
 #
 #  make exec directory
 #
@@ -268,7 +267,10 @@ def config_init(path,fll, overwrite):
 
     fconfig.close()
 
-def mkconfigfile(path, cwd,version,fll,fll_lib,exec_dir):
+
+
+
+def mkconfigfile(path, cwd,version,fll,fll_lib,exec_dir,cgns_dir):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -298,9 +300,6 @@ def mkconfigfile(path, cwd,version,fll,fll_lib,exec_dir):
             break
     
     fconfig = open(confname, 'w')
-#
-#  header 
-#
 #
 #  header 
 #
@@ -346,13 +345,20 @@ def mkconfigfile(path, cwd,version,fll,fll_lib,exec_dir):
                 print(line)
                 fconfig.write(line)
     fconfig.write("#\n")
-    fconfig.write("#  External modules\n")
+    fconfig.write("DOPTS= $(PREC_MPI)  $(MPI_INCDIR) $(SYSTEM) $(COMP) P3D_SINGLE\n")  
+    fconfig.write("#\n")  
+    fconfig.write("#  External modules location\n")
     fconfig.write("#\n")
-    fconfig.write("EFMODDIRS="+fll+"\n")
+    fconfig.write("EFMODDIRS="+ cgns_dir + " " +fll+"\n")  
     fconfig.write("#\n")
     fconfig.write("#  Libraries\n")
     fconfig.write("#\n")
-    fconfig.write("LIBS="+lpath+"\n")  
+
+    if(cgns_dir == ''):
+    	fconfig.write("LIBS="+lpath+"\n")  
+    else:
+        fconfig.write("LIBS= -lcgns -lconfig "+lpath+"\n") 
+
     fconfig.write("#\n")
     fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
@@ -393,6 +399,7 @@ if __name__ == "__main__":
     parser.add_argument('-L','--fll',nargs=1,help='Location of FLL utility')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
     parser.add_argument('-x','--executable',action='store_true',help='Location of executables')
+    parser.add_argument('-C','--cgns',nargs=1,help='Location of cgns header files')
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -402,6 +409,7 @@ if __name__ == "__main__":
     compiler = args.compiler[0] if args.compiler else None
     fll = args.fll[0] if args.fll else ''
     execd    = args.executable[0] if args.executable else ''
+    cgns_dir    = args.cgns[0] if args.cgns else ''
     
     if not init:
     
@@ -431,4 +439,4 @@ if __name__ == "__main__":
           sys.exit()       
         
 
-    run(comp=compiler,build=build,execd=execd,fll=fll,force=args.force, overwrite=args.overwrite, init=args.init)
+    run(comp=compiler,build=build,execd=execd,fll=fll,cgns_dir=cgns_dir,force=args.force, overwrite=args.overwrite, init=args.init)

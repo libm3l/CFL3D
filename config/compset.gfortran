@@ -2,16 +2,17 @@ FTN             = gfortran
 FFLAG        = -g -O2 -fdefault-real-8 -fdefault-double-8 -fbacktrace 
 FFLAG_SPEC   = -g -O2 -fdefault-real-8 -fdefault-double-8 -fbacktrace 
 PREC           =
-PREC_MPI  = -DDBLE_PRECSN
+PREC_MPI  =   DBLE_PRECSN
 LFLAG          = -g -O2 -fdefault-real-8 -fdefault-double-8 -fbacktrace
 MPI_LFLAG = -g -O2 -fdefault-real-8 -fdefault-double-8 -fbacktrace
 CPP              = cpp
 CPPFLAG    = -P
-CPPOPT      =  $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
 CPPOPT_SP  = -DP3D_SINGLE -DLINUX -DINTEL $(PREC_MPI) $(CGNS_INCDIR)
-CPPOPT_CMPLX = -DCMPLX
-MPI_FTN        = mpif90
-CC                   = mpicc
+MPI_FTN      = mpif90
+CC           = mpicc
+SYSTEM       = LINUX
+COMP         = GFORTRAN
+CGNS_INCDIR  =
 
 FCMODINCFLAG = -I
 
