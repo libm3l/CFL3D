@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE COLLQC0_M
+      CONTAINS
       subroutine collqc0(qc0,qc0c,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
      .                  dqc0,dqc0c,qw,nbl,nou,bou,nbuf,ibufdim)
 c
@@ -29,6 +31,11 @@ c***********************************************************************
 c     Purpose:  Restrict conservative variables Q(n) and Q(n)-Q(n-1)
 c     to coarser meshes via summation over fine-grid cells for use
 c     in time-accurate multigrid.
+c
+c     CHANGELOG
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder  wrap routine in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -137,3 +144,5 @@ c
    61 continue
       return
       end
+
+      END MODULE COLLQC0_M

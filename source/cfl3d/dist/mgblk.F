@@ -103,6 +103,19 @@ c
       USE BCCHK_M
       USE RSMOOTH_M
 !      USE RESP_M
+      USE COLLQC0_M
+!
+!  Note: while using USE RESP_M compiler issues error:
+!
+!    mgblk.F:1699.23:
+!    
+!         $                 chdw,swetw,fmdotw,
+!    
+!    Error: Rank mismatch in argument 'hdw' at (1) (scalar and rank-1)
+!    reason is :    
+!    mgblk.F:  chdw is declared as 1D array
+!    resp.F :  chdw is declared as 2D array
+!
 
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
