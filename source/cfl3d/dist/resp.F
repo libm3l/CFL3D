@@ -20,8 +20,6 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      MODULE RESP_M
-      CONTAINS
       subroutine resp(nbl,ntime,ntt0,jdim,kdim,idim,q,sj,sk,si,vol,
      .                x,y,z,res,wk0,vmuk,vmuj,vmui,wk,nwork,nblstag,
      .                nblendg,nblstat,nblendt,nptsr,nptsrb,nnegb,
@@ -50,14 +48,6 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Compute and print residuals and sum the forces.
-c
-c     CHANGELOG
-c     Version   Date       Author               Comment
-c     -------   --------   -------              -------
-c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     add pglob pointer for non-equilibrium model
-c                                               need to use fll library (https:/github.com/libm3l/fll
-c                                               and FLL_MODS_M
-c                                               wrap routine in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -1361,4 +1351,3 @@ c
 c
       return
       end
-      END MODULE RESP_M
