@@ -187,7 +187,7 @@ def run(comp,build,execd,force=None, overwrite=None, init=None):
 #
     if not os.path.isdir(exec_dir):
       print("  ")
-      print("\033[031mERROR:\033[039m Creating exec directory \033[032m"+exec_dir+"\033[039m .... ")
+      print("\033[031mDIAG:\033[039m Creating exec directory \033[032m"+exec_dir+"\033[039m .... ")
       os.makedirs(exec_dir)
 
 
