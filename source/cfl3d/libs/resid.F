@@ -31,7 +31,7 @@ c
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance,qavg,nummem,pglob,icall)
+     .           idefrm,iadvance,qavg,nummem,pglob,icallhd)
 #   ifdef CMPLX
 #   else
       use module_kwstm, only: kws_main,kws_dump_movie
@@ -144,7 +144,7 @@ c
       TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK
       TYPE(FUNC_DATA_SET)  :: FPAR
       INTEGER(LINT) :: IGRID, NGRID, NBLOCK,IBLOCK
-      INTEGER :: ICALL
+      INTEGER :: ICALLHD,ICALL
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -1038,6 +1038,7 @@ c
 c     look for non-equilibrium model extra data
 c
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+      icallhd = icall*ihdm
       PGRID => NULL()
       IF(IHDM == 1)THEN     
       NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
