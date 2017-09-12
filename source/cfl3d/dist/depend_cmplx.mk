@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-12 15:27:39
+#  Date: 2017-09-12 15:34:37
 #
 
 findmin_new.o : 
@@ -116,6 +116,7 @@ mgblk.o :  \
 	../../cflcmplx/libs/collqc0.o \
 	../../cflcmplx/libs/addx.o \
 	../../cflcmplx/libs/resadd.o \
+	../../cflcmplx/libs/intrbc.o \
 	../../cflcmplx/libs/collq.o \
 	../../cflcmplx/libs/shift.o \
 	../../cflcmplx/libs/bcchk.o \

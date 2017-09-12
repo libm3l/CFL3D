@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE INTRBC_M
+      CONTAINS
       subroutine intrbc(q,jdim,kdim,idim,nbl,ldim,maxbl,iitot,lig,
      .                  iipntsg,dxintg,dyintg,dzintg,iiig,jjig,kkig,
      .                  qb,qj0,qk0,qi0,qq,bcj,bck,bci,nou,bou,nbuf,
@@ -30,6 +32,11 @@ c
 c***********************************************************************
 c     Purpose:  Interpolate corrections for boundary values for all 
 c     grids overlapped in the current mesh.
+c
+c     CHANGELOG
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder wrap routine in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -147,4 +154,5 @@ c
          write(bou(nou(1),1),*)'  qb points updated = ',iipntsg(nbl)
       end if
       return
-      end 
+      end
+      END MODULE INTRBC_M 

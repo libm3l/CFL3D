@@ -56,6 +56,7 @@ c
       use module_kwstm, only:kws_init
 #   endif
       USE FLL_MODS_M
+      USE INTRBC_M
 c
 c     $Id$
 c

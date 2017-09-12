@@ -105,6 +105,7 @@ c
 !      USE RESP_M
       USE COLLQC0_M
       USE ADDX_M
+      USE INTRBC_M
 !
 !  Note: while using USE RESP_M compiler issues error:
 !
