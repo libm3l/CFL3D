@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE ADDX_M
+      CONTAINS
       subroutine addx(q,qq,jdim,kdim,idim,jj2,kk2,ii2,q1,dq,wq,wqj,nbl,
      .                blank,nou,bou,nbuf,ibufdim,ll,myid)
 c
@@ -28,6 +30,12 @@ c
 c***********************************************************************
 c     Purpose:  Interpolate the solution or the correction from a 
 c     coarser mesh to a finer mesh.
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap up in module
 c***********************************************************************
 c
       USE RSMOOTH_M 
@@ -243,3 +251,5 @@ cdir$ ivdep
       call fill(jdim,kdim,idim,q,ll)
       return
       end
+
+      END MODULE ADDX_M

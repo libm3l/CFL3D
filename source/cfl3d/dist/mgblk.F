@@ -104,6 +104,7 @@ c
       USE RSMOOTH_M
 !      USE RESP_M
       USE COLLQC0_M
+      USE ADDX_M
 !
 !  Note: while using USE RESP_M compiler issues error:
 !

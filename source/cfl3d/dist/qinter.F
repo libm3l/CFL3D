@@ -38,6 +38,8 @@ c     mesh. Also updates grid position of finer mesh if meshes are in
 c     motion.
 c***********************************************************************
 c
+      USE ADDX_M
+
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
