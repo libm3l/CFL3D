@@ -56,7 +56,7 @@ import time
 from time import gmtime, strftime
 #Definitions
 
-def run(comp,build,force=None, overwrite=None, init=None):
+def run(comp,build,execd,force=None, overwrite=None, init=None):
 #
 #  definition of parameters
 #
@@ -151,7 +151,20 @@ def run(comp,build,force=None, overwrite=None, init=None):
         shutil.rmtree(build_path)
         os.makedirs(build_path)
 
-    os.chdir(build_path) 
+    os.chdir(build_path)
+#
+#  specify exec directory where all executables will be located
+#
+    print("Specified exec is "+execd)
+    if execd == '':
+      print("  ")
+      print("\033[031mDIAG:\033[039m Bild directory not specified, setting it to \033[032m "+build_path+platform.machine()+"/bin\033[039m")  	
+      print("  ")
+      exec_dir=build_path+'/'+platform.machine()+'/bin'
+    else:
+      exec_dir=execd
+
+    print(exec_dir)
 #
 #  untar build_template.tar
 #
@@ -168,8 +181,14 @@ def run(comp,build,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp)
-
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,exec_dir=exec_dir)
+#
+#  make exec directory
+#
+    if not os.path.isdir(exec_dir):
+      print("  ")
+      print("\033[031mERROR:\033[039m Creating exec directory \033[032m"+exec_dir+"\033[039m .... ")
+      os.makedirs(exec_dir)
 
 
 def check_path(path):
@@ -235,7 +254,7 @@ def config_init(path, overwrite):
     fconfig.write("EFMODDIRS=\n")  
     fconfig.close()
 
-def mkconfigfile(path, cwd,version):
+def mkconfigfile(path, cwd,version,exec_dir):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -326,6 +345,9 @@ def mkconfigfile(path, cwd,version):
     fconfig.write("#\n")
     fconfig.write("INSTALL = install -c\n")
     fconfig.write("#\n")
+    fconfig.write("#  bin_dir is the base directory with installed executables\n")
+    fconfig.write("#\n")
+    fconfig.write('bin_dir='+exec_dir+"\n")
 
     f.close()
     fconfig.close()
@@ -352,13 +374,15 @@ if __name__ == "__main__":
     parser.add_argument('-f','--force',action='store_true',help='Force updates to existing installation')
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
+    parser.add_argument('-x','--executable',action='store_true',help='Location of executables')
 
     # Parse the command line arguments
     args = parser.parse_args()
 
-    init = args.init if args.init else None
-    build = args.build[0] if args.build else ''
+    init     = args.init if args.init else None
+    build    = args.build[0] if args.build else ''
     compiler = args.compiler[0] if args.compiler else None
+    execd    = args.executable[0] if args.executable else ''
     
     if not init:
     
@@ -375,4 +399,4 @@ if __name__ == "__main__":
         sys.exit()
         
 
-    run(comp=compiler,build=build,force=args.force, overwrite=args.overwrite, init=args.init)
+    run(comp=compiler,build=build,execd=execd,force=args.force, overwrite=args.overwrite, init=args.init)

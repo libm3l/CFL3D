@@ -84,9 +84,7 @@ depend: $(FFILES)
 	echo $(FFILES)
 	cd $(srcdir) && $(MAKEDEPEND) -r  $(PROJ_ROOT_PATH) -d $(FMODDIRS)  $(VERBOSE) -w -o $(srcdir)/$(DEP_FILE) -f $(FFILES)  && cp depend.mk depend_cmplx.mk && sed -i 's|cfl3d/|cflcmplx/|g' depend_cmplx.mk
 
-install: $(EXE).x $(EXE).py
-	$(INSTALL) $(EXE).x $(bin_dir)/$(EXE)$(POSTFIX).x
-	$(INSTALL) $(EXE).py $(bin_dir)/$(EXE)$(POSTFIX).py
+install: $(SUBDIRS:%=%.install)
 
 -include $(srcdir)/$(DEP_FILE)
 

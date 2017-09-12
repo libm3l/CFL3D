@@ -2,15 +2,19 @@ INSTALLATION INSTRUCTIONS:
 
     1. in CFL3D main directory, execute python configuration script source/configure.py with input parameters
         input parameters are: 
-        [-b BUILD] [-c COMPILER] [-f] [-o]
+        [-h] [-b BUILD] [-c COMPILER] [-f] [-o] [-i] [-x]
        
         -b specifies name of directory where to build executables
        
         -c specifies version of compiler
        
-        -f if directory with executables already exist, add any changes to it
+        -f if build directory already exist, add any changes to it
        
-        -o if directory with executables already exist, remove it and make new one
+        -o if build directory already exist, remove it and make new one
+
+        -x specifies location where all executables will be copied during "make install" phase
+           if not specified, location will be in build directory in subdirectory starting with
+           machine platform name with bin subdirectory in it
        
         example: source/configure.py -b build -c gfortran -o
        

@@ -46,6 +46,9 @@ ifneq ($(strip $(MPI_FTN)),)
   SUBDIR_COMP+= mpi
 endif
 
+EXE_SEQ = cfl3d_seq
+EXE_MPI = cfl3d_mpi
+
 #
 # Use MPI compilation if required
 #
@@ -62,6 +65,8 @@ endif
 #
 ifneq (,$(findstring cmplx,$(DIR)))
 	DOPTS   +=  CMPLX
+	EXE_SEQ = cfl3d_cmplx_seq
+	EXE_MPI = cfl3d_cmplx_mpi
 endif
 
 FMODDIRS  =  $(EFMODDIRS)
@@ -99,7 +104,7 @@ $(EXEC).x: $(srcdir)/main.F $(wildcard libs/*.o seq/*.o)
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) main.F 
-	$(FTN) $(LFLAGS) -o cfl3d_seq main.o libs/*.o  seq/*.o $(LIBS)
+	$(FTN) $(LFLAGS) -o $(EXE_SEQ).x main.o libs/*.o  seq/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'
 	@echo '* sequential complex version of CFL3D built successfully!'
@@ -117,7 +122,7 @@ $(MPIEXE).x:   $(srcdir)/main.F $(wildcard libs/*.o mpi/*.o)
 	    -e "s|BKERNEL|$(BKERNEL)|g" \
 	    $(srcdir)/main.F > main.F
 	$(MPI_FTN) -c $(FFLAGS) $(FMODDIRS:%=$(FCMODINCFLAG)%) $(DOPTS:%=-D%) -DDIST_MPI main.F 
-	$(MPI_FTN) $(MPI_LFLAGS) -o cfl3d_mpi main.o libs/*.o  mpi/*.o $(LIBS)
+	$(MPI_FTN) $(MPI_LFLAGS) -o $(EXE_MPI).x main.o libs/*.o  mpi/*.o $(LIBS)
 	@echo '************************************************'
 	@echo '*'
 	@echo '* MPI complex version of CFL3D built successfully!'
@@ -132,4 +137,7 @@ clean: $(SUBDIR_COMP:%=%.clean)
 
 depend: $(SUBDIRS:%=%.depend)
 
-install: $(SUBDIR_COMP:%=%.install)
+install:
+	$(INSTALL) $(EXE_SEQ).x  $(bin_dir)/$(EXE_SEQ).x
+	$(INSTALL) $(EXE_MPI).x  $(bin_dir)/$(EXE_MPI).x
+
