@@ -56,7 +56,7 @@ import time
 from time import gmtime, strftime
 #Definitions
 
-def run(comp,build,execd,force=None, overwrite=None, init=None):
+def run(comp,build,execd,cgns_dir,force=None, overwrite=None, init=None):
 #
 #  definition of parameters
 #
@@ -181,7 +181,7 @@ def run(comp,build,execd,force=None, overwrite=None, init=None):
 #
 #  create configuration file config.mk
 #
-    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,exec_dir=exec_dir)
+    ok = mkconfigfile(path=tarpath, cwd=build_path,version=comp,exec_dir=exec_dir,cgns_dir=cgns_dir)
 #
 #  make exec directory
 #
@@ -254,7 +254,12 @@ def config_init(path, overwrite):
     fconfig.write("EFMODDIRS=\n")  
     fconfig.close()
 
-def mkconfigfile(path, cwd,version,exec_dir):
+
+
+
+
+
+def mkconfigfile(path, cwd,version,exec_dir,cgns_dir):
     filename = path+'/config/compset.'+version
     
     fortdeppath = path.replace("source/", "")
@@ -327,15 +332,20 @@ def mkconfigfile(path, cwd,version,exec_dir):
     fconfig.write("#\n")  
     fconfig.write("#  Fortran preprocessor options\n")
     fconfig.write("#\n")
-    fconfig.write("DOPTS= $(PREC_MPI)  $(MPI_INCDIR) \n")  
+    fconfig.write("DOPTS= $(PREC_MPI)  $(MPI_INCDIR) $(SYSTEM) $(COMP) P3D_SINGLE\n")  
     fconfig.write("#\n")  
     fconfig.write("#  External modules location\n")
     fconfig.write("#\n")
-    fconfig.write("EFMODDIRS=\n")  
+    fconfig.write("EFMODDIRS="+ cgns_dir + "\n")  
     fconfig.write("#\n")
     fconfig.write("#  Libraries\n")
     fconfig.write("#\n")
-    fconfig.write("LIBS=\n")  
+
+    if(cgns_dir == ''):
+    	fconfig.write("LIBS= \n")  
+    else:
+        fconfig.write("LIBS= -lcgns -lconfig\n") 
+
     fconfig.write("#\n")
     fconfig.write("#  MACHINE identifies the host machine type\n")
     fconfig.write("#\n")
@@ -375,6 +385,7 @@ if __name__ == "__main__":
     parser.add_argument('-o','--overwrite',action='store_true',help='Overwrite existing installation')
     parser.add_argument('-i','--init',action='store_true',help='Initialize (only for developers)')
     parser.add_argument('-x','--executable',action='store_true',help='Location of executables')
+    parser.add_argument('-C','--cgns',nargs=1,help='Location of cgns header files')
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -383,6 +394,7 @@ if __name__ == "__main__":
     build    = args.build[0] if args.build else ''
     compiler = args.compiler[0] if args.compiler else None
     execd    = args.executable[0] if args.executable else ''
+    cgns_dir    = args.cgns[0] if args.cgns else ''
     
     if not init:
     
@@ -399,4 +411,4 @@ if __name__ == "__main__":
         sys.exit()
         
 
-    run(comp=compiler,build=build,execd=execd,force=args.force, overwrite=args.overwrite, init=args.init)
+    run(comp=compiler,build=build,execd=execd,cgns_dir=cgns_dir,force=args.force, overwrite=args.overwrite, init=args.init)

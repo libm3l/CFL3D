@@ -8,9 +8,11 @@ MPI_LFLAG = -g -O2 -fdefault-real-8 -fdefault-double-8 -fbacktrace
 CPP              = cpp
 CPPFLAG    = -P
 CPPOPT_SP  = -DP3D_SINGLE -DLINUX -DINTEL $(PREC_MPI) $(CGNS_INCDIR)
-CPPOPT_CMPLX = -DCMPLX
-MPI_FTN        = mpif90
-CC                   = mpicc
+MPI_FTN      = mpif90
+CC           = mpicc
+SYSTEM       = LINUX
+COMP         = GFORTRAN
+CGNS_INCDIR  =
 
 FCMODINCFLAG = -I
 

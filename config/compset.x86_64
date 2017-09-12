@@ -8,9 +8,10 @@ MPI_LFLAG   = -O2 -msse3 -ip -r8 -std03 -fpp
 CPP                = icc
 CPPFLAG      = -P
 CPPOPT_SP = -DP3D_SINGLE -DLINUX -DINTEL $(PREC_MPI) $(CGNS_INCDIR)
-CPPOPT_CMPLX = -DCMPLX
 MPI_FTN        = mpif90
 CC                   = mpicc
+SYSTEM       = LINUX
+COMP         = INTEL
 
 FCMODINCFLAG = -I
 
