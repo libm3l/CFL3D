@@ -176,7 +176,7 @@ c
 
 
 c
-c   store velocity for non-eq model
+c   store velocity for non-eq model (should be added check for ivisc == 6)
 c 
       if (icall > 0)then
 c
@@ -206,7 +206,6 @@ c
 	      do i=1,idim
 	        do j=1,jdim
 	          do k=1,kdim
-
                     ihdm = find_index(i,j,k,idim,jdim,kdim)
                     VEL(ihdm,1) = q(j,k,i,2)
                     VEL(ihdm,2) = q(j,k,i,3)
