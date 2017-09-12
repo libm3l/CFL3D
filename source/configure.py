@@ -327,7 +327,7 @@ def mkconfigfile(path, cwd,version,exec_dir):
     fconfig.write("#\n")  
     fconfig.write("#  Fortran preprocessor options\n")
     fconfig.write("#\n")
-    fconfig.write("DOPTS=\n")  
+    fconfig.write("DOPTS= $(PREC_MPI)  $(MPI_INCDIR) \n")  
     fconfig.write("#\n")  
     fconfig.write("#  External modules location\n")
     fconfig.write("#\n")
