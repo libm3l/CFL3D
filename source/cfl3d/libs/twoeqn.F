@@ -1118,9 +1118,12 @@ c
 c          turbulence model advanced with physical time only
 c          (pseudo-time term NOT included, even for tau-TS in mean-
 c          flow equations, since multigrid is not used for turb. eq.)
+c
+c          if start from 0 or very early time dependent solution
+c          the temprorary restriction improves diagonal dominance
+c
+         RELFACT = min(1._rdouble, time/10._rdouble)
 
-         RELFACT = min(1., time/10.)
-         write(*,*)' Relaxation is ', time, RELFACT
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
@@ -1483,10 +1486,10 @@ c Get TURRE values
         enddo
       enddo
 
-      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
-      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+!      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+!      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 c
 c Iterate to solve the equations
       do 500 not=1,nsubit
