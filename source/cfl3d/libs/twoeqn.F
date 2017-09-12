@@ -292,7 +292,7 @@ c
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS
+     .  OMFREE, LAMBDA,EPS,RELFACT
 
       INTEGER :: ISTAT,SHIFT,INDTMP
 
@@ -1118,10 +1118,14 @@ c
 c          turbulence model advanced with physical time only
 c          (pseudo-time term NOT included, even for tau-TS in mean-
 c          flow equations, since multigrid is not used for turb. eq.)
+
+         RELFACT = min(1., time/10.)
+         write(*,*)' Relaxation is ', time, RELFACT
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
-           timestp(j,k,i)=dt
+!           timestp(j,k,i)=dt
+           timestp(j,k,i)=dt*RELFACT
            factor2=1.
          enddo
          enddo
@@ -1478,6 +1482,11 @@ c Get TURRE values
           enddo
         enddo
       enddo
+
+      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 c
 c Iterate to solve the equations
       do 500 not=1,nsubit
