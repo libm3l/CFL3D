@@ -102,7 +102,7 @@ c
       USE COLLQ_M
       USE BCCHK_M
       USE RSMOOTH_M
-      USE RESP_M
+!      USE RESP_M
 
 #   ifdef CMPLX
       implicit complex(a-h,o-z)

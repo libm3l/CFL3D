@@ -20,7 +20,7 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      USE RESP_M
+      MODULE RESP_M
       CONTAINS
       subroutine resp(nbl,ntime,ntt0,jdim,kdim,idim,q,sj,sk,si,vol,
      .                x,y,z,res,wk0,vmuk,vmuj,vmui,wk,nwork,nblstag,
