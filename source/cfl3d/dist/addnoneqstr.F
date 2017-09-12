@@ -99,7 +99,7 @@ c
              PGRID => FLL_MK("grid","DIR",0_LINT, 0_LINT,FPAR)
              IF(.NOT.FLL_MV(PGRID,PBLOCK,FPAR))STOP'ERROR MOVING NODE'
 
-             PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
+             PTMP => FLL_MK('grid-number','I',1_LINT,1_LINT, FPAR)
              PTMP%I0 = J
              IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
 
@@ -154,7 +154,7 @@ c
 !  these is a temproray term, value calculated
 !  in twoeqn.F
 !
-               PTMP => FLL_MK('DSDT_N','D',dims,13_LINT, FPAR)
+               PTMP => FLL_MK('DSDT_N','D',dims,12_LINT, FPAR)
                PTMP%D2 = 0.
                IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
               END IF

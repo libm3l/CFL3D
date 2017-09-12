@@ -250,7 +250,6 @@ c
       REAL(RDOUBLE), POINTER :: S22D_N(:),S23D_N(:),S33D_N(:)
       REAL(RDOUBLE), POINTER :: S11D_N2(:),S12D_N2(:),S13D_N2(:)
       REAL(RDOUBLE), POINTER :: S22D_N2(:),S23D_N2(:),S33D_N2(:)
-      REAL(RDOUBLE), POINTER :: STILDETRACE(:)
 
       REAL(RDOUBLE) :: S11DT,S13DT,S12DT,S22DT,S23DT
       REAL(RDOUBLE) :: S33DT,SKK
@@ -401,7 +400,6 @@ c
       S22D_N2  => PTMQ%D2(:,10)
       S23D_N2  => PTMQ%D2(:,11)
       S33D_N2  => PTMQ%D2(:,12)
-      STILDETRACE   => PTMQ%D2(:,13)
 !
 !     calculate strain-rate gradients
 !
@@ -1127,7 +1125,6 @@ c
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
-!           timestp(j,k,i)=dt
            timestp(j,k,i)=dt*RELFACT
            factor2=1.
          enddo
@@ -1478,18 +1475,18 @@ c Get TURRE values
       do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            if(isnan(zksav(j,k,i,1)))zksav(j,k,i,1) = 10000
-            if(isnan(zksav(j,k,i,2)))zksav(j,k,i,2) = 1
+!            if(isnan(zksav(j,k,i,1)))zksav(j,k,i,1) = 10000
+!            if(isnan(zksav(j,k,i,2)))zksav(j,k,i,2) = 1
             turre(j,k,i,1)=zksav(j,k,i,1)
             turre(j,k,i,2)=zksav(j,k,i,2)
           enddo
         enddo
       enddo
 
-!      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
-!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
-!      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
-!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 c
 c Iterate to solve the equations
       do 500 not=1,nsubit
@@ -3070,8 +3067,6 @@ c            or 0.33333 (3D))
      .            +2*S13*S13 + S22*S22 + 2*S23*S23 + S33*S33 )
 
                 SIJTILDE = MIN(SIJTILDE, SKK/SLIMITER)
-        
-                STILDETRACE(IND) = SIJTILDE
 
                 NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
@@ -3086,7 +3081,7 @@ c            or 0.33333 (3D))
                 CMUTILDE = MIN(CMU, CMUTILDE)        
         
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP*mulamref
+                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP/mulamref
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3101,13 +3096,27 @@ c            or 0.33333 (3D))
                 STRETRM33(IND)=2*MUT(IND)
      .            *MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
+!
+!  AJ NOTE
+!  get rid of it
+!
 
+                tracepart=(s11+s22+s33)*prod2d3dtrace
+                s11t=s11-tracepart
+                s22t=s22-tracepart
+                s33t=s33-tracepart
                 xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +                2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
                 w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
                 w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+
+!                xis = SIJTILDE
+!                w12 = S12+AE12
+!                w13 = S13+AE13
+!                w23 = S23+AE23
+!                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
 
 !          END IF ! IHDM == 1
 
@@ -3223,8 +3232,6 @@ c   Get Pk and Dk:
 !
 !      sijtilde = sij * sij~
 !
-                SIJTILDE = STILDETRACE(FIND_INDEX(I,J,K,idim,JDIM,KDIM)) 
-          
                 NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
           
                 IF(ABS(NU) > EPSILON(NU))THEN
@@ -3238,6 +3245,10 @@ c   Get Pk and Dk:
           
                 pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
+!
+!   AJ NOTE - get rid of it
+!
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
  
               else
 
@@ -5249,6 +5260,11 @@ c Update VIST3D and save omega and k values
 !
               INDTMP = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
+!
+!  AJ NOTE
+!  get rid of it
+!
+              vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:

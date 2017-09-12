@@ -1060,6 +1060,12 @@ c
 
       END DO
       END IF
+
+!
+!  AJ NOTE
+!  get rid of it
+!
+       IHDM = 0
 c
 c     residuals   J direction - viscous terms
 c
