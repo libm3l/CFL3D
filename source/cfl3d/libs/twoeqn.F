@@ -5210,9 +5210,9 @@ c
                 negno=negno+1
                 if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
               else
-                WREZ = 1.+ 
-     .            REZRELAX*max(rhside(j,k,i,1)/turre(j,k,i,1), 0.)
-                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)/WREZ
+!                WREZ = 1.+ 
+!     .            REZRELAX*max(rhside(j,k,i,1)/turre(j,k,i,1), 0.)
+                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)  !/WREZ
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
               if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
@@ -5220,9 +5220,9 @@ c
                 negnk=negnk+1
                 if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
               else
-                WREZ = 1.+ 
-     .            REZRELAX*max(rhside(j,k,i,2)/turre(j,k,i,2), 0.)
-                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)/WREZ
+!                WREZ = 1.+ 
+!     .            REZRELAX*max(rhside(j,k,i,2)/turre(j,k,i,2), 0.)
+                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)  !/WREZ
               end if
             enddo
           enddo
