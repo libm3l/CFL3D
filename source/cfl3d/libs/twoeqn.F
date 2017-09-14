@@ -316,16 +316,16 @@ c
 !   do only for non-equilibrium model
 !
       IF(IHDM == 1)THEN
-      SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
+        SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
 
-      SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
-      ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
-        IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310 '
+        SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
+        ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
+        IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310'
 
 
-      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
+        NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
 
-      DO IBLOCK = 1, NBLOCK  
+        DO IBLOCK = 1, NBLOCK  
 
          PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
      .                       IBLOCK,.FALSE.,FPAR)
@@ -340,7 +340,7 @@ c
          END IF
          IHDM = 0 
 
-      END DO
+        END DO
       END IF
 !
 !  if non-equilibrium model
@@ -2832,6 +2832,7 @@ c
       end if
 c  Source terms for k-omega (Wilcox & SST):
       if (ivmx .eq. 6 .or. ivmx .eq. 7) then
+
         pklimtermset=pklimterm
         if (isst2003 .eq. 1) pklimtermset=10.
 c
@@ -2856,6 +2857,7 @@ c
               else
                 cutoff=1.
               end if
+
               betax=blend(j,k,i)*beta1+(1.-blend(j,k,i))*beta2
               cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
@@ -3081,7 +3083,7 @@ c            or 0.33333 (3D))
                 CMUTILDE = MIN(CMU, CMUTILDE)        
         
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-                MUT(IND) = q(j,k,i,2)*turre(j,k,i,2)*MUTTMP/mulamref
+                MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP  !/mulamref
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3096,27 +3098,11 @@ c            or 0.33333 (3D))
                 STRETRM33(IND)=2*MUT(IND)
      .            *MIN(S33/SLIMITER,MAX(-S33/SLIMITER,AE33))
 
-!
-!  AJ NOTE
-!  get rid of it
-!
-
-                tracepart=(s11+s22+s33)*prod2d3dtrace
-                s11t=s11-tracepart
-                s22t=s22-tracepart
-                s33t=s33-tracepart
-                xis = s11t*s11t + s22t*s22t + s33t*s33t +
-     +                2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-                w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
-                w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
-                w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+                xis = SIJTILDE
+                w12 = S12+AE12
+                w13 = S13+AE13
+                w23 = S23+AE23
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
-
-!                xis = SIJTILDE
-!                w12 = S12+AE12
-!                w13 = S13+AE13
-!                w23 = S23+AE23
-!                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
 
 !          END IF ! IHDM == 1
 
@@ -3245,10 +3231,6 @@ c   Get Pk and Dk:
           
                 pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
-!
-!   AJ NOTE - get rid of it
-!
-                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
  
               else
 
@@ -5260,11 +5242,6 @@ c Update VIST3D and save omega and k values
 !
               INDTMP = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
-!
-!  AJ NOTE
-!  get rid of it
-!
-              vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
@@ -5285,6 +5262,7 @@ c            Determine Sij values:
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/denom
             else
               vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
+
             end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)
