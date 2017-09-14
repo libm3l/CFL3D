@@ -1044,9 +1044,9 @@ c
       icallhd = icall*ihdm
       PGRID => NULL()
       IF(IHDM == 1)THEN     
-      NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
+        NBLOCK =  FLL_NNODES(PGLOB,'block','DIR',-1_lint,.false.,FPAR)  
 
-      DO IBLOCK = 1, NBLOCK  
+        DO IBLOCK = 1, NBLOCK  
 
          PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
      .                       IBLOCK,.FALSE.,FPAR)
@@ -1061,14 +1061,8 @@ c
          END IF
          IHDM = 0 
 
-      END DO
+        END DO
       END IF
-
-!
-!  AJ NOTE
-!  get rid of it
-!
-       IHDM = 0
 c
 c     residuals   J direction - viscous terms
 c
