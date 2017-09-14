@@ -1128,7 +1128,7 @@ c          the temprorary restriction improves diagonal dominance
 c          TRELAX is time length of relaxation period
 c
          RELFACT = min(1._rdouble, time/TRELAX)
-         write(*,*)relfact
+!         write(*,*)relfact
 
          do i=1,idim-1
          do k=1,kdim-1

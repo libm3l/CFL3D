@@ -56,6 +56,21 @@ c
        PTMP => FLL_MK('shift','I',1_LINT,1_LINT, FPAR)
        PTMP%I0 = 0
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+!
+!  relaxaction factor, specifies how long it takes
+!  to get to full time step for turbulent equations
+!
+       PTMP => FLL_MK('TRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP%D0 = 1.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+!
+!  factro specifying how much large residuals are relaxed
+!  currently not used
+!
+       PTMP => FLL_MK('REZRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP%D0 = 0.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+
 
        IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
 
@@ -69,14 +84,6 @@ c
 
        PTMP => FLL_MK('SLIMITER','D',1_LINT,1_LINT, FPAR)
        PTMP%D0 = 1.
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-       PTMP => FLL_MK('TRELAX','D',1_LINT,1_LINT, FPAR)
-       PTMP%D0 = 1.
-       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
-
-       PTMP => FLL_MK('REZRELAX','D',1_LINT,1_LINT, FPAR)
-       PTMP%D0 = 0.
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
 
