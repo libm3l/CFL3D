@@ -28,17 +28,28 @@ c     $Id$
 c
 c**********************************************************************
 c     Purpose:  get 1D index from 3D indexes
+c               it is assumed that arrays are fortran type of arrays
+c               ie. start from index 1, not 0
+c               if they start from 0, do not substract 1 
+c               from i,j,k
+c
+c               term (K-1) + 1 = K
+c               I just keep it there to make sure anyone
+c               changing this routine will be aware of -1s
+c
 c
 c     CHANGELOG
 c
 c     Version   Date       Author               Comment
 c     -------   --------   -------              -------
-c**********************************************************************
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder   create routines
+c***********************************************************************
        IMPLICIT NONE
 
        INTEGER :: I,IM,J,JM,K,KM,IND
 
-       IND = I*JM*KM+J*KM+K
+       IND = (I-1)*JM*KM+(J-1)*KM+(K-1) + 1
+
        RETURN
 
       END 
