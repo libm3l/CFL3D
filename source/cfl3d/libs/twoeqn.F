@@ -291,7 +291,7 @@ c
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS,RELFACT
+     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX
 
       INTEGER :: ISTAT,SHIFT,INDTMP
 
@@ -312,6 +312,7 @@ c
 !
       LIHDT =.FALSE.
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
+!      IHDM = 0
 !
 !   do only for non-equilibrium model
 !
@@ -319,6 +320,9 @@ c
         SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
 
         SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
+        TRELAX    = FLL_GETNDATA_D0(PGLOB, 'TRELAX', 1_LINT, FPAR)
+        REZRELAX  = FLL_GETNDATA_D0(PGLOB, 'REZRELAX', 1_LINT, FPAR)
+
         ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310'
 
@@ -1120,7 +1124,7 @@ c
 c          if start from 0 or very early time dependent solution
 c          the temprorary restriction improves diagonal dominance
 c
-         RELFACT = min(1._rdouble, time/10._rdouble)
+         RELFACT = min(1._rdouble, time/TRELAX)
 
          do i=1,idim-1
          do k=1,kdim-1
@@ -1478,6 +1482,7 @@ c Get TURRE values
 !            if(isnan(zksav(j,k,i,1)))zksav(j,k,i,1) = 10000
 !            if(isnan(zksav(j,k,i,2)))zksav(j,k,i,2) = 1
             turre(j,k,i,1)=zksav(j,k,i,1)
+!            if(zksav(j,k,i,1) > 10 )zksav(j,k,i,1) = 10
             turre(j,k,i,2)=zksav(j,k,i,2)
           enddo
         enddo
@@ -3076,7 +3081,7 @@ c            or 0.33333 (3D))
                   CMUTILDE = -8./15/2.*(1.-1.5)
                   CMUTILDE = (1.-1.5)/(4*NU*NU)
                   CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
-     .             *vist3d(j,k,i)*vist3d(j,k,i)*(1.+0.)/(1.-1.5)**2))
+     .             *NU*NU*(1.+0.)/(1.-1.5)**2))
                 ELSE
                   CMUTILDE = -8./15/2.*(1.-1.5)
                 END IF
@@ -5199,7 +5204,9 @@ c
                 negno=negno+1
                 if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
               else
-                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
+                WREZ = 1.+ 
+     .            REZRELAX*max(rhside(j,k,i,1)/turre(j,k,i,1), 0.)
+                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)/WREZ
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
               if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
@@ -5265,6 +5272,9 @@ c            Determine Sij values:
 
             end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
+
+!            if(turre(j,k,i,1) > 10 ) turre(j,k,i,1) = 10
+
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)
 
@@ -5949,6 +5959,13 @@ c
       end if
       end if
       end if
+
+      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+      write(*,*)'WU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+
+
 c
 c-----END HARDWIRED OUTPUT SECTION
 c

@@ -660,6 +660,8 @@ c allocate for DES and DDES
       end if
 c
 c  get turbulence stuff - production etc.
+c  this routine calculates new values of turbulent quantities
+c  (k,w or epsilon etc.) and updates them
 c
       call twoeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
      + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),

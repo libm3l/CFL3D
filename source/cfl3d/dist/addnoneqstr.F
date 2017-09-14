@@ -71,16 +71,24 @@ c
        PTMP%D0 = 1.
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
+       PTMP => FLL_MK('TRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP%D0 = 1000.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
-       DO J = 1,1   !MSEQ
+       PTMP => FLL_MK('REZRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP%D0 = 1000.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
-         IF(IDIMG(J) == 2)THEN
-           NDIMS = 2*2
-         ELSE
-           NDIMS = 3*3
-         END IF
-       
-         WRITE(*,*)'======================= ',  MSEQ,NGRID, NBLOCK
+
+!       DO J = 1,1   !MSEQ
+!
+!         IF(IDIMG(J) == 2)THEN
+!           NDIMS = 2*2
+!         ELSE
+!           NDIMS = 3*3
+!         END IF
+!       
+!         WRITE(*,*)'======================= ',  MSEQ,NGRID, NBLOCK
 
          DO K=1,NBLOCK
 
@@ -167,7 +175,7 @@ c
               IF(.NOT.FLL_MV(PTMP, PGRID, FPAR))STOP'ERROR MOVING NODE'
            END DO
          END DO
-       END DO
+!       END DO
 
        CALL FLL_CAT(PGLOB, 6, .FALSE.,FPAR)
 
