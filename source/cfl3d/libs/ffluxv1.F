@@ -1306,7 +1306,7 @@ c******************************************************************************
 c  calculate fluxes
 c
 c  viscous terms at interfaces
-      IF(IHDM /= 1) THEN
+      IF(IHDM == 0) THEN
 cdir$ ivdep
       do 1026 j=1,l0
 c
