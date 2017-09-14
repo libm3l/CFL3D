@@ -28,6 +28,7 @@ c     $Id$
 c
 c**********************************************************************
 c     Purpose:  allocate additional arrays for non-equilibrium model
+c               and for time relaxation
 c**********************************************************************
 c
 c      input arrays   : PBGLOB
