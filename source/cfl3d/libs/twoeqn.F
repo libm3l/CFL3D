@@ -1123,8 +1123,9 @@ c          turbulence model advanced with physical time only
 c          (pseudo-time term NOT included, even for tau-TS in mean-
 c          flow equations, since multigrid is not used for turb. eq.)
 c
-c          if start from 0 or very early time dependent solution
+c          if time dependent solution started from time < TRELAX
 c          the temprorary restriction improves diagonal dominance
+c          TRELAX is time length of relaxation period
 c
          RELFACT = min(1._rdouble, time/TRELAX)
          write(*,*)relfact
@@ -1491,10 +1492,10 @@ c Get TURRE values
         enddo
       enddo
 
-      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
-      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+!      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+!      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 c
 c Iterate to solve the equations
       do 500 not=1,nsubit
@@ -3091,7 +3092,7 @@ c            or 0.33333 (3D))
                 CMUTILDE = MIN(CMU, CMUTILDE)        
         
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
-                MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP  !/mulamref
+                MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3238,7 +3239,7 @@ c   Get Pk and Dk:
                 CMUTILDE = MIN(CMU, CMUTILDE)
           
                 pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
-     .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)
+     .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)/re
  
               else
 
@@ -3256,7 +3257,7 @@ c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               else if(IHDM ==1)THEN
-                pw=pk*CMUTILDE/CMU*MUT(IND)/q(j,k,i,1)
+                pw=pk*CMUTILDE/CMU*MUT(IND)/turre(j,k,i,1)
               else
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               end if
@@ -5219,7 +5220,9 @@ c
                 negnk=negnk+1
                 if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
               else
-                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)
+                WREZ = 1.+ 
+     .            REZRELAX*max(rhside(j,k,i,2)/turre(j,k,i,2), 0.)
+                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)/WREZ
               end if
             enddo
           enddo
