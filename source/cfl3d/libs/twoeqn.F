@@ -291,7 +291,7 @@ c
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX
+     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX,GAMMAHD
 
       INTEGER :: ISTAT,SHIFT,INDTMP
 
@@ -322,6 +322,8 @@ c
         SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
         TRELAX    = FLL_GETNDATA_D0(PGLOB, 'TRELAX', 1_LINT, FPAR)
         REZRELAX  = FLL_GETNDATA_D0(PGLOB, 'REZRELAX', 1_LINT, FPAR)
+
+        GAMMAHD = 0.075/0.09 -0.41*0.41/(2*SQRT(0.09))
 
         ALLOCATE(MUT(idim*jdim*kdim), STAT = ISTAT)
         IF(ISTAT /= 0)STOP'ERROR ALLOCATING MEMORY ==> twoeqn ERR:310'
@@ -1125,6 +1127,7 @@ c          if start from 0 or very early time dependent solution
 c          the temprorary restriction improves diagonal dominance
 c
          RELFACT = min(1._rdouble, time/TRELAX)
+         write(*,*)relfact
 
          do i=1,idim-1
          do k=1,kdim-1
@@ -3252,6 +3255,8 @@ c   Get Pk and Dk:
 c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
+              else if(IHDM ==1)THEN
+                pw=pk*CMUTILDE/CMU*MUT(IND)/q(j,k,i,1)
               else
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               end if
