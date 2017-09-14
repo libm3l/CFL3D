@@ -1483,15 +1483,11 @@ c Get TURRE values
       do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-!            if(isnan(zksav(j,k,i,1)))zksav(j,k,i,1) = 10000
-!            if(isnan(zksav(j,k,i,2)))zksav(j,k,i,2) = 1
             turre(j,k,i,1)=zksav(j,k,i,1)
-!            if(zksav(j,k,i,1) > 10 )zksav(j,k,i,1) = 10
             turre(j,k,i,2)=zksav(j,k,i,2)
           enddo
         enddo
       enddo
-
 !      write(*,*)'K ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
 !     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
 !      write(*,*)'W ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
@@ -5968,10 +5964,10 @@ c
       end if
       end if
 
-      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
-      write(*,*)'WU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+!      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+!      write(*,*)'WU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 
 
 c
