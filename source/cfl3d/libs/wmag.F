@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE WMAG_M
+      CONTAINS
       subroutine wmag(jdim,kdim,idim,q,sj,sk,si,vol,vor,w,wt,ip,blank,
      .                iover,qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,
      .                volk0,voli0,vormax,ivmax,jvmax,kvmax,maxbl)
@@ -29,7 +31,13 @@ c
 c**********************************************************************
 c     Purpose:  Evaluate vorticity magnitude for use in determining
 c     the turbulent eddy viscosity.
-c**********************************************************************
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap up in module
+c***********************************************************************
 c
 c      input arrays   : 
 c       q             : primitive variables at cell centers
@@ -278,3 +286,4 @@ c
       end if
       return
       end
+      END MODULE WMAG_M

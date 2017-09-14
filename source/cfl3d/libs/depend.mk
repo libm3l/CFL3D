@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-12 15:18:28
+#  Date: 2017-09-14 15:24:38
 #
 
 i2xsj_d.o : 
@@ -93,7 +93,7 @@ cctogp.o :
 
 cblki_d.o : 
 
-intrbc.o : 
+mvdat.o : 
 
 global.o : 
 
@@ -120,6 +120,7 @@ resid.o :  \
 	twoeqn.o \
 	ffluxv.o \
 	module_kwstm.o \
+	wmag.o \
 	gfluxv.o \
 	hfluxv1.o
 
@@ -566,6 +567,8 @@ newfit.o :
 
 bc2010.o : 
 
+intrbc.o : 
+
 rb_pred.o : 
 
 collq.o :  \
@@ -587,8 +590,6 @@ bc2005.o :  \
 dabckz.o : 
 
 collxtb.o : 
-
-mvdat.o : 
 
 init_rb.o : 
 

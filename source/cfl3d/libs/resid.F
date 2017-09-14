@@ -45,6 +45,7 @@ c
       USE GFLUXV1_M
       USE HFLUXV_M
       USE HFLUXV1_M
+      USE WMAG_M
 c
 c     $Id$
 c
