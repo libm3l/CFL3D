@@ -3233,7 +3233,7 @@ c   Get Pk and Dk:
                 END IF
                 CMUTILDE = MIN(CMU, CMUTILDE)
           
-                pk = MAX(q(j,k,i,1)*2*CMUTILDE/CMU*turre(j,k,i,2)/
+                pk = MAX(2*CMUTILDE/CMU*turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)/re
  
               else
@@ -3252,7 +3252,7 @@ c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               else if(IHDM ==1)THEN
-                pw=pk*CMUTILDE*GAMMAHD/(CMU*MUT(IND))
+                 pw=pk*GAMMAHD*turre(j,k,i,1)/MAX(turre(j,k,i,2),EPS)
               else
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               end if
