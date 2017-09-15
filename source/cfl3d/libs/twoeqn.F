@@ -291,7 +291,8 @@ c
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX,GAMMAHD
+     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX,GAMMAHD,
+     .  factor2
 
       INTEGER :: ISTAT,SHIFT,INDTMP
 
@@ -316,12 +317,12 @@ c
 !
 !   do only for non-equilibrium model
 !
+      TRELAX    = FLL_GETNDATA_D0(PGLOB, 'TRELAX', 1_LINT, FPAR)
+      REZRELAX  = FLL_GETNDATA_D0(PGLOB, 'REZRELAX', 1_LINT, FPAR)
       IF(IHDM == 1)THEN
         SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
 
         SLIMITER  = FLL_GETNDATA_D0(PGLOB, 'SLIMITER', 1_LINT, FPAR)
-        TRELAX    = FLL_GETNDATA_D0(PGLOB, 'TRELAX', 1_LINT, FPAR)
-        REZRELAX  = FLL_GETNDATA_D0(PGLOB, 'REZRELAX', 1_LINT, FPAR)
 
         GAMMAHD = 0.075/0.09 -0.41*0.41/(2*SQRT(0.09))
 
@@ -1128,16 +1129,15 @@ c          the temprorary restriction improves diagonal dominance
 c          TRELAX is time length of relaxation period
 c
          RELFACT = min(1._rdouble, time/TRELAX)
-!         write(*,*)relfact
 
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
            timestp(j,k,i)=dt*RELFACT
-           factor2=1.
          enddo
          enddo
          enddo
+         factor2=1.
       end if
 c
 c Set up constants
@@ -3089,6 +3089,7 @@ c            or 0.33333 (3D))
         
                 MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
                 MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP
+
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -5206,9 +5207,9 @@ c
                 negno=negno+1
                 if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
               else
-!                WREZ = 1.+ 
-!     .            REZRELAX*max(rhside(j,k,i,1)/turre(j,k,i,1), 0.)
-                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)  !/WREZ
+                WREZ = 1.+ 
+     .            REZRELAX*max(ABS(rhside(j,k,i,1)/turre(j,k,i,1)), 0.)
+                turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)/WREZ
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
               if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
@@ -5216,9 +5217,9 @@ c
                 negnk=negnk+1
                 if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
               else
-!                WREZ = 1.+ 
-!     .            REZRELAX*max(rhside(j,k,i,2)/turre(j,k,i,2), 0.)
-                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)  !/WREZ
+                WREZ = 1.+ 
+     .            REZRELAX*max(ABS(rhside(j,k,i,2)/turre(j,k,i,2)), 0.)
+                turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)/WREZ
               end if
             enddo
           enddo
@@ -5964,10 +5965,10 @@ c
       end if
       end if
 
-!      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
-!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
-!      write(*,*)'WU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
-!     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
+      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,2)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,2))
+      write(*,*)'WU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1,1)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1,1))
 
 
 c

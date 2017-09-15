@@ -48,7 +48,7 @@ c
 !  specify if non-equilibrium model (1) or not
 !
        PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 1
+       PTMP%I0 = 0
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 !
 !  this is a switch which determines when mbglk.F call shift  (pglob) routine
