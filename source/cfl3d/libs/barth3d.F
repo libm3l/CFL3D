@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE BARTH3D_M
+      CONTAINS
       subroutine barth3d(jdim,kdim,idim,q,sj,sk,si,vol,dtj,
      + x,y,z,vist3d,vor,smin,xjb,tursav,xkb,turre,damp1,damp2,
      + timestp,fnu,
@@ -1911,5 +1913,12 @@ c
         enddo
       end if
 c
+
+      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1)),
+     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1))
+      write(*,*)'WU ', maxval(vist3d(1:jdim-1,1:kdim-1,1:idim-1)),
+     .                 minval(vist3d(1:jdim-1,1:kdim-1,1:idim-1))
       return
       end
+
+      END MODULE BARTH3D_M
