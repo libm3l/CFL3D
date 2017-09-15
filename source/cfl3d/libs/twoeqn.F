@@ -291,7 +291,7 @@ c
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
       REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,REZRELAX,GAMMAHD,
+     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,WRELAX,GAMMAHD,KRELAX
      .  factor2
 
       INTEGER :: ISTAT,SHIFT,INDTMP
@@ -313,12 +313,12 @@ c
 !
       LIHDT =.FALSE.
       IHDM = FLL_GETNDATA_I0(PGLOB, 'IHDM', 1_LINT, FPAR)
-!      IHDM = 0
 !
 !   do only for non-equilibrium model
 !
       TRELAX    = FLL_GETNDATA_D0(PGLOB, 'TRELAX', 1_LINT, FPAR)
-      REZRELAX  = FLL_GETNDATA_D0(PGLOB, 'REZRELAX', 1_LINT, FPAR)
+      KRELAX  = FLL_GETNDATA_D0(PGLOB, 'KRELAX', 1_LINT, FPAR)
+      WRELAX  = FLL_GETNDATA_D0(PGLOB, 'WRELAX', 1_LINT, FPAR)
       IF(IHDM == 1)THEN
         SHIFT = FLL_GETNDATA_I0(PGLOB, 'shift', 1_LINT, FPAR)
 
@@ -362,8 +362,6 @@ c
         ELSE
          LIHDT = .FALSE.
         END IF
-
-!       CALL FLL_CAT(PGRID, 6, .FALSE.,FPAR)
 !
 !  get velocities at three time levels  , t, t-1 and t-2
 !
@@ -3254,7 +3252,7 @@ c   Get Pw and Dw:
               if (isst2003 .eq. 1) then
                 pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               else if(IHDM ==1)THEN
-                pw=pk*CMUTILDE/CMU*MUT(IND)/turre(j,k,i,1)
+                pw=pk*CMUTILDE*GAMMAHD/(CMU*MUT(IND))
               else
                 pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
               end if
@@ -5208,7 +5206,7 @@ c
                 if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
               else
                 WREZ = 1.+ 
-     .            REZRELAX*max(ABS(rhside(j,k,i,1)/turre(j,k,i,1)), 0.)
+     .            WRELAX*max(ABS(rhside(j,k,i,1)/turre(j,k,i,1)), 0.)
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)/WREZ
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
@@ -5218,7 +5216,7 @@ c
                 if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
               else
                 WREZ = 1.+ 
-     .            REZRELAX*max(ABS(rhside(j,k,i,2)/turre(j,k,i,2)), 0.)
+     .            KRELAX*max(ABS(rhside(j,k,i,2)/turre(j,k,i,2)), 0.)
                 turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)/WREZ
               end if
             enddo

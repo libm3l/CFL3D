@@ -48,7 +48,7 @@ c
 !  specify if non-equilibrium model (1) or not
 !
        PTMP => FLL_MK('IHDM','I',1_LINT,1_LINT, FPAR)
-       PTMP%I0 = 0
+       PTMP%I0 = 1
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 !
 !  this is a switch which determines when mbglk.F call shift  (pglob) routine
@@ -65,10 +65,13 @@ c
        PTMP%D0 = 1.
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 !
-!  factro specifying how much large residuals are relaxed
+!  factor specifying how much large residuals are relaxed
 !  currently not used
 !
-       PTMP => FLL_MK('REZRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP => FLL_MK('WRELAX','D',1_LINT,1_LINT, FPAR)
+       PTMP%D0 = 10000.
+       IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
+       PTMP => FLL_MK('KRELAX','D',1_LINT,1_LINT, FPAR)
        PTMP%D0 = 0.
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
 
