@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-15 13:49:02
+#  Date: 2017-09-15 13:52:24
 #
 
 i2xsj_d.o : 
@@ -116,6 +116,7 @@ dlutr.o :
 resid.o :  \
 	hfluxv.o \
 	gfluxv1.o \
+	spalart.o \
 	ffluxv1.o \
 	twoeqn.o \
 	ffluxv.o \

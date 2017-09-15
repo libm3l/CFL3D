@@ -47,6 +47,7 @@ c
       USE HFLUXV1_M
       USE WMAG_M
       USE BARTH3D_M
+      USE SPALART_M
 c
 c     $Id$
 c

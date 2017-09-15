@@ -20,6 +20,8 @@ c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
+      MODULE SPALART_M
+      CONTAINS
       subroutine spalart(jdim,kdim,idim,q,sj,sk,si,vol,dtj,
      + x,y,z,vist3d,vor,smin,tursav,turre,damp1,timestp,fnu,bx,cx,dx,
      + fx,workx,by,cy,dy,fy,worky,bz,cz,dz,fz,workz,ntime,
@@ -33,6 +35,12 @@ c***********************************************************************
 c     Purpose:  Compute turbulent viscosity distributions using
 c     1-equation Spalart turbulence model (ivisc=5)
 c     (reprogrammed by Rumsey for CFL3D 1/92)
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap up in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -2572,3 +2580,5 @@ c-----END HARDWIRED OUTPUT SECTION
 c
       return
       end
+
+      END MODULE SPALART_M

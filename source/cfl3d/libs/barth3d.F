@@ -35,6 +35,12 @@ c***********************************************************************
 c     Purpose:  Compute turbulent viscosity distributions using
 c     1-equation Baldwin-Barth turbulence model (ivisc=4)
 c     (reprogrammed by Rumsey for CFL3D 7/91)
+c
+c     CHANGELOG
+c
+c     Version   Date       Author               Comment
+c     -------   --------   -------              -------
+c     6.0       08/17    Adam Jirasek/USAFA/CU Boulder     wrap up in module
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -1913,11 +1919,6 @@ c
         enddo
       end if
 c
-
-      write(*,*)'KU ', maxval(turre(1:jdim-1,1:kdim-1,1:idim-1)),
-     .                 minval(turre(1:jdim-1,1:kdim-1,1:idim-1))
-      write(*,*)'WU ', maxval(vist3d(1:jdim-1,1:kdim-1,1:idim-1)),
-     .                 minval(vist3d(1:jdim-1,1:kdim-1,1:idim-1))
       return
       end
 
