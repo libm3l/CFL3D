@@ -69,7 +69,7 @@ c
 !  currently not used
 !
        PTMP => FLL_MK('WRELAX','D',1_LINT,1_LINT, FPAR)
-       PTMP%D0 = 10000.
+       PTMP%D0 = 0.
        IF(.NOT.FLL_MV(PTMP, PGLOB, FPAR))STOP' ERROR MOVING NODE'
        PTMP => FLL_MK('KRELAX','D',1_LINT,1_LINT, FPAR)
        PTMP%D0 = 0.

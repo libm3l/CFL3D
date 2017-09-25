@@ -290,8 +290,8 @@ c
 
       REAL(RDOUBLE), ALLOCATABLE :: MUT(:)
 
-      REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,TEDAMP,
-     .  OMFREE, LAMBDA,EPS,RELFACT,WREZ,TRELAX,WRELAX,GAMMAHD,KRELAX
+      REAL(RDOUBLE) :: CMUTILDE,CMU,OMDAMP,MUTTMP,NU,TSCALE,
+     .  LAMBDA,EPS,RELFACT,WREZ,TRELAX,WRELAX,GAMMAHD,KRELAX
      .  factor2
 
       INTEGER :: ISTAT,SHIFT,INDTMP
@@ -300,9 +300,7 @@ c
 
       LARGE = 10.E20
       EPS   = 10.E-20
-      TEDAMP= 0.01
-      OMFREE = 1000
-      OMDAMP= OMFREE*TEDAMP
+      OMDAMP= .01
       CLAMB = 0.26
       CMU   = 0.09
 !
@@ -3084,10 +3082,10 @@ c            or 0.33333 (3D))
                   CMUTILDE = -8./15/2.*(1.-1.5)
                 END IF
                 CMUTILDE = MIN(CMU, CMUTILDE)        
+!                CMUTILDE = CMU
         
-                MUTTMP = CMUTILDE/CMU/MAX(OMDAMP,turre(j,k,i,1))
+                MUTTMP = CMUTILDE/(CMU*MAX(OMDAMP,turre(j,k,i,1)))
                 MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP
-
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3217,24 +3215,11 @@ c   Get Pk and Dk:
               elseif(IHDM == 1)THEN
 !
 !  non-equilibrium model
-!
-                TSCALE = 1./MAX(EPS,CMU*turre(j,k,i,1))
-!
-!      sijtilde = sij * sij~
-!
-                NU = TSCALE * SQRT(MAX(EPS,SIJTILDE))
-          
-                IF(ABS(NU) > EPSILON(NU))THEN
-                 CMUTILDE = (1.-1.5)/(4*NU*NU)
-                 CMUTILDE = CMUTILDE * (1-SQRT(1.-4.*(-8./15.)
-     .             *NU*NU*(1.+0.)/(1.-1.5)**2 ))
-                ELSE
-                  CMUTILDE = -8./15/2.*(1.-1.5)
-                END IF
-                CMUTILDE = MIN(CMU, CMUTILDE)
-          
-                pk = MAX(2*CMUTILDE/CMU*turre(j,k,i,2)/
+!         
+                pk = MAX(2 * CMUTILDE/CMU * turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)/re
+
+!                pW=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
  
               else
 
@@ -5252,6 +5237,7 @@ c Update VIST3D and save omega and k values
 !
               INDTMP = FIND_INDEX(I,J,K,IDIM,JDIM,KDIM)
               vist3d(j,k,i)=MUT(INDTMP)
+
 
             else if (i_wilcox06 .eq. 1) then
 c            Determine Sij values:
