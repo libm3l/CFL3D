@@ -300,7 +300,7 @@ c
 
       LARGE = 10.E20
       EPS   = 10.E-20
-      OMDAMP= .005
+      OMDAMP= .000001
       CLAMB = 0.26
       CMU   = 0.09
 !
@@ -3086,11 +3086,9 @@ c            or 0.33333 (3D))
                 CMUTILDE = MIN(CMU, CMUTILDE)        
                 CMUTILDE = CMU
         
-!                MUTTMP = CMUTILDE/(CMU*MAX(OMDAMP,turre(j,k,i,1)))
-                MUTTMP = CMUTILDE/(CMU*turre(j,k,i,1))
+                MUTTMP = CMUTILDE/(CMU*MAX(OMDAMP,turre(j,k,i,1)))
+!                MUTTMP = CMUTILDE/(CMU*turre(j,k,i,1))
                 MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP
-
-!                MUT(IND)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3223,8 +3221,6 @@ c   Get Pk and Dk:
 !         
                 pk = MAX(2 * CMUTILDE/CMU * turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)/re
-
-!                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
 
               else
 
