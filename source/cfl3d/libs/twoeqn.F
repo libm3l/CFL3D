@@ -300,7 +300,7 @@ c
 
       LARGE = 10.E20
       EPS   = 10.E-20
-      OMDAMP= .01
+      OMDAMP= .005
       CLAMB = 0.26
       CMU   = 0.09
 !
@@ -3050,7 +3050,9 @@ c            or 0.33333 (3D))
                 S22DT2 = S22D_N2(IND)
                 S23DT2 = S23D_N2(IND)
                 S33DT2 = S33D_N2(IND)
-
+!
+!   rhoref*aref**2/mulamref
+!
                 TSCALE  = 1./MAX(EPS,CMU*turre(j,k,i,1))          
                 LAMBDA  = CLAMB*TSCALE
 
@@ -3082,10 +3084,13 @@ c            or 0.33333 (3D))
                   CMUTILDE = -8./15/2.*(1.-1.5)
                 END IF
                 CMUTILDE = MIN(CMU, CMUTILDE)        
-!                CMUTILDE = CMU
+                CMUTILDE = CMU
         
-                MUTTMP = CMUTILDE/(CMU*MAX(OMDAMP,turre(j,k,i,1)))
+!                MUTTMP = CMUTILDE/(CMU*MAX(OMDAMP,turre(j,k,i,1)))
+                MUTTMP = CMUTILDE/(CMU*turre(j,k,i,1))
                 MUT(IND) = q(j,k,i,1)*turre(j,k,i,2)*MUTTMP
+
+!                MUT(IND)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
           
                 STRETRM11(IND)=2*MUT(IND)
      .            *MIN(S11/SLIMITER,MAX(-S11/SLIMITER,AE11))
@@ -3219,8 +3224,8 @@ c   Get Pk and Dk:
                 pk = MAX(2 * CMUTILDE/CMU * turre(j,k,i,2)/
      .            MAX(turre(j,k,i,1),EPS) * SIJTILDE,  0.)/re
 
-!                pW=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
- 
+!                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+
               else
 
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
@@ -5261,8 +5266,6 @@ c            Determine Sij values:
 
             end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
-
-!            if(turre(j,k,i,1) > 10 ) turre(j,k,i,1) = 10
 
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)
