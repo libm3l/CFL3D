@@ -300,7 +300,8 @@ c
 
       LARGE = 10.E20
       EPS   = 10.E-20
-      OMDAMP= .000001
+!      OMDAMP= .000001
+      OMDAMP= .00001
       CLAMB = 0.26
       CMU   = 0.09
 !
