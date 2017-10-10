@@ -1,36 +1,23 @@
 #!/usr/bin/python
-#The MIT License (MIT)
-
-#Copyright (c) 2014 David Dickinson, Peter Hill
-
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
-
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
-
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
+#  CFL3D is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged
+#  Navier-Stokes (RANS) code. It can be run in parallel on multiple grid zones
+#  with point-matched, patched, overset, or embedded connectivities. Both
+#  multigrid and mesh sequencing are available in time-accurate or
+#  steady-state modes.
+#
+#  Copyright 2001 United States Government as represented by the Administrator
+#  of the National Aeronautics and Space Administration. All Rights Reserved.
 # 
-#
-#  this is a modification of the original script of D Dickinson and Peter Hill
-#  @https://github.com/ZedThree/fort_depend.py
-#
-#  The modification was done by Adam Jirasek 
-#  the modified version can be found @https://github.com/libm3l/fort_depend.py
-#
-#  the major update is that the dependency script can make dependenies 
-#  from files located in different directories, so it is more suitable 
-#  for bigger project 
+#  The CFL3D platform is licensed under the Apache License, Version 2.0 
+#  (the "License"); you may not use this file except in compliance with the 
+#  License. You may obtain a copy of the License at 
+#  http://www.apache.org/licenses/LICENSE-2.0. 
+# 
+#  Unless required by applicable law or agreed to in writing, software 
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+#  License for the specific language governing permissions and limitations 
+#  under the License.
 #
 # History:
 # Version   Date       Author        Patch number  CLA  Comment
