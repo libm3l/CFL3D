@@ -143,6 +143,7 @@ clean: $(SUBDIR_COMP:%=%.clean)
 depend: $(SUBDIRS:%=%.depend)
 
 install:
+	gmake 
 	$(INSTALL) $(EXE_SEQ).x  $(bin_dir)/$(EXE_SEQ).x
 ifneq ($(strip $(MPI_FTN)),)
 	$(INSTALL) $(EXE_MPI).x  $(bin_dir)/$(EXE_MPI).x
