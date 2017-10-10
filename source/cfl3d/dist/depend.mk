@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-14 15:24:39
+#  Date: 2017-10-10 15:22:56
 #
 
 findmin_new.o : 
@@ -10,7 +10,8 @@ plot3d_2d.o :
 
 setslave.o : 
 
-updatedg.o : 
+updatedg.o :  \
+	../../cfl3d/libs/oscilchannelsurf.o
 
 qoutavg.o : 
 
