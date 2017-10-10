@@ -298,6 +298,9 @@ c
 
       LOGICAL :: LIHDT
 
+      RGAS = 1716
+!      c0 = sqrt(1.4*rgas*tinf)
+
       LARGE = 10.E20
       EPS   = 10.E-20
 !      OMDAMP= .000001
