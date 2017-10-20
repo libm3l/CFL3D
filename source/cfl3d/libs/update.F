@@ -81,9 +81,9 @@ c
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /iupdate/ iupdatemean
 
-      TYPE(DNODE), POINTER :: PGRID,PBLOCK,PGLOB
+      TYPE(DNODE), POINTER :: PGRID,PBLOCK,PGLOB,PTMP
       TYPE(FUNC_DATA_SET)  :: FPAR
-      INTEGER :: ILEV,IHDM
+      INTEGER :: IHDM
       INTEGER(LINT) :: NGRID,NBLOCK,IBLOCK
       INTEGER :: ICALL
       REAL(RDOUBLE), POINTER :: VEL(:,:)
@@ -195,12 +195,15 @@ c
             PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
      .                       IBLOCK,.FALSE.,FPAR)
 
-            ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
-            IF(ILEV == nbl)THEN
-              NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,
+            NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,
      .            .false.,FPAR)
-              PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+            PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
+
+            PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+            IF(ASSOCIATED(PTMP))THEN
+
               VEL => FLL_GETNDATA_D2(PGRID,'velocity',1_LINT,FPAR)
 c
 	      do i=1,idim

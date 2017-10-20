@@ -243,7 +243,7 @@ c
 c  additional declarations needed by non-equilibrium model
 c
       TYPE(DNODE), POINTER :: PGRID,PTMP,PTMQ,PBLOCK
-      INTEGER :: ILEV,IND,IHDM,IDIM,JDIM,KDIM
+      INTEGER :: IND,IHDM,IDIM,JDIM,KDIM
       INTEGER(LINT) :: IGRID, NGRID,NBLOCK,IBLOCK
       REAL(RDOUBLE), POINTER :: STR(:,:),STRN1(:,:),STRN2(:,:)
       REAL(RDOUBLE), POINTER :: S11D_N(:),S12D_N(:),S13D_N(:)
@@ -339,11 +339,13 @@ c
          PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
      .                       IBLOCK,.FALSE.,FPAR)
 
-         ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
-         IF(ILEV == nbl)THEN
-           NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
-           PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+         NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+         PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
+ 
+         PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+         IF(ASSOCIATED(PTMP))THEN
            IHDM = 1
            EXIT
          END IF
@@ -375,6 +377,7 @@ c
 
        PTMP => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
+       if(.not.associated(ptmp)) stop' did not find '
        UU_NN     => PTMP%D2(:,1)
        VV_NN     => PTMP%D2(:,2)
        WW_NN     => PTMP%D2(:,3)

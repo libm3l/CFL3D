@@ -109,9 +109,9 @@ c
            PTMP => FLL_MK('cfl3d-level','I',1_LINT,1_LINT, FPAR)
            PTMP%I0 = NBLOCK - K + 1
            IF(.NOT.FLL_MV(PTMP, PBLOCK, FPAR))STOP'ERROR MOVING NODE'
-           PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
-           PTMP%I0 = K
-           IF(.NOT.FLL_MV(PTMP, PBLOCK, FPAR))STOP'ERROR MOVING NODE'
+!           PTMP => FLL_MK('level','I',1_LINT,1_LINT, FPAR)
+!           PTMP%I0 = K
+!           IF(.NOT.FLL_MV(PTMP, PBLOCK, FPAR))STOP'ERROR MOVING NODE'
 
            DO I = 1,NGRID  ! NBLOCK
 

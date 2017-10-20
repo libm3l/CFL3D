@@ -144,7 +144,7 @@ c
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /reystressmodel/ issglrrw2012,i_sas_rsm
 
-      TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK
+      TYPE(DNODE), POINTER :: PGLOB, PGRID, PBLOCK,PTMP
       TYPE(FUNC_DATA_SET)  :: FPAR
       INTEGER(LINT) :: IGRID, NGRID, NBLOCK,IBLOCK
       INTEGER :: ICALLHD,ICALL
@@ -1053,11 +1053,13 @@ c
          PBLOCK => FLL_LOCATE(PGLOB,'block','DIR',-1_LINT,
      .                       IBLOCK,.FALSE.,FPAR)
 
-         ILEV = FLL_GETNDATA_I0(PBLOCK,'level',1_LINT,FPAR)
-         IF(ILEV == nbl)THEN
-           NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
-           PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
+         NGRID =  FLL_NNODES(PBLOCK,'grid','DIR',-1_lint,.false.,FPAR)
+         PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
+
+         PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+     .                       1_lint,.FALSE.,FPAR)
+         IF(ASSOCIATED(PTMP))THEN
            IHDM = 1
            EXIT
          END IF
