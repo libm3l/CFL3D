@@ -1057,7 +1057,7 @@ c
          PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
 
-         PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+         PTMP => FLL_LOCATE(PGRID,'SSGRAD','*',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
          IF(ASSOCIATED(PTMP))THEN
            IHDM = 1
@@ -1067,6 +1067,7 @@ c
 
         END DO
       END IF
+!      write(*,*)' RESID ', ihdm
 c
 c     residuals   J direction - viscous terms
 c

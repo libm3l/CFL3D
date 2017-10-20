@@ -200,11 +200,13 @@ c
             PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
 
-            PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+            PTMP => FLL_LOCATE(PGRID,'SSGRAD','*',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
+!            write(*,*)' BEFORE update velocity '
             IF(ASSOCIATED(PTMP))THEN
 
               VEL => FLL_GETNDATA_D2(PGRID,'velocity',1_LINT,FPAR)
+!              write(*,*)' update velocity '
 c
 	      do i=1,idim
 	        do j=1,jdim

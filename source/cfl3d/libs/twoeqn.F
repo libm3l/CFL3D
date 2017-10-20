@@ -343,7 +343,7 @@ c
          PGRID => FLL_LOCATE(PBLOCK,'grid','DIR',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
  
-         PTMP => FLL_LOCATE(PBLOCK,'SSGRAD','*',-1_LINT,
+         PTMP => FLL_LOCATE(PGRID,'SSGRAD','*',-1_LINT,
      .                       1_lint,.FALSE.,FPAR)
          IF(ASSOCIATED(PTMP))THEN
            IHDM = 1
@@ -356,6 +356,8 @@ c
 !
 !  if non-equilibrium model
 !
+
+!      write(*,*)' IHDM ', IHDM
       IF(IHDM == 1)THEN
 !
 !  find if calculate time derivative, this is calculated only at the beginning of 
@@ -377,7 +379,6 @@ c
 
        PTMP => FLL_LOCATE(PGRID,'velocity_nn','D',-1_LINT,
      .                       1_LINT,.FALSE.,FPAR)
-       if(.not.associated(ptmp)) stop' did not find '
        UU_NN     => PTMP%D2(:,1)
        VV_NN     => PTMP%D2(:,2)
        WW_NN     => PTMP%D2(:,3)

@@ -206,6 +206,9 @@ c
         XSTRAIN => FLL_GETNDATA_D2(PGRID,'Extra_Strain',1_LINT,FPAR)
         XSTRAINL => FLL_GETNDATA_D2(PGRIDL,'Extra_Strain',1_LINT,FPAR)
 
+!        write(*,*)size(XSTRAIN)
+!        write(*,*)size(XSTRAINL)
+
          if (idim.gt.2) then
           kk = 0
           do k=1,kdim1,2
