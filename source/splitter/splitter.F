@@ -810,6 +810,7 @@ c
 c     read in the input grid file; if input grid file is 'null', get
 c     needed block dimensions from unsplit cfl3d input file
 c
+
       if (gridin .ne. 'null') then
 c
          if (ip3dgrd .gt. 0) then
@@ -829,6 +830,10 @@ c
             do n=1,nbl
                if (ilo(n).ne.il(n) .or. jlo(n).ne.jl(n) .or.
      .             klo(n).ne.kl(n)) then
+                   write(*,*)' Dimensions are not equal'
+                   write(*,*)ilo(n),il(n)
+                   write(*,*)jlo(n),jl(n)
+                   write(*,*)klo(n),kl(n)
                    call termn8(0,-1,ibufdim,nbuf,bou,nou)
                end if
             end do
