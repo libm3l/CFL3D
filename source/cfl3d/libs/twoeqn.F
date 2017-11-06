@@ -356,8 +356,6 @@ c
 !
 !  if non-equilibrium model
 !
-
-!      write(*,*)' IHDM ', IHDM
       IF(IHDM == 1)THEN
 !
 !  find if calculate time derivative, this is calculated only at the beginning of 
