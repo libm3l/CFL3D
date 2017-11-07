@@ -59,7 +59,6 @@ c                          2...rotation (+/- symmetric) only
 c                         99...aeroelastic only
 c***********************************************************************
 c
-!      USE OSCILCHANNELSURF_M
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
@@ -337,19 +336,12 @@ c
 c
 c           aeroelastic surface 
 c
-!            call aesurf(nbl,jdim,kdim,idim,w(ldeltj),w(ldeltk),
-!     .                  w(ldelti),w(lxmdj),w(lxmdk),w(lxmdi),
-!     .                  wk(lwk1),wk(lwk2),wk(lwk3),maxbl,maxseg,
-!     .                  nmds,maxaes,aesrfdat,xs,xxn,icsi,icsf,
-!     .                  jcsi,jcsf,kcsi,kcsf,nsegdfrm,idfrmseg,
-!     .                  iaesurf,maxsegdg)
-
-           call oscilchannelsurf(nbl,jdim,kdim,idim,w(ldeltj),w(ldeltk),
+            call aesurf(nbl,jdim,kdim,idim,w(ldeltj),w(ldeltk),
      .                  w(ldelti),w(lxmdj),w(lxmdk),w(lxmdi),
      .                  wk(lwk1),wk(lwk2),wk(lwk3),maxbl,maxseg,
      .                  nmds,maxaes,aesrfdat,xs,xxn,icsi,icsf,
      .                  jcsi,jcsf,kcsi,kcsf,nsegdfrm,idfrmseg,
-     .                  iaesurf,maxsegdg,time)
+     .                  iaesurf,maxsegdg)
 c
             do lll=lwk1,lwk4
                wk(lll) = 1.
