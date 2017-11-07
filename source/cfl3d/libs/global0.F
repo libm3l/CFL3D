@@ -484,6 +484,7 @@ c        deforming mesh data
          call echoinp(iunit5,iunit11,1)
          call echoinp(iunit5,iunit11,1)
          read(iunit5,*) ndefrm
+
          write(iunit11,'(i10)') ndefrm
          call echoinp(iunit5,iunit11,0)
          if (abs(ndefrm).gt.0) then
@@ -803,6 +804,7 @@ c
 c
       if (irw .gt. 0) then
          read(iunit5,'(a80)') string
+!         write(*,*)' Input is :', string
          write(iunit11,'(a80)') string
       end if
       call my_flush(iunit11)
