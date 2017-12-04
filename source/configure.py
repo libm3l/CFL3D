@@ -386,7 +386,7 @@ if __name__ == "__main__":
     if not init:
     
       if not compiler:
-        print ("\033[031mError: \033[039m missing compiler settings, specify option \033[031m-c \033[032m")
+        print ("\033[031mError: \033[039m missing compiler settings, specify option \033[031m-c \033[039m")
         print ("\033[031m       \033[039m available options are: \033[032m gfortran\033[039m")
         print ("\033[031m       \033[039m                        \033[032m gfortran_debug\033[039m")
         print ("\033[031m       \033[039m                        \033[032m x86_64\033[039m")
@@ -394,7 +394,7 @@ if __name__ == "__main__":
         sys.exit()
         
       if not build:
-        print ("\033[031mError: \033[039m missing name of build directory,  specify option \033[031m-b \033[032m")
+        print ("\033[031mError: \033[039m missing name of build directory,  specify option \033[031m-b \033[039m")
         sys.exit()
         
 
