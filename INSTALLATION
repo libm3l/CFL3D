@@ -37,7 +37,7 @@ DEVELOPMENT:
 
        If any new routine is added, encapsulate it in module and use USE statement. You will need to recreate dependency file. To do so
        execute command "gmake depend" from CFL3D directory. If only part of project was modified, go to that directory and execute
-       gmake clean from there.
+       "gmake depend" from there.
        
 NOTE:
        Makefiles for cflcmplx and preron  must be completed!!!!
