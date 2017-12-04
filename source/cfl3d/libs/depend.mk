@@ -1,7 +1,7 @@
 # This file is generated automatically by fort_depend.py. DO NOT EDIT!
 #
 #  Created by: jiraseka
-#  Date: 2017-09-08 19:48:28
+#  Date: 2017-12-04 14:28:14
 #
 
 i2xsj_d.o : 
@@ -44,7 +44,7 @@ ccomplex.o :
 
 diagi.o : 
 
-blockk.o : 
+chkroti_d.o : 
 
 swafk.o : 
 
@@ -90,7 +90,7 @@ cctogp.o :
 
 cblki_d.o : 
 
-intrbc.o : 
+mvdat.o : 
 
 global.o : 
 
@@ -163,7 +163,7 @@ rotateq.o :
 
 pre_blockbc.o : 
 
-lead.o : 
+mms.o : 
 
 triv.o : 
 
@@ -182,6 +182,8 @@ csout.o :
 rcfl.o : 
 
 csurf.o : 
+
+lead.o : 
 
 my_flush.o : 
 
@@ -298,7 +300,7 @@ cblkj.o :
 
 rp3d.o : 
 
-chkroti_d.o : 
+blockk.o : 
 
 collapse.o : 
 
@@ -541,6 +543,8 @@ newfit.o :
 
 bc2010.o : 
 
+intrbc.o : 
+
 rb_pred.o : 
 
 collq.o : 
@@ -562,15 +566,11 @@ dabckz.o :
 
 collxtb.o : 
 
-mvdat.o : 
-
 init_rb.o : 
 
 xyzintr.o : 
 
 bc1005.o : 
-
-mms.o : 
 
 pre_patch.o : 
 
